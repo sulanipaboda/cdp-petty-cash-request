@@ -1,7 +1,7 @@
 // src/components/PettyCashForm.jsx
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Calendar, User, MapPin, Package, FileText, Send, Upload, DollarSign, X } from 'lucide-react';
+import { Calendar, User, MapPin, Package, FileText, Send, Upload, DollarSign, X, CheckCircle, ShieldCheck } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { useDispatch } from 'react-redux';
 import { addRequest } from '../store/pettyCashSlice';
@@ -134,231 +134,289 @@ const PettyCashForm = () => {
     };
 
     return (
-        <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5 }}
-            className="max-w-3xl mx-auto"
-        >
-            <div className="bg-white rounded-xl shadow-lg overflow-hidden">
-                {/* Header */}
-                <div className="bg-gradient-to-r from-primary-600 to-primary-700 px-6 py-8">
-                    <h1 className="text-2xl font-bold text-white flex items-center gap-2">
-                        <FileText className="h-6 w-6" />
-                        Petty Cash Request Form
-                    </h1>
-                    <p className="text-primary-100 mt-2">Fill in the details below to submit your request</p>
+        <div className="max-w-4xl mx-auto">
+            <motion.div
+                initial={{ opacity: 0, y: 30 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+                className="bg-white dark:bg-gray-900 rounded-[2.5rem] shadow-[0_32px_64px_-16px_rgba(0,0,0,0.1)] dark:shadow-none overflow-hidden border border-gray-100 dark:border-gray-800 transition-all duration-500"
+            >
+                {/* Hero Header */}
+                <div className="relative h-64 bg-gradient-to-br from-primary-600 via-primary-700 to-primary-900 flex items-center px-12 overflow-hidden">
+                    <div className="absolute inset-0 opacity-10 bg-[radial-gradient(circle_at_50%_120%,rgba(255,255,255,0.4),transparent)]"></div>
+                    <div className="relative z-10 flex items-center gap-8">
+                        <div className="h-20 w-20 bg-white/10 backdrop-blur-xl border border-white/20 rounded-3xl flex items-center justify-center rotate-3 hover:rotate-0 transition-transform duration-500">
+                            <FileText className="h-10 w-10 text-white" />
+                        </div>
+                        <div>
+                            <h1 className="text-2xl font-black text-white uppercase tracking-tighter leading-none">Petty Cash</h1>
+                            <p className="text-primary-100 mt-1.5 text-sm font-medium opacity-90">Digital Requisition Portal</p>
+                        </div>
+                    </div>
                 </div>
 
-                {/* Form */}
-                <form onSubmit={handleSubmit} className="p-6 space-y-6">
-                    {/* Date */}
-                    <div className="space-y-2">
-                        <label className="flex items-center gap-2 text-sm font-medium text-gray-700">
-                            1. Date (dd/MM/yyyy)
-                        </label>
-                        <input
-                            type="date"
-                            name="date"
-                            value={formData.date}
-                            onChange={(e) => handleDateChange(e, 'date')}
-                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors"
-                            required
-                        />
-                    </div>
+                {/* Form Content */}
+                <form onSubmit={handleSubmit} className="p-12 space-y-12">
+                    {/* Section 1: Core Details */}
+                    <div className="space-y-8">
+                        <div className="flex items-center gap-4">
+                            <div className="h-8 w-8 bg-primary-50 dark:bg-primary-900/30 rounded-full flex items-center justify-center text-primary-600 dark:text-primary-400 font-bold text-xs">01</div>
+                            <h2 className="text-sm font-black text-gray-400 dark:text-gray-500 uppercase tracking-[0.3em]">Basic Information</h2>
+                            <div className="flex-1 h-[1px] bg-gray-100 dark:bg-gray-800"></div>
+                        </div>
 
-                    {/* Full Name */}
-                    <div className="space-y-2">
-                        <label className="flex items-center gap-2 text-sm font-medium text-gray-700">
-                            2. Full Name
-                        </label>
-                        <input
-                            type="text"
-                            name="fullName"
-                            value={formData.fullName}
-                            onChange={handleChange}
-                            placeholder="Enter your full name"
-                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors"
-                            required
-                        />
-                    </div>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
+                            <div className="space-y-3">
+                                <label className="text-[11px] font-black text-gray-500 dark:text-gray-400 uppercase tracking-widest pl-1 flex justify-between">
+                                    Requester Name <span className="text-primary-500">Required</span>
+                                </label>
+                                <div className="relative group">
+                                    <User className="absolute left-4 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400 group-focus-within:text-primary-500 transition-colors" />
+                                    <input
+                                        type="text"
+                                        name="fullName"
+                                        value={formData.fullName}
+                                        onChange={handleChange}
+                                        placeholder="Enter your full legal name"
+                                        className="w-full pl-12 pr-4 py-4 bg-gray-50 dark:bg-gray-800/50 border border-transparent dark:border-gray-700/50 rounded-2xl focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 outline-none transition-all text-gray-900 dark:text-gray-100 font-bold placeholder:text-gray-400"
+                                        required
+                                    />
+                                </div>
+                            </div>
 
-                    {/* Branch Location */}
-                    <div className="space-y-2">
-                        <label className="flex items-center gap-2 text-sm font-medium text-gray-700">
-                            3. Branch Location
-                        </label>
-                        <input
-                            type="text"
-                            name="branchLocation"
-                            value={formData.branchLocation}
-                            onChange={handleChange}
-                            placeholder="Enter branch location"
-                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors"
-                            required
-                        />
-                    </div>
-
-                    {/* Date Needed */}
-                    <div className="space-y-2">
-                        <label className="flex items-center gap-2 text-sm font-medium text-gray-700">
-                            4. Date Needed (dd/MM/yyyy)
-                        </label>
-                        <input
-                            type="date"
-                            name="dateNeeded"
-                            value={formData.dateNeeded}
-                            onChange={(e) => handleDateChange(e, 'dateNeeded')}
-                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors"
-                            required
-                        />
-                    </div>
-
-                    {/* Stationaries */}
-                    <div className="space-y-2">
-                        <label className="flex items-center gap-2 text-sm font-medium text-gray-700">
-                            5. Stationaries needed for the location
-                        </label>
-                        <textarea
-                            name="stationaries"
-                            value={formData.stationaries}
-                            onChange={handleChange}
-                            placeholder="List the stationaries needed..."
-                            rows="4"
-                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors resize-none"
-                            required
-                        />
-                    </div>
-
-                    {/* Request Type */}
-                    <div className="space-y-2">
-                        <label className="flex items-center gap-2 text-sm font-medium text-gray-700">
-                            6. Type of the Request
-                        </label>
-                        <div className="space-y-3">
-                            <label className="flex items-center gap-3 p-3 border border-gray-200 rounded-lg hover:bg-gray-50 cursor-pointer transition-colors">
-                                <input
-                                    type="radio"
-                                    name="requestType"
-                                    value="New Purchase"
-                                    checked={formData.requestType === 'New Purchase'}
-                                    onChange={handleChange}
-                                    className="h-4 w-4 text-primary-600 focus:ring-primary-500"
-                                />
-                                <span className="text-gray-700">New Purchase</span>
-                            </label>
-                            <label className="flex items-center gap-3 p-3 border border-gray-200 rounded-lg hover:bg-gray-50 cursor-pointer transition-colors">
-                                <input
-                                    type="radio"
-                                    name="requestType"
-                                    value="Reimbursement of Existing purchase"
-                                    checked={formData.requestType === 'Reimbursement of Existing purchase'}
-                                    onChange={handleChange}
-                                    className="h-4 w-4 text-primary-600 focus:ring-primary-500"
-                                />
-                                <span className="text-gray-700">Reimbursement of Existing purchase</span>
-                            </label>
+                            <div className="space-y-3">
+                                <label className="text-[11px] font-black text-gray-500 dark:text-gray-400 uppercase tracking-widest pl-1">
+                                    Branch / Location
+                                </label>
+                                <div className="relative group">
+                                    <MapPin className="absolute left-4 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400 group-focus-within:text-primary-500 transition-colors" />
+                                    <input
+                                        type="text"
+                                        name="branchLocation"
+                                        value={formData.branchLocation}
+                                        onChange={handleChange}
+                                        placeholder="Assigned operational branch"
+                                        className="w-full pl-12 pr-4 py-4 bg-gray-50 dark:bg-gray-800/50 border border-transparent dark:border-gray-700/50 rounded-2xl focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 outline-none transition-all text-gray-900 dark:text-gray-100 font-bold placeholder:text-gray-400"
+                                        required
+                                    />
+                                </div>
+                            </div>
                         </div>
                     </div>
 
-                    {/* Conditional File Upload for Reimbursement */}
-                    <AnimatePresence>
-                        {formData.requestType === 'Reimbursement of Existing purchase' && (
-                            <motion.div
-                                initial={{ opacity: 0, height: 0 }}
-                                animate={{ opacity: 1, height: 'auto' }}
-                                exit={{ opacity: 0, height: 0 }}
-                                transition={{ duration: 0.3 }}
-                                className="space-y-2 overflow-hidden"
-                            >
-                                <label className="flex items-center gap-2 text-sm font-medium text-gray-700">
-                                    7. Upload Receipt (Required for Reimbursement)
+                    {/* Section 2: Timeline */}
+                    <div className="space-y-8">
+                        <div className="flex items-center gap-4">
+                            <div className="h-8 w-8 bg-primary-50 dark:bg-primary-900/30 rounded-full flex items-center justify-center text-primary-600 dark:text-primary-400 font-bold text-xs">02</div>
+                            <h2 className="text-sm font-black text-gray-400 dark:text-gray-500 uppercase tracking-[0.3em]">Timeline Specification</h2>
+                            <div className="flex-1 h-[1px] bg-gray-100 dark:bg-gray-800"></div>
+                        </div>
+
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
+                            <div className="space-y-3">
+                                <label className="text-[11px] font-black text-gray-500 dark:text-gray-400 uppercase tracking-widest pl-1">
+                                    Submission Date
                                 </label>
+                                <div className="relative group">
+                                    <Calendar className="absolute left-4 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400 transition-colors" />
+                                    <input
+                                        type="date"
+                                        name="date"
+                                        value={formData.date}
+                                        onChange={(e) => handleDateChange(e, 'date')}
+                                        className="w-full pl-12 pr-4 py-4 bg-gray-50 dark:bg-gray-800/50 border border-transparent dark:border-gray-700/50 rounded-2xl focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 outline-none transition-all text-gray-900 dark:text-gray-100 font-bold"
+                                        required
+                                    />
+                                </div>
+                            </div>
 
-                                {!formData.receiptFile ? (
-                                    <div className="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-lg hover:border-primary-500 transition-colors">
-                                        <div className="space-y-1 text-center">
-                                            <Upload className="mx-auto h-12 w-12 text-gray-400" />
-                                            <div className="flex text-sm text-gray-600">
-                                                <label
-                                                    htmlFor="receipt-upload"
-                                                    className="relative cursor-pointer bg-white rounded-md font-medium text-primary-600 hover:text-primary-500 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-primary-500"
-                                                >
-                                                    <span>Upload a file</span>
-                                                    <input
-                                                        id="receipt-upload"
-                                                        name="receipt-upload"
-                                                        type="file"
-                                                        className="sr-only"
-                                                        onChange={handleFileChange}
-                                                        accept=".jpg,.jpeg,.png,.pdf"
-                                                    />
-                                                </label>
-                                                <p className="pl-1">or drag and drop</p>
-                                            </div>
-                                            <p className="text-xs text-gray-500">
-                                                PNG, JPG, PDF up to 5MB
-                                            </p>
-                                        </div>
-                                    </div>
-                                ) : (
-                                    <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg border border-gray-200">
-                                        <div className="flex items-center gap-3">
-                                            <span className="text-sm text-gray-700 truncate max-w-xs">
-                                                {formData.receiptFileName}
-                                            </span>
-                                        </div>
-                                        <button
-                                            type="button"
-                                            onClick={removeFile}
-                                            className="p-1 hover:bg-gray-200 rounded-full transition-colors"
-                                        >
-                                            <X className="h-4 w-4 text-gray-500" />
-                                        </button>
-                                    </div>
-                                )}
-                                <p className="text-xs text-gray-500">
-                                    Please upload a clear image or PDF of your receipt
-                                </p>
-                            </motion.div>
-                        )}
-                    </AnimatePresence>
+                            <div className="space-y-3">
+                                <label className="text-[11px] font-black text-gray-500 dark:text-gray-400 uppercase tracking-widest pl-1">
+                                    Funds Required By
+                                </label>
+                                <div className="relative group">
+                                    <Calendar className="absolute left-4 top-1/2 transform -translate-y-1/2 h-5 w-5 text-primary-500 transition-colors" />
+                                    <input
+                                        type="date"
+                                        name="dateNeeded"
+                                        value={formData.dateNeeded}
+                                        onChange={(e) => handleDateChange(e, 'dateNeeded')}
+                                        className="w-full pl-12 pr-4 py-4 bg-gray-50 dark:bg-gray-800/50 border border-primary-500/20 dark:border-primary-500/30 rounded-2xl focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 outline-none transition-all text-gray-900 dark:text-gray-100 font-bold ring-1 ring-primary-500/10"
+                                        required
+                                    />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
 
-                    {/* Amount */}
-                    <div className="space-y-2">
-                        <label className="flex items-center gap-2 text-sm font-medium text-gray-700">
-                            <DollarSign className="h-4 w-4 text-primary-600" />
-                            {formData.requestType === 'Reimbursement of Existing purchase' ? '8' : '7'}. Amount (LKR)
-                        </label>
-                        <div className="relative">
-                            <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500">Rs.</span>
-                            <input
-                                type="number"
-                                name="amount"
-                                value={formData.amount}
+                    {/* Section 3: Request Nature */}
+                    <div className="space-y-8">
+                        <div className="flex items-center gap-4">
+                            <div className="h-8 w-8 bg-primary-50 dark:bg-primary-900/30 rounded-full flex items-center justify-center text-primary-600 dark:text-primary-400 font-bold text-xs">03</div>
+                            <h2 className="text-sm font-black text-gray-400 dark:text-gray-500 uppercase tracking-[0.3em]">Request Details</h2>
+                            <div className="flex-1 h-[1px] bg-gray-100 dark:bg-gray-800"></div>
+                        </div>
+
+                        <div className="space-y-6">
+                            <p className="text-[11px] font-black text-gray-500 dark:text-gray-400 uppercase tracking-widest">Select Request Category</p>
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                <label className={`relative flex items-center gap-5 p-6 rounded-3xl border-2 cursor-pointer transition-all duration-300 ${formData.requestType === 'New Purchase' ? 'bg-primary-50 dark:bg-primary-900/10 border-primary-500 ring-4 ring-primary-500/5' : 'bg-transparent border-gray-100 dark:border-gray-800 hover:border-primary-200 dark:hover:border-primary-900/30'}`}>
+                                    <input
+                                        type="radio"
+                                        name="requestType"
+                                        value="New Purchase"
+                                        checked={formData.requestType === 'New Purchase'}
+                                        onChange={handleChange}
+                                        className="h-6 w-6 text-primary-600 border-gray-300 focus:ring-primary-500"
+                                    />
+                                    <div className="flex flex-col">
+                                        <span className={`text-base font-black tracking-tight ${formData.requestType === 'New Purchase' ? 'text-primary-900 dark:text-primary-100' : 'text-gray-900 dark:text-gray-100'}`}>Standard Purchase</span>
+                                        <span className="text-[9px] text-gray-500 dark:text-gray-400 font-bold uppercase tracking-widest">New Expenditure Requisition</span>
+                                    </div>
+                                </label>
+                                <label className={`relative flex items-center gap-5 p-6 rounded-3xl border-2 cursor-pointer transition-all duration-300 ${formData.requestType === 'Reimbursement of Existing purchase' ? 'bg-primary-50 dark:bg-primary-900/10 border-primary-500 ring-4 ring-primary-500/5' : 'bg-transparent border-gray-100 dark:border-gray-800 hover:border-primary-200 dark:hover:border-primary-900/30'}`}>
+                                    <input
+                                        type="radio"
+                                        name="requestType"
+                                        value="Reimbursement of Existing purchase"
+                                        checked={formData.requestType === 'Reimbursement of Existing purchase'}
+                                        onChange={handleChange}
+                                        className="h-6 w-6 text-primary-600 border-gray-300 focus:ring-primary-500"
+                                    />
+                                    <div className="flex flex-col">
+                                        <span className={`text-base font-black tracking-tight ${formData.requestType === 'Reimbursement of Existing purchase' ? 'text-primary-900 dark:text-primary-100' : 'text-gray-900 dark:text-gray-100'}`}>Reimbursement</span>
+                                        <span className="text-[9px] text-gray-500 dark:text-gray-400 font-bold uppercase tracking-widest">Claim for Past Expenditure</span>
+                                    </div>
+                                </label>
+                            </div>
+                        </div>
+
+                        <div className="space-y-4">
+                            <label className="text-[11px] font-black text-gray-500 dark:text-gray-400 uppercase tracking-widest pl-1">
+                                Itemization & Description
+                            </label>
+                            <textarea
+                                name="stationaries"
+                                value={formData.stationaries}
                                 onChange={handleChange}
-                                placeholder="0.00"
-                                min="0"
-                                step="0.01"
-                                className="w-full pl-12 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors"
+                                placeholder="Describe each item and the specific reason for this expenditure..."
+                                rows="5"
+                                className="w-full px-6 py-5 bg-gray-50 dark:bg-gray-800/50 border border-transparent dark:border-gray-700/50 rounded-[2rem] focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 outline-none transition-all text-gray-900 dark:text-gray-100 font-medium placeholder:text-gray-400 resize-none"
                                 required
                             />
                         </div>
                     </div>
 
-                    {/* Submit Button */}
-                    <motion.button
-                        type="submit"
-                        whileHover={{ scale: 1.02 }}
-                        whileTap={{ scale: 0.98 }}
-                        className="w-full bg-primary-600 text-white py-3 px-4 rounded-lg font-medium hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 transition-colors flex items-center justify-center gap-2"
-                    >
-                        <Send className="h-4 w-4" />
-                        Submit Request
-                    </motion.button>
+                    {/* Section 4: Evidence & Valuation */}
+                    <div className="space-y-8">
+                        <div className="flex items-center gap-4">
+                            <div className="h-8 w-8 bg-primary-50 dark:bg-primary-900/30 rounded-full flex items-center justify-center text-primary-600 dark:text-primary-400 font-bold text-xs">04</div>
+                            <h2 className="text-sm font-black text-gray-400 dark:text-gray-500 uppercase tracking-[0.3em]">Financial Evidence</h2>
+                            <div className="flex-1 h-[1px] bg-gray-100 dark:bg-gray-800"></div>
+                        </div>
+
+                        <div className="grid grid-cols-1 lg:grid-cols-2 gap-10">
+                            <div className="space-y-3">
+                                <label className="text-[11px] font-black text-gray-500 dark:text-gray-400 uppercase tracking-widest pl-1">
+                                    Transaction Value (LKR)
+                                </label>
+                                <div className="relative group">
+                                    <div className="absolute left-6 top-1/2 transform -translate-y-1/2 flex items-center gap-2 pointer-events-none">
+                                        <DollarSign className="h-6 w-6 text-primary-500" />
+                                        <span className="text-xs font-black text-gray-400 uppercase">LKR</span>
+                                    </div>
+                                    <input
+                                        type="number"
+                                        name="amount"
+                                        value={formData.amount}
+                                        onChange={handleChange}
+                                        placeholder="0.00"
+                                        className="w-full pl-24 pr-8 py-5 bg-gray-900 text-white rounded-[2rem] focus:ring-4 focus:ring-primary-500/20 outline-none transition-all text-xl font-black placeholder:text-gray-700"
+                                        required
+                                    />
+                                </div>
+                            </div>
+
+                            <div className="space-y-3">
+                                <label className="text-[11px] font-black text-gray-500 dark:text-gray-400 uppercase tracking-widest pl-1">
+                                    Evidence Attachment
+                                </label>
+                                <AnimatePresence mode="wait">
+                                    {!formData.receiptFile ? (
+                                        <motion.div
+                                            key="upload"
+                                            initial={{ opacity: 0, scale: 0.98 }}
+                                            animate={{ opacity: 1, scale: 1 }}
+                                            exit={{ opacity: 0, scale: 0.98 }}
+                                            className="relative h-[88px] flex items-center justify-center border-2 border-dashed border-gray-100 dark:border-gray-800 rounded-[2rem] hover:border-primary-500/30 transition-all cursor-pointer group bg-gray-50/30"
+                                        >
+                                            <label className="absolute inset-0 cursor-pointer flex items-center px-8 gap-4">
+                                                <div className="p-3 bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700">
+                                                    <Upload className="h-5 w-5 text-gray-400 group-hover:text-primary-500 transition-colors" />
+                                                </div>
+                                                <div className="flex flex-col">
+                                                    <span className="text-xs font-black text-gray-900 dark:text-gray-100 uppercase tracking-tight">Select Evidence</span>
+                                                    <span className="text-[9px] text-gray-400 font-bold uppercase tracking-widest">PDF, JPG up to 5MB</span>
+                                                </div>
+                                                <input
+                                                    type="file"
+                                                    className="sr-only"
+                                                    onChange={handleFileChange}
+                                                    accept=".jpg,.jpeg,.png,.pdf"
+                                                />
+                                            </label>
+                                        </motion.div>
+                                    ) : (
+                                        <motion.div
+                                            key="file"
+                                            initial={{ opacity: 0, scale: 0.98 }}
+                                            animate={{ opacity: 1, scale: 1 }}
+                                            className="h-[88px] flex items-center justify-between px-6 bg-primary-600 rounded-[2rem] shadow-xl shadow-primary-200 dark:shadow-none"
+                                        >
+                                            <div className="flex items-center gap-4 overflow-hidden">
+                                                <div className="p-3 bg-white/20 rounded-xl">
+                                                    <CheckCircle className="h-5 w-5 text-white" />
+                                                </div>
+                                                <div className="flex flex-col overflow-hidden">
+                                                    <span className="text-xs font-black text-white uppercase tracking-tight truncate max-w-[120px]">
+                                                        {formData.receiptFileName}
+                                                    </span>
+                                                    <span className="text-[9px] text-primary-100 font-bold uppercase tracking-widest">Verified & Secure</span>
+                                                </div>
+                                            </div>
+                                            <button
+                                                type="button"
+                                                onClick={removeFile}
+                                                className="p-2 hover:bg-white/10 rounded-xl transition-colors text-white"
+                                            >
+                                                <X className="h-5 w-5" />
+                                            </button>
+                                        </motion.div>
+                                    )}
+                                </AnimatePresence>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Submit Area */}
+                    <div className="pt-8 border-t border-gray-100 dark:border-gray-800 flex flex-col items-center gap-6">
+                        <motion.button
+                            type="submit"
+                            whileHover={{ scale: 1.02, translateY: -4 }}
+                            whileTap={{ scale: 0.98 }}
+                            className="w-full max-w-md bg-primary-600 text-white py-6 rounded-[2rem] font-black text-sm uppercase tracking-[0.4em] shadow-[0_20px_40px_-12px_rgba(234,88,12,0.3)] hover:bg-primary-700 hover:shadow-primary-300 dark:hover:shadow-none transition-all flex items-center justify-center gap-4"
+                        >
+                            <Send className="h-5 w-5" />
+                            Submit Requisition
+                        </motion.button>
+                        <div className="flex items-center gap-2 text-gray-400 dark:text-gray-500">
+                            <ShieldCheck className="h-4 w-4" />
+                            <span className="text-[10px] font-black uppercase tracking-[0.2em]">End-to-End Encrypted Secure Submission</span>
+                        </div>
+                    </div>
                 </form>
-            </div>
-        </motion.div>
+            </motion.div>
+        </div>
     );
 };
 
