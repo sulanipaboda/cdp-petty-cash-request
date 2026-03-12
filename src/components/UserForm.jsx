@@ -1,8 +1,9 @@
 // src/components/UserForm.jsx
 import React, { useState, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 import { User, Mail, Shield, Activity, Save, X } from 'lucide-react';
 import { useSelector } from 'react-redux';
+import logo from '../assets/logo.png';
 
 const UserForm = ({ onSubmit, initialData = null, onCancel }) => {
     const [formData, setFormData] = useState({
@@ -31,140 +32,122 @@ const UserForm = ({ onSubmit, initialData = null, onCancel }) => {
     };
 
     return (
-        <div className="max-w-4xl mx-auto">
+        <div className="max-w-xl mx-auto py-8">
             <motion.div
-                initial={{ opacity: 0, y: 30 }}
-                animate={{ opacity: 1, y: 0 }}
-                className="bg-white dark:bg-gray-900 rounded-[2.5rem] shadow-[0_40px_80px_-20px_rgba(0,0,0,0.08)] dark:shadow-none border border-gray-100 dark:border-gray-800 overflow-hidden"
+                initial={{ opacity: 0, scale: 0.98 }}
+                animate={{ opacity: 1, scale: 1 }}
+                className="bg-white rounded-[2rem] shadow-[0_20px_50px_rgba(41,140,119,0.06)] p-10 md:p-12 border border-primary-50"
             >
-                {/* Hero Header */}
-                <div className="relative bg-primary-600 px-6 py-6 overflow-hidden">
-                    <div className="absolute top-0 right-0 -translate-y-1/4 translate-x-1/4 opacity-10">
-                        <User className="h-40 w-40 text-white" />
-                    </div>
-                    <div className="relative z-10 flex items-center gap-4">
-                        <div className="p-2.5 bg-white/20 backdrop-blur-md rounded-xl border border-white/30">
-                            <User className="h-6 w-6 text-white" />
-                        </div>
-                        <div>
-                            <h1 className="text-lg font-black text-white uppercase tracking-tighter leading-none">
-                                {initialData ? 'Update Profile' : 'New Identity'}
-                            </h1>
-                            <p className="text-primary-100 mt-1 text-[9px] font-medium opacity-80 uppercase tracking-widest leading-none">
-                                User Management Console
-                            </p>
-                        </div>
+                {/* Branding Header */}
+                <div className="flex justify-center mb-8">
+                    <div className="p-3 bg-primary-50 rounded-2xl">
+                        <img src={logo} alt="CDP Logo" className="h-10 w-auto object-contain" />
                     </div>
                 </div>
 
-                <form onSubmit={handleSubmit} className="p-6 space-y-6">
+                <div className="text-center mb-10">
+                    <h1 className="text-2xl font-black text-gray-900 tracking-tight uppercase">
+                        {initialData ? 'Update Profile' : 'New Identity'}
+                    </h1>
+                    <p className="text-gray-400 mt-2 text-[10px] font-bold uppercase tracking-widest leading-none">
+                        User Management Console
+                    </p>
+                </div>
+
+                <form onSubmit={handleSubmit} className="space-y-10">
                     {/* Section 01: Profile Identity */}
-                    <div className="relative">
-                        <div className="flex items-center gap-3 mb-5">
-                            <span className="text-2xl font-black text-gray-100 dark:text-gray-800 tracking-tighter">01</span>
-                            <div className="h-px flex-1 bg-gray-100 dark:bg-gray-800"></div>
-                            <h2 className="text-[9px] font-black text-gray-400 uppercase tracking-[0.3em]">Profile Identity</h2>
+                    <div className="space-y-8">
+                        <div className="flex items-center gap-3">
+                            <span className="h-1.5 w-1.5 rounded-full bg-primary-600"></span>
+                            <h2 className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Profile Identity</h2>
                         </div>
 
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-                            <div className="space-y-2">
-                                <label className="text-[9px] font-black text-gray-400 dark:text-gray-500 uppercase tracking-widest pl-1">Full Name</label>
-                                <div className="relative group">
-                                    <User className="absolute left-5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-gray-400 group-focus-within:text-primary-500 transition-colors" />
-                                    <input
-                                        type="text"
-                                        name="name"
-                                        value={formData.name}
-                                        onChange={handleChange}
-                                        placeholder="Full Name"
-                                        className="w-full pl-12 pr-6 py-2.5 bg-gray-50/50 dark:bg-gray-800/50 border-2 border-transparent focus:border-primary-500/20 focus:bg-white dark:focus:bg-gray-800 rounded-xl outline-none transition-all text-[12px] font-bold text-gray-900 dark:text-gray-100"
-                                        required
-                                    />
-                                </div>
+                        <div className="space-y-8">
+                            <div className="relative group">
+                                <User className="absolute left-0 bottom-3 h-4 w-4 text-primary-600" />
+                                <input
+                                    type="text"
+                                    name="name"
+                                    value={formData.name}
+                                    onChange={handleChange}
+                                    placeholder="Full Name"
+                                    className="w-full pl-8 pb-3 bg-transparent border-b border-gray-100 focus:border-primary-600 outline-none transition-all text-[14px] font-bold text-gray-900 placeholder:text-gray-300 placeholder:font-medium"
+                                    required
+                                />
                             </div>
 
-                            <div className="space-y-2">
-                                <label className="text-[9px] font-black text-gray-400 dark:text-gray-500 uppercase tracking-widest pl-1">Email Address</label>
-                                <div className="relative group">
-                                    <Mail className="absolute left-5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-gray-400 group-focus-within:text-primary-500 transition-colors" />
-                                    <input
-                                        type="email"
-                                        name="email"
-                                        value={formData.email}
-                                        onChange={handleChange}
-                                        placeholder="Email"
-                                        className="w-full pl-12 pr-6 py-2.5 bg-gray-50/50 dark:bg-gray-800/50 border-2 border-transparent focus:border-primary-500/20 focus:bg-white dark:focus:bg-gray-800 rounded-xl outline-none transition-all text-[12px] font-bold text-gray-900 dark:text-gray-100"
-                                        required
-                                    />
-                                </div>
+                            <div className="relative group">
+                                <Mail className="absolute left-0 bottom-3 h-4 w-4 text-gray-200 group-focus-within:text-primary-600 transition-colors" />
+                                <input
+                                    type="email"
+                                    name="email"
+                                    value={formData.email}
+                                    onChange={handleChange}
+                                    placeholder="Email Address"
+                                    className="w-full pl-8 pb-3 bg-transparent border-b border-gray-100 focus:border-primary-600 outline-none transition-all text-[14px] font-bold text-gray-900 placeholder:text-gray-300 placeholder:font-medium"
+                                    required
+                                />
                             </div>
                         </div>
                     </div>
 
                     {/* Section 02: System Access */}
-                    <div className="relative">
-                        <div className="flex items-center gap-3 mb-5">
-                            <span className="text-2xl font-black text-gray-100 dark:text-gray-800 tracking-tighter">02</span>
-                            <div className="h-px flex-1 bg-gray-100 dark:bg-gray-800"></div>
-                            <h2 className="text-[9px] font-black text-gray-400 uppercase tracking-[0.3em]">System Access</h2>
+                    <div className="space-y-8">
+                        <div className="flex items-center gap-3">
+                            <span className="h-1.5 w-1.5 rounded-full bg-primary-600"></span>
+                            <h2 className="text-[10px] font-black text-gray-400 uppercase tracking-widest">System Access</h2>
                         </div>
 
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-                            <div className="space-y-2">
-                                <label className="text-[9px] font-black text-gray-400 dark:text-gray-500 uppercase tracking-widest pl-1">Assign Role</label>
-                                <div className="relative group">
-                                    <Shield className="absolute left-5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-gray-400 group-focus-within:text-primary-500 transition-colors" />
-                                    <select
-                                        name="role"
-                                        value={formData.role}
-                                        onChange={handleChange}
-                                        className="w-full pl-12 pr-6 py-2.5 bg-gray-50/50 dark:bg-gray-800/50 border-2 border-transparent focus:border-primary-500/20 focus:bg-white dark:focus:bg-gray-800 rounded-xl outline-none transition-all text-[12px] font-bold text-gray-900 dark:text-gray-100 appearance-none"
-                                        required
-                                    >
-                                        <option value="">Select Scale</option>
-                                        {roles.map(role => (
-                                            <option key={role.id} value={role.name}>{role.name}</option>
-                                        ))}
-                                    </select>
-                                </div>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                            <div className="relative group">
+                                <Shield className="absolute left-0 bottom-3 h-4 w-4 text-gray-200 group-focus-within:text-primary-600 transition-colors" />
+                                <select
+                                    name="role"
+                                    value={formData.role}
+                                    onChange={handleChange}
+                                    className="w-full pl-8 pb-3 bg-transparent border-b border-gray-100 focus:border-primary-600 outline-none transition-all text-[14px] font-bold text-gray-900 appearance-none cursor-pointer"
+                                    required
+                                >
+                                    <option value="" disabled className="text-gray-400">Select Role</option>
+                                    {roles.map(role => (
+                                        <option key={role.id} value={role.name}>{role.name}</option>
+                                    ))}
+                                </select>
                             </div>
 
-                            <div className="space-y-2">
-                                <label className="text-[9px] font-black text-gray-400 dark:text-gray-500 uppercase tracking-widest pl-1">Operational Status</label>
-                                <div className="relative group">
-                                    <Activity className="absolute left-5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-gray-400 group-focus-within:text-primary-500 transition-colors" />
-                                    <select
-                                        name="status"
-                                        value={formData.status}
-                                        onChange={handleChange}
-                                        className="w-full pl-12 pr-6 py-2.5 bg-gray-50/50 dark:bg-gray-800/50 border-2 border-transparent focus:border-primary-500/20 focus:bg-white dark:focus:bg-gray-800 rounded-xl outline-none transition-all text-[12px] font-bold text-gray-900 dark:text-gray-100 appearance-none"
-                                        required
-                                    >
-                                        <option value="Active">Active</option>
-                                        <option value="Inactive">Inactive</option>
-                                    </select>
-                                </div>
+                            <div className="relative group">
+                                <Activity className="absolute left-0 bottom-3 h-4 w-4 text-gray-200 group-focus-within:text-primary-600 transition-colors" />
+                                <select
+                                    name="status"
+                                    value={formData.status}
+                                    onChange={handleChange}
+                                    className="w-full pl-8 pb-3 bg-transparent border-b border-gray-100 focus:border-primary-600 outline-none transition-all text-[14px] font-bold text-gray-900 appearance-none cursor-pointer"
+                                    required
+                                >
+                                    <option value="Active">Active</option>
+                                    <option value="Inactive">Inactive</option>
+                                </select>
                             </div>
                         </div>
                     </div>
 
                     {/* Actions */}
-                    <div className="pt-6 border-t border-gray-100 dark:border-gray-800 flex items-center justify-end gap-5">
+                    <div className="pt-6 flex items-center justify-between gap-4">
                         <button
                             type="button"
                             onClick={onCancel}
-                            className="text-[9px] font-black text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 uppercase tracking-[0.2em] transition-colors"
+                            className="text-[10px] font-black text-gray-400 hover:text-gray-900 uppercase tracking-[0.2em] transition-colors"
                         >
                             Discard
                         </button>
                         <motion.button
                             type="submit"
-                            whileHover={{ scale: 1.02, translateY: -1 }}
+                            whileHover={{ scale: 1.02 }}
                             whileTap={{ scale: 0.98 }}
-                            className="bg-primary-600 text-white px-6 py-2.5 rounded-xl font-black text-[9px] uppercase tracking-[0.2em] shadow-lg shadow-primary-200 dark:shadow-none hover:bg-primary-700 transition-all flex items-center gap-2"
+                            className="bg-primary-600 text-white px-10 py-4 rounded-2xl font-black text-[11px] uppercase tracking-[0.2em] shadow-xl shadow-primary-200 hover:bg-primary-700 transition-all flex items-center gap-3"
                         >
-                            <Save className="h-3.5 w-3.5" />
-                            {initialData ? 'Sync' : 'Create'}
+                            <Save className="h-4 w-4" />
+                            {initialData ? 'Sync Profile' : 'Create Identity'}
                         </motion.button>
                     </div>
                 </form>
