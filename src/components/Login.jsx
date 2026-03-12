@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
-import { LogIn, Mail, Lock, ShieldCheck, ArrowRight } from 'lucide-react';
+import { Mail, Lock } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
+import logo from '../assets/logo.png';
 
 const Login = () => {
     const navigate = useNavigate();
@@ -18,7 +19,6 @@ const Login = () => {
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        // Mock login
         if (formData.email && formData.password) {
             toast.success('Access Granted');
             navigate('/dashboard');
@@ -28,84 +28,95 @@ const Login = () => {
     };
 
     return (
-        <div className="min-h-screen bg-gray-50 dark:bg-gray-950 flex items-center justify-center p-4">
+        <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4 relative overflow-hidden">
+            {/* Abstract Background Elements */}
+            <div className="absolute inset-0 z-0">
+                <motion.div
+                    animate={{
+                        x: [0, 20, 0],
+                        y: [0, -30, 0],
+                    }}
+                    transition={{ duration: 15, repeat: Infinity, ease: "linear" }}
+                    className="absolute -top-10 -right-20 w-[500px] h-[500px] bg-primary-600 rounded-full blur-[120px] opacity-20"
+                />
+                <motion.div
+                    animate={{
+                        x: [0, -40, 0],
+                        y: [0, 20, 0],
+                    }}
+                    transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
+                    className="absolute -bottom-20 -left-20 w-[600px] h-[600px] bg-primary-600 rounded-full blur-[100px] opacity-30"
+                />
+                <div className="absolute top-1/4 right-10 w-32 h-32 border-[15px] border-primary-100 rounded-full opacity-40 -rotate-12" />
+                <div className="absolute bottom-1/4 left-5 w-48 h-48 border-[2px] border-primary-200 rounded-full opacity-20" />
+                <div className="absolute top-10 left-1/4 w-24 h-24 bg-primary-50 rounded-full opacity-30" />
+            </div>
+
             <motion.div
                 initial={{ opacity: 0, scale: 0.95 }}
                 animate={{ opacity: 1, scale: 1 }}
-                className="w-full max-w-[400px]"
+                transition={{ duration: 0.5 }}
+                className="w-full max-w-[420px] relative z-10"
             >
-                <div className="bg-white dark:bg-gray-900 rounded-[2.5rem] shadow-[0_40px_80px_-20px_rgba(0,0,0,0.1)] dark:shadow-none border border-gray-100 dark:border-gray-800 overflow-hidden">
-                    {/* Hero Header */}
-                    <div className="bg-primary-600 p-10 text-center relative overflow-hidden">
-                        <div className="absolute top-0 right-0 opacity-10">
-                            <ShieldCheck className="h-40 w-40 text-white -mr-10 -mt-10" />
-                        </div>
-                        <div className="relative z-10 flex flex-col items-center">
-                            <div className="h-14 w-14 bg-white/20 backdrop-blur-md rounded-2xl border border-white/30 flex items-center justify-center mb-4">
-                                <LogIn className="h-7 w-7 text-white" />
-                            </div>
-                            <h1 className="text-xl font-black text-white uppercase tracking-tighter leading-none">Management Access</h1>
-                            <p className="text-primary-100 mt-2 text-[10px] font-black uppercase tracking-widest opacity-80">Secure Portal Identity</p>
+                <div className="bg-white rounded-[2rem] shadow-[0_20px_50px_rgba(41,140,119,0.08)] p-12 text-center border border-primary-50">
+                    {/* Branding Logo */}
+                    <div className="flex justify-center mb-8">
+                        <div className="p-3 bg-primary-50 rounded-2xl">
+                            <img src={logo} alt="CDP Logo" className="h-10 w-auto object-contain" />
                         </div>
                     </div>
 
-                    <form onSubmit={handleSubmit} className="p-8 space-y-6">
-                        <div className="space-y-4">
-                            <div className="space-y-2">
-                                <label className="text-[10px] font-black text-gray-500 dark:text-gray-400 uppercase tracking-widest pl-1">Email Address</label>
-                                <div className="relative group">
-                                    <Mail className="absolute left-5 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400 group-focus-within:text-primary-500 transition-colors" />
-                                    <input
-                                        type="email"
-                                        name="email"
-                                        value={formData.email}
-                                        onChange={handleChange}
-                                        placeholder="admin@cdp.com"
-                                        className="w-full pl-12 pr-6 py-3.5 bg-gray-50 dark:bg-gray-800/50 border-2 border-transparent focus:border-primary-500/20 focus:bg-white dark:focus:bg-gray-800 rounded-2xl outline-none transition-all text-[13px] font-bold text-gray-900 dark:text-gray-100"
-                                        required
-                                    />
-                                </div>
+                    <h1 className="text-3xl font-black text-gray-900 mb-10 tracking-tight">Login</h1>
+
+                    <form onSubmit={handleSubmit} className="space-y-10 text-left">
+                        <div className="space-y-8">
+                            {/* Email Input */}
+                            <div className="relative group">
+                                <Mail className="absolute left-0 bottom-3 h-5 w-5 text-primary-600" />
+                                <input
+                                    type="email"
+                                    name="email"
+                                    value={formData.email}
+                                    onChange={handleChange}
+                                    placeholder="admin@cdp.com"
+                                    className="w-full pl-8 pb-3 bg-transparent border-b border-gray-200 focus:border-primary-600 outline-none transition-all text-[14px] font-medium text-gray-900 placeholder:text-gray-300"
+                                    required
+                                />
                             </div>
 
-                            <div className="space-y-2">
-                                <label className="text-[10px] font-black text-gray-500 dark:text-gray-400 uppercase tracking-widest pl-1">Secret Key</label>
-                                <div className="relative group">
-                                    <Lock className="absolute left-5 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400 group-focus-within:text-primary-500 transition-colors" />
-                                    <input
-                                        type="password"
-                                        name="password"
-                                        value={formData.password}
-                                        onChange={handleChange}
-                                        placeholder="••••••••"
-                                        className="w-full pl-12 pr-6 py-3.5 bg-gray-50 dark:bg-gray-800/50 border-2 border-transparent focus:border-primary-500/20 focus:bg-white dark:focus:bg-gray-800 rounded-2xl outline-none transition-all text-[13px] font-bold text-gray-900 dark:text-gray-100"
-                                        required
-                                    />
-                                </div>
+                            {/* Password Input */}
+                            <div className="relative group">
+                                <Lock className="absolute left-0 bottom-3 h-5 w-5 text-gray-200 group-focus-within:text-primary-600 transition-colors" />
+                                <input
+                                    type="password"
+                                    name="password"
+                                    value={formData.password}
+                                    onChange={handleChange}
+                                    placeholder="password"
+                                    className="w-full pl-8 pb-3 bg-transparent border-b border-gray-200 focus:border-primary-600 outline-none transition-all text-[14px] font-medium text-gray-900 placeholder:text-gray-300"
+                                    required
+                                />
                             </div>
                         </div>
 
                         <motion.button
                             type="submit"
-                            whileHover={{ scale: 1.02, translateY: -2 }}
-                            whileTap={{ scale: 0.98 }}
-                            className="w-full bg-primary-600 text-white py-4 rounded-2xl font-black text-[11px] uppercase tracking-[0.3em] shadow-xl shadow-primary-200 dark:shadow-none hover:bg-primary-700 transition-all flex items-center justify-center gap-3"
+                            whileHover={{ scale: 1.01 }}
+                            whileTap={{ scale: 0.99 }}
+                            className="w-full bg-primary-600 text-white py-4 rounded-xl font-bold text-[14px] shadow-lg shadow-primary-200 hover:bg-primary-700 transition-all flex items-center justify-center uppercase tracking-widest"
                         >
-                            Authorize Entry
-                            <ArrowRight className="h-4 w-4" />
+                            Log In
                         </motion.button>
 
-                        <p className="text-center text-[9px] text-gray-400 dark:text-gray-500 font-bold uppercase tracking-widest mt-4">
-                            Protected by end-to-end proprietary encryption
-                        </p>
                     </form>
                 </div>
                 
-                <div className="mt-8 text-center">
+                <div className="mt-8 text-center px-4">
                     <button 
                         onClick={() => navigate('/')}
-                        className="text-[10px] font-black text-gray-400 hover:text-primary-600 uppercase tracking-widest transition-colors"
+                        className="text-[10px] font-black text-gray-400 hover:text-primary-600 uppercase tracking-widest transition-all duration-300 flex items-center justify-center gap-2 mx-auto py-2 border-t border-transparent hover:border-primary-100"
                     >
-                        ← Back to Public Requisition
+                        <span>← Return to Public Requisition Portal</span>
                     </button>
                 </div>
             </motion.div>

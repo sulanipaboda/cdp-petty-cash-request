@@ -21,7 +21,7 @@ function AppContent() {
   const theme = useSelector((state) => state.user.theme);
   const location = useLocation();
   const isPublicRoute = location.pathname.startsWith('/public');
-  const isLoginRoute = location.pathname === '/public/login';
+  const isLoginRoute = location.pathname === '/login';
 
   useEffect(() => {
     if (theme === 'dark') {
@@ -31,6 +31,15 @@ function AppContent() {
     }
   }, [theme]);
 
+  if (isLoginRoute) {
+    return (
+      <>
+        <Login />
+        <Toaster position="top-right" />
+      </>
+    );
+  }
+
   if (isPublicRoute) {
     return (
       <div className="min-h-screen bg-gray-50 dark:bg-gray-950 transition-colors duration-300">
@@ -38,7 +47,6 @@ function AppContent() {
         <div className="container mx-auto px-4 py-8 md:py-12">
           <Routes>
             <Route path="/public/request" element={<PettyCashForm />} />
-            <Route path="/public/login" element={<Login />} />
           </Routes>
         </div>
         <Toaster position="top-right" />
@@ -47,7 +55,7 @@ function AppContent() {
   }
 
   if (!currentUser) {
-    return <Navigate to="/public/login" replace />;
+    return <Navigate to="/login" replace />;
   }
 
   return (

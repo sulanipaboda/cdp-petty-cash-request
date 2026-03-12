@@ -20,7 +20,7 @@ const Navigation = () => {
   const handleLogout = () => {
     if (window.confirm('Are you sure you want to logout?')) {
       dispatch(logout());
-      navigate('/public/login');
+      window.location.href = '/login';
     }
   };
 

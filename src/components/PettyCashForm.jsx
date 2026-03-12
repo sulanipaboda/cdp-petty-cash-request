@@ -316,7 +316,7 @@ const PettyCashForm = () => {
                                         value={formData.amount}
                                         onChange={handleChange}
                                         placeholder="0.00"
-                                        className="w-full pl-16 pr-4 py-2.5 bg-gray-900 text-white rounded-xl focus:ring-2 focus:ring-primary-500/20 outline-none transition-all text-sm font-black placeholder:text-gray-700"
+                                        className="w-full pl-16 pr-4 py-2.5 bg-gray-50 dark:bg-gray-800/50 border border-transparent dark:border-gray-700/50 rounded-xl focus:ring-1 focus:ring-primary-500/20 focus:border-primary-500 outline-none transition-all text-gray-900 dark:text-gray-100 font-black text-sm placeholder:text-gray-500"
                                         required
                                     />
                                 </div>
