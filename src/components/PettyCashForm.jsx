@@ -14,7 +14,7 @@ const PettyCashForm = () => {
     const isAdmin = currentUser?.role === 'System Administrator' || currentUser?.role === 'Finance Manager';
 
     const [formData, setFormData] = useState({
-        fullName: currentUser?.name || '',
+        fullName: '',
         branchLocation: '',
         department: '',
         dateNeeded: '',
@@ -132,22 +132,20 @@ const PettyCashForm = () => {
                 animate={{ opacity: 1, scale: 1 }}
                 className="w-full max-w-5xl relative z-10 my-4"
             >
-                <div className="bg-white rounded-[2rem] shadow-[0_30px_70px_rgba(41,140,119,0.08)] p-6 md:p-8 border border-primary-50">
-                    {/* Branding Logo */}
-                    <div className="flex justify-center mb-6">
-                        <div className="p-4 bg-primary-50 rounded-2xl">
-                            <img src={logo} alt="CDP Logo" className="h-14 w-auto object-contain" />
-                        </div>
+                <div className="bg-white rounded-[2rem] shadow-[0_30px_70px_rgba(41,140,119,0.08)] p-6 md:p-8 border border-primary-50 relative overflow-hidden">
+                    {/* Watermark Logo */}
+                    <div className="absolute inset-0 z-0 flex items-center justify-center pointer-events-none opacity-[0.10]">
+                        <img src={logo} alt="Background Watermark" className="w-[90%] max-w-[800px] h-auto object-contain -rotate-6" />
                     </div>
 
-                    <div className="text-center mb-8">
+                    <div className="text-center mb-8 relative z-10">
                         <h1 className="text-3xl font-black text-black tracking-tight flex items-center justify-center gap-3">
                             <span className="text-primary-700">Requisition</span> Portal
                         </h1>
                         <p className="text-gray-600 mt-2 text-[11px] font-bold uppercase tracking-[0.2em] leading-none">Petty Cash Management System</p>
                     </div>
 
-                    <form onSubmit={handleSubmit} className="space-y-6">
+                    <form onSubmit={handleSubmit} className="space-y-6 relative z-10">
                         {/* 3-Column Grid for Primary Fields */}
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                             {/* Row 1 */}
@@ -333,4 +331,4 @@ const PettyCashForm = () => {
     );
 };
 
-export default PettyCashForm;
+export default PettyCashForm;
