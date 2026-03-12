@@ -42,13 +42,10 @@ function AppContent() {
 
   if (isPublicRoute) {
     return (
-      <div className="min-h-screen bg-gray-50 dark:bg-gray-950 transition-colors duration-300">
-        <PublicNavigation />
-        <div className="container mx-auto px-4 py-8 md:py-12">
-          <Routes>
-            <Route path="/public/request" element={<PettyCashForm />} />
-          </Routes>
-        </div>
+      <div className="min-h-screen bg-gray-50 transition-colors duration-300">
+        <Routes>
+          <Route path="/public/request" element={<PettyCashForm />} />
+        </Routes>
         <Toaster position="top-right" />
       </div>
     );

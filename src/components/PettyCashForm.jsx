@@ -14,7 +14,6 @@ const PettyCashForm = () => {
     const isAdmin = currentUser?.role === 'System Administrator' || currentUser?.role === 'Finance Manager';
 
     const [formData, setFormData] = useState({
-        referenceNumber: '',
         fullName: currentUser?.name || '',
         branchLocation: '',
         department: '',
@@ -74,16 +73,9 @@ const PettyCashForm = () => {
         e.preventDefault();
         
         // Basic validation
-        if (!formData.referenceNumber || !formData.fullName || !formData.branchLocation ||
+        if (!formData.fullName || !formData.branchLocation ||
             !formData.dateNeeded || !formData.category || !formData.amount) {
             toast.error('Please fill in all required fields');
-            return;
-        }
-
-        // Uniqueness check for Reference Number
-        const isRefUnique = !requests.some(req => req.referenceNumber === formData.referenceNumber);
-        if (!isRefUnique) {
-            toast.error('Reference Number must be unique');
             return;
         }
 
@@ -104,7 +96,6 @@ const PettyCashForm = () => {
         dispatch(addRequest(newRequest));
         toast.success('Submitted Successfully');
         setFormData({
-            referenceNumber: '',
             fullName: currentUser?.name || '',
             branchLocation: '',
             department: '',
@@ -123,7 +114,6 @@ const PettyCashForm = () => {
 
     return (
         <div className="min-h-screen bg-transparent flex items-center justify-center p-4 relative overflow-hidden">
-            {/* Abstract Background Elements (Matching Login) */}
             <div className="fixed inset-0 z-0 pointer-events-none">
                 <motion.div
                     animate={{ x: [0, 30, 0], y: [0, -40, 0] }}
@@ -140,265 +130,200 @@ const PettyCashForm = () => {
             <motion.div
                 initial={{ opacity: 0, scale: 0.98 }}
                 animate={{ opacity: 1, scale: 1 }}
-                className="w-full max-w-[620px] relative z-10 my-8"
+                className="w-full max-w-5xl relative z-10 my-4"
             >
-                <div className="bg-white rounded-[2.5rem] shadow-[0_30px_70px_rgba(41,140,119,0.08)] p-10 md:p-14 border border-primary-50">
+                <div className="bg-white rounded-[2rem] shadow-[0_30px_70px_rgba(41,140,119,0.08)] p-6 md:p-8 border border-primary-50">
                     {/* Branding Logo */}
-                    <div className="flex justify-center mb-10">
-                        <div className="p-4 bg-primary-50 rounded-3xl">
-                            <img src={logo} alt="CDP Logo" className="h-12 w-auto object-contain" />
+                    <div className="flex justify-center mb-6">
+                        <div className="p-4 bg-primary-50 rounded-2xl">
+                            <img src={logo} alt="CDP Logo" className="h-14 w-auto object-contain" />
                         </div>
                     </div>
 
-                    <div className="text-center mb-12">
-                        <h1 className="text-4xl font-black text-gray-900 tracking-tight flex items-center justify-center gap-3">
-                            <span className="text-primary-600">Requisition</span> Portal
+                    <div className="text-center mb-8">
+                        <h1 className="text-3xl font-black text-black tracking-tight flex items-center justify-center gap-3">
+                            <span className="text-primary-700">Requisition</span> Portal
                         </h1>
-                        <p className="text-gray-400 mt-3 text-[12px] font-bold uppercase tracking-[0.2em] leading-none">Petty Cash Management System</p>
+                        <p className="text-gray-600 mt-2 text-[11px] font-bold uppercase tracking-[0.2em] leading-none">Petty Cash Management System</p>
                     </div>
 
-                    <form onSubmit={handleSubmit} className="space-y-12">
-                        {/* Section 1: Identification */}
-                        <div className="space-y-8">
-                            <div className="flex items-center gap-3">
-                                <span className="h-1.5 w-1.5 rounded-full bg-primary-600" />
-                                <h2 className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Identification</h2>
+                    <form onSubmit={handleSubmit} className="space-y-6">
+                        {/* 3-Column Grid for Primary Fields */}
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                            {/* Row 1 */}
+                            <div className="relative group mt-2">
+                                <User className="absolute left-0 bottom-2 h-5 w-5 text-primary-600" />
+                                <input
+                                    type="text"
+                                    name="fullName"
+                                    value={formData.fullName}
+                                    onChange={handleChange}
+                                    placeholder="Full Name"
+                                    className="w-full pl-8 pb-2 bg-transparent border-b border-gray-300 focus:border-primary-600 outline-none transition-all text-[13px] font-bold text-black placeholder:text-gray-500"
+                                    required
+                                />
                             </div>
-                            
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
-                                <div className="relative group">
-                                    <Hash className="absolute left-0 bottom-3 h-5 w-5 text-primary-600" />
-                                    <input
-                                        type="text"
-                                        name="referenceNumber"
-                                        value={formData.referenceNumber}
-                                        onChange={handleChange}
-                                        placeholder="Reference Number (Unique)"
-                                        className="w-full pl-8 pb-3 bg-transparent border-b border-gray-100 focus:border-primary-600 outline-none transition-all text-[14px] font-bold text-gray-900 placeholder:text-gray-300 placeholder:font-medium"
-                                        required
-                                    />
-                                </div>
-                                <div className="relative group">
-                                    <User className="absolute left-0 bottom-3 h-5 w-5 text-primary-600" />
-                                    <input
-                                        type="text"
-                                        name="fullName"
-                                        value={formData.fullName}
-                                        onChange={handleChange}
-                                        placeholder="Full Name"
-                                        className="w-full pl-8 pb-3 bg-transparent border-b border-gray-100 focus:border-primary-600 outline-none transition-all text-[14px] font-bold text-gray-900 placeholder:text-gray-300 placeholder:font-medium"
-                                        required
-                                    />
-                                </div>
+                            <div className="relative group mt-2">
+                                <MapPin className="absolute left-0 bottom-2 h-5 w-5 text-gray-400 group-focus-within:text-primary-600 transition-colors" />
+                                <input
+                                    type="text"
+                                    name="branchLocation"
+                                    value={formData.branchLocation}
+                                    onChange={handleChange}
+                                    placeholder="Branch / Location"
+                                    className="w-full pl-8 pb-2 bg-transparent border-b border-gray-300 focus:border-primary-600 outline-none transition-all text-[13px] font-bold text-black placeholder:text-gray-500"
+                                    required
+                                />
+                            </div>
+                            <div className="relative group mt-2">
+                                <Briefcase className="absolute left-0 bottom-2 h-5 w-5 text-gray-400 group-focus-within:text-primary-600 transition-colors" />
+                                <input
+                                    type="text"
+                                    name="department"
+                                    value={formData.department}
+                                    onChange={handleChange}
+                                    placeholder="Department (Optional)"
+                                    className="w-full pl-8 pb-2 bg-transparent border-b border-gray-300 focus:border-primary-600 outline-none transition-all text-[13px] font-bold text-black placeholder:text-gray-500"
+                                />
+                            </div>
+
+                            {/* Row 2 */}
+                            <div className="relative group mt-6">
+                                <Calendar className="absolute left-0 bottom-2 h-5 w-5 text-gray-400 group-focus-within:text-primary-600 transition-colors" />
+                                <label className="absolute left-8 top-[-16px] text-[10px] font-black text-primary-600 uppercase tracking-widest">Funds Required By</label>
+                                <input
+                                    type="date"
+                                    name="dateNeeded"
+                                    value={formData.dateNeeded}
+                                    onChange={(e) => handleDateChange(e, 'dateNeeded')}
+                                    className="w-full pl-8 pb-2 bg-transparent border-b border-gray-300 focus:border-primary-600 outline-none transition-all text-[13px] font-bold text-black"
+                                    required
+                                />
+                            </div>
+                            <div className="relative group mt-6">
+                                <Layers className="absolute left-0 bottom-2 h-5 w-5 text-gray-400 group-focus-within:text-primary-600 transition-colors" />
+                                <select
+                                    name="category"
+                                    value={formData.category}
+                                    onChange={handleChange}
+                                    className="w-full pl-8 pb-2 bg-transparent border-b border-gray-300 focus:border-primary-600 outline-none transition-all text-[13px] font-bold text-black appearance-none cursor-pointer"
+                                    required
+                                >
+                                    <option value="" disabled className="text-gray-500">Select Category</option>
+                                    {categories.map(cat => (
+                                        <option key={cat.id} value={cat.id} className="text-black">{cat.name}</option>
+                                    ))}
+                                </select>
+                            </div>
+                            <div className="relative group mt-6 flex flex-col justify-end">
+                                <DollarSign className="absolute left-0 bottom-2 h-5 w-5 text-primary-600" />
+                                <input
+                                    type="number"
+                                    name="amount"
+                                    value={formData.amount}
+                                    onChange={handleChange}
+                                    placeholder="Value (LKR)"
+                                    step="0.01"
+                                    className="w-full pl-8 pb-2 bg-transparent border-b border-gray-300 focus:border-primary-600 outline-none transition-all text-[15px] font-black text-black placeholder:text-gray-500"
+                                    required
+                                />
+                                <span className="absolute right-0 bottom-2 text-[10px] font-black text-primary-600 uppercase tracking-widest">LKR</span>
                             </div>
                         </div>
 
-                        {/* Section 2: Location & Department */}
-                        <div className="space-y-8">
-                            <div className="flex items-center gap-3">
+                        {/* Full Width Sections */}
+                        <div className="space-y-4 pt-4 border-t border-gray-100 mt-6">
+                            <div className="flex items-center gap-2">
                                 <span className="h-1.5 w-1.5 rounded-full bg-primary-600" />
-                                <h2 className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Location & Department</h2>
-                            </div>
-                            
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
-                                <div className="relative group">
-                                    <MapPin className="absolute left-0 bottom-3 h-5 w-5 text-gray-200 group-focus-within:text-primary-600 transition-colors" />
-                                    <input
-                                        type="text"
-                                        name="branchLocation"
-                                        value={formData.branchLocation}
-                                        onChange={handleChange}
-                                        placeholder="Branch / Location"
-                                        className="w-full pl-8 pb-3 bg-transparent border-b border-gray-100 focus:border-primary-600 outline-none transition-all text-[14px] font-bold text-gray-900 placeholder:text-gray-300 placeholder:font-medium"
-                                        required
-                                    />
-                                </div>
-                                <div className="relative group">
-                                    <Briefcase className="absolute left-0 bottom-3 h-5 w-5 text-gray-200 group-focus-within:text-primary-600 transition-colors" />
-                                    <input
-                                        type="text"
-                                        name="department"
-                                        value={formData.department}
-                                        onChange={handleChange}
-                                        placeholder="Department (Optional)"
-                                        className="w-full pl-8 pb-3 bg-transparent border-b border-gray-100 focus:border-primary-600 outline-none transition-all text-[14px] font-bold text-gray-900 placeholder:text-gray-300 placeholder:font-medium"
-                                    />
-                                </div>
-                            </div>
-                        </div>
-
-                        {/* Section 3: Timeline & Category */}
-                        <div className="space-y-8">
-                            <div className="flex items-center gap-3">
-                                <span className="h-1.5 w-1.5 rounded-full bg-primary-600" />
-                                <h2 className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Specifications</h2>
-                            </div>
-                            
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
-                                <div className="relative group">
-                                    <Calendar className="absolute left-0 bottom-3 h-5 w-5 text-gray-200 group-focus-within:text-primary-600 transition-colors" />
-                                    <label className="absolute left-8 top-[-18px] text-[9px] font-black text-primary-600/50 uppercase tracking-widest">Funds Required By</label>
-                                    <input
-                                        type="date"
-                                        name="dateNeeded"
-                                        value={formData.dateNeeded}
-                                        onChange={(e) => handleDateChange(e, 'dateNeeded')}
-                                        className="w-full pl-8 pb-3 bg-transparent border-b border-gray-100 focus:border-primary-600 outline-none transition-all text-[14px] font-bold text-gray-900"
-                                        required
-                                    />
-                                </div>
-                                <div className="relative group">
-                                    <Layers className="absolute left-0 bottom-3 h-5 w-5 text-gray-200 group-focus-within:text-primary-600 transition-colors" />
-                                    <select
-                                        name="category"
-                                        value={formData.category}
-                                        onChange={handleChange}
-                                        className="w-full pl-8 pb-3 bg-transparent border-b border-gray-100 focus:border-primary-600 outline-none transition-all text-[14px] font-bold text-gray-900 appearance-none cursor-pointer"
-                                        required
-                                    >
-                                        <option value="" disabled className="text-gray-300">Select Category</option>
-                                        {categories.map(cat => (
-                                            <option key={cat.id} value={cat.id} className="text-gray-900">{cat.name}</option>
-                                        ))}
-                                    </select>
-                                </div>
-                            </div>
-                        </div>
-
-                        {/* Section 4: Request Type & Description */}
-                        <div className="space-y-8">
-                            <div className="flex items-center gap-3">
-                                <span className="h-1.5 w-1.5 rounded-full bg-primary-600" />
-                                <h2 className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Request Nature</h2>
+                                <h2 className="text-[11px] font-black text-gray-600 uppercase tracking-widest">Request Nature</h2>
                             </div>
 
                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                                <label className={`relative flex items-center gap-4 p-5 rounded-2xl border transition-all duration-300 cursor-pointer ${formData.requestType === 'New Purchase' ? 'bg-primary-50/50 border-primary-600 shadow-sm shadow-primary-100' : 'bg-transparent border-gray-100 hover:border-primary-200'}`}>
+                                <label className={`relative flex items-center gap-3 p-4 rounded-xl border transition-all duration-300 cursor-pointer ${formData.requestType === 'New Purchase' ? 'bg-primary-50 border-primary-600 shadow-sm shadow-primary-200' : 'bg-transparent border-gray-300 hover:border-primary-300'}`}>
                                     <input type="radio" name="requestType" value="New Purchase" checked={formData.requestType === 'New Purchase'} onChange={handleChange} className="sr-only" />
-                                    <div className={`h-4 w-4 rounded-full border-2 flex items-center justify-center transition-all ${formData.requestType === 'New Purchase' ? 'border-primary-600' : 'border-gray-200'}`}>
+                                    <div className={`h-4 w-4 rounded-full border-2 flex items-center justify-center transition-all ${formData.requestType === 'New Purchase' ? 'border-primary-600' : 'border-gray-400'}`}>
                                         {formData.requestType === 'New Purchase' && <div className="h-2 w-2 rounded-full bg-primary-600" />}
                                     </div>
                                     <div className="flex flex-col">
-                                        <span className="text-[14px] font-black text-gray-900 tracking-tight leading-none mb-1">New Purchase</span>
-                                        <span className="text-[9px] text-gray-400 font-bold uppercase tracking-widest leading-none">Standard Expenditure</span>
+                                        <span className="text-[13px] font-black text-black tracking-tight leading-none mb-1">New Purchase</span>
+                                        <span className="text-[10px] text-gray-500 font-bold uppercase tracking-widest leading-none">Standard Exp.</span>
                                     </div>
                                 </label>
-                                <label className={`relative flex items-center gap-4 p-5 rounded-2xl border transition-all duration-300 cursor-pointer ${formData.requestType === 'Reimbursement' ? 'bg-primary-50/50 border-primary-600 shadow-sm shadow-primary-100' : 'bg-transparent border-gray-100 hover:border-primary-200'}`}>
+                                <label className={`relative flex items-center gap-3 p-4 rounded-xl border transition-all duration-300 cursor-pointer ${formData.requestType === 'Reimbursement' ? 'bg-primary-50 border-primary-600 shadow-sm shadow-primary-200' : 'bg-transparent border-gray-300 hover:border-primary-300'}`}>
                                     <input type="radio" name="requestType" value="Reimbursement" checked={formData.requestType === 'Reimbursement'} onChange={handleChange} className="sr-only" />
-                                    <div className={`h-4 w-4 rounded-full border-2 flex items-center justify-center transition-all ${formData.requestType === 'Reimbursement' ? 'border-primary-600' : 'border-gray-200'}`}>
+                                    <div className={`h-4 w-4 rounded-full border-2 flex items-center justify-center transition-all ${formData.requestType === 'Reimbursement' ? 'border-primary-600' : 'border-gray-400'}`}>
                                         {formData.requestType === 'Reimbursement' && <div className="h-2 w-2 rounded-full bg-primary-600" />}
                                     </div>
                                     <div className="flex flex-col">
-                                        <span className="text-[14px] font-black text-gray-900 tracking-tight leading-none mb-1">Reimbursement</span>
-                                        <span className="text-[9px] text-gray-400 font-bold uppercase tracking-widest leading-none">Past Expenditure</span>
+                                        <span className="text-[13px] font-black text-black tracking-tight leading-none mb-1">Reimbursement</span>
+                                        <span className="text-[10px] text-gray-500 font-bold uppercase tracking-widest leading-none">Past Exp.</span>
                                     </div>
                                 </label>
                             </div>
 
-                            <div className="relative group">
-                                <FileText className="absolute left-0 top-3 h-5 w-5 text-gray-200 group-focus-within:text-primary-600 transition-colors" />
+                            {/* File Upload (Moved here under Request Nature) */}
+                            <AnimatePresence>
+                                {formData.requestType === 'Reimbursement' && (
+                                    <motion.div
+                                        initial={{ opacity: 0, height: 0 }}
+                                        animate={{ opacity: 1, height: 'auto' }}
+                                        exit={{ opacity: 0, height: 0 }}
+                                        className="relative w-full overflow-hidden"
+                                    >
+                                        {!formData.receiptFile ? (
+                                            <label className="flex flex-col items-center justify-center w-full h-24 border-2 border-primary-200 border-dashed rounded-xl cursor-pointer bg-primary-50/30 hover:bg-primary-50 hover:border-primary-600 transition-all group mt-2">
+                                                <div className="flex flex-col items-center justify-center pt-3 pb-4">
+                                                    <Upload className="w-6 h-6 mb-2 text-primary-500 group-hover:text-primary-700 transition-colors" />
+                                                    <p className="mb-1 text-xs text-gray-700 group-hover:text-black"><span className="font-bold">Click to upload</span> receipt</p>
+                                                    <p className="text-[10px] text-gray-500">JPG, PNG, PDF (MAX. 5MB)</p>
+                                                </div>
+                                                <input id="receipt-upload" type="file" className="sr-only" onChange={handleFileChange} accept=".jpg,.jpeg,.png,.pdf" required />
+                                            </label>
+                                        ) : (
+                                            <div className="flex items-center justify-between p-3 bg-primary-50 border border-primary-200 rounded-xl mt-2">
+                                                <div className="flex items-center gap-3 overflow-hidden">
+                                                    <CheckCircle className="h-5 w-5 text-primary-600 flex-shrink-0" />
+                                                    <span className="text-[13px] font-black text-black truncate uppercase tracking-tighter">{formData.receiptFileName}</span>
+                                                </div>
+                                                <button type="button" onClick={removeFile} className="p-1 hover:bg-white rounded-lg text-primary-600 transition-colors flex-shrink-0 shadow-sm border border-transparent hover:border-gray-300">
+                                                    <X className="h-4 w-4" />
+                                                </button>
+                                            </div>
+                                        )}
+                                    </motion.div>
+                                )}
+                            </AnimatePresence>
+
+                            <div className="relative group flex flex-col pt-4">
+                                <label className="flex items-center gap-2 mb-2 text-[12px] font-black text-gray-600 uppercase tracking-widest">
+                                    <FileText className="h-4 w-4 text-primary-600" />
+                                    Description of Expenditure
+                                </label>
                                 <textarea
                                     name="description"
                                     value={formData.description}
                                     onChange={handleChange}
-                                    placeholder="Brief Description of Expenditure (Optional)"
-                                    rows="1"
-                                    className="w-full pl-8 pb-3 bg-transparent border-b border-gray-100 focus:border-primary-600 outline-none transition-all text-[14px] font-bold text-gray-900 placeholder:text-gray-300 placeholder:font-medium resize-none overflow-hidden"
+                                    placeholder="Please provide a detailed description of the expenditure..."
+                                    rows="6"
+                                    className="w-full p-4 bg-white border border-gray-300 rounded-xl focus:border-primary-600 focus:ring-4 focus:ring-primary-600/10 outline-none transition-all text-[14px] font-bold text-black placeholder:text-gray-500 resize-none shadow-sm shadow-gray-200 hover:border-gray-400"
                                 />
                             </div>
                         </div>
 
-                        {/* Section 5: Finance & Approval */}
-                        <div className="space-y-8">
-                            <div className="flex items-center gap-3">
-                                <span className="h-1.5 w-1.5 rounded-full bg-primary-600" />
-                                <h2 className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Financial & Control</h2>
-                            </div>
-
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
-                                <div className="relative group">
-                                    <DollarSign className="absolute left-0 bottom-3 h-5 w-5 text-primary-600" />
-                                    <input
-                                        type="number"
-                                        name="amount"
-                                        value={formData.amount}
-                                        onChange={handleChange}
-                                        placeholder="Value (LKR)"
-                                        step="0.01"
-                                        className="w-full pl-10 pb-3 bg-transparent border-b border-gray-100 focus:border-primary-600 outline-none transition-all text-[14px] font-black text-gray-900 placeholder:text-gray-300"
-                                        required
-                                    />
-                                    <span className="absolute right-0 bottom-3 text-[10px] font-black text-primary-600/50 uppercase tracking-widest">LKR</span>
-                                </div>
-
-                                {isAdmin && (
-                                    <div className="relative group">
-                                        <UserCheck className="absolute left-0 bottom-3 h-5 w-5 text-gray-200 group-focus-within:text-primary-600 transition-colors" />
-                                        <select
-                                            name="approvedBy"
-                                            value={formData.approvedBy}
-                                            onChange={handleChange}
-                                            className="w-full pl-8 pb-3 bg-transparent border-b border-gray-100 focus:border-primary-600 outline-none transition-all text-[14px] font-bold text-gray-900 appearance-none cursor-pointer"
-                                        >
-                                            <option value="" disabled className="text-gray-300">Approver (Admin Only)</option>
-                                            {users.filter(u => u.role === 'System Administrator' || u.role === 'Finance Manager').map(user => (
-                                                <option key={user.id} value={user.id} className="text-gray-900">{user.name}</option>
-                                            ))}
-                                        </select>
-                                    </div>
-                                )}
-                            </div>
-
-                            <div className="relative">
-                                <AnimatePresence mode="wait">
-                                    {!formData.receiptFile ? (
-                                        <motion.div
-                                            key="upload"
-                                            initial={{ opacity: 0 }}
-                                            animate={{ opacity: 1 }}
-                                            exit={{ opacity: 0 }}
-                                            className="relative h-full flex items-end"
-                                        >
-                                            <label className="flex items-center gap-3 w-full pb-3 border-b border-gray-100 cursor-pointer group">
-                                                <Upload className="h-5 w-5 text-gray-200 group-hover:text-primary-600 transition-colors" />
-                                                <span className="text-[14px] font-bold text-gray-300 group-hover:text-primary-600 transition-colors uppercase tracking-tight">Attach Evidence (Optional)</span>
-                                                <input id="receipt-upload" type="file" className="sr-only" onChange={handleFileChange} accept=".jpg,.jpeg,.png,.pdf" />
-                                            </label>
-                                        </motion.div>
-                                    ) : (
-                                        <motion.div
-                                            key="file"
-                                            initial={{ y: 20, opacity: 0 }}
-                                            animate={{ y: 0, opacity: 1 }}
-                                            className="flex items-center justify-between gap-3 pb-3 border-b border-primary-600"
-                                        >
-                                            <div className="flex items-center gap-3 overflow-hidden">
-                                                <CheckCircle className="h-5 w-5 text-primary-600" />
-                                                <span className="text-[14px] font-black text-gray-900 truncate uppercase tracking-tighter">{formData.receiptFileName}</span>
-                                            </div>
-                                            <button type="button" onClick={removeFile} className="p-1.5 hover:bg-primary-50 rounded-xl text-primary-600 transition-colors">
-                                                <X className="h-4 w-4" />
-                                            </button>
-                                        </motion.div>
-                                    )}
-                                </AnimatePresence>
-                            </div>
-                        </div>
-
                         {/* Submit Button */}
-                        <div className="pt-10 flex flex-col items-center gap-6">
+                        <div className="pt-6 flex flex-col items-center gap-4">
                             <motion.button
                                 type="submit"
                                 whileHover={{ scale: 1.01 }}
                                 whileTap={{ scale: 0.99 }}
-                                className="w-full bg-primary-600 text-white py-5 rounded-2xl font-black text-[14px] shadow-2xl shadow-primary-200 hover:bg-primary-700 transition-all flex items-center justify-center uppercase tracking-[0.3em] gap-3"
+                                className="w-full bg-primary-600 text-white py-3.5 rounded-xl font-black text-[13px] shadow-[0_10px_20px_rgba(41,140,119,0.3)] hover:bg-primary-700 transition-all flex items-center justify-center uppercase tracking-[0.2em] gap-2"
                             >
                                 <Send className="h-4 w-4" />
                                 Submit Requisition
                             </motion.button>
-                            <div className="flex items-center gap-2 text-gray-400">
-                                <ShieldCheck className="h-4 w-4 text-primary-600/40" />
-                                <span className="text-[10px] font-black uppercase tracking-widest opacity-60">Verified Secure Endpoint</span>
+                            <div className="flex items-center gap-2 text-gray-600">
+                                <ShieldCheck className="h-4 w-4 text-primary-600" />
+                                <span className="text-[10px] font-black uppercase tracking-widest opacity-80">Verified Secure Endpoint</span>
                             </div>
                         </div>
                     </form>
