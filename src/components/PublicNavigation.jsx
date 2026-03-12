@@ -38,13 +38,6 @@ const PublicNavigation = () => {
             >
               {theme === 'light' ? <Moon className="h-5 w-5" /> : <Sun className="h-5 w-5" />}
             </button>
-            <Link
-              to="/dashboard"
-              className="flex items-center gap-2 px-6 py-3 bg-gray-900 dark:bg-primary-600 text-white text-sm font-black rounded-2xl hover:bg-gray-800 dark:hover:bg-primary-700 transition-all shadow-xl shadow-gray-200 dark:shadow-none uppercase tracking-widest"
-            >
-              <LogIn className="h-4 w-4" />
-              <span>Login</span>
-            </Link>
           </div>
         </div>
       </div>

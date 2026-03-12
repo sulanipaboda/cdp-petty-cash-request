@@ -14,11 +14,13 @@ import Permissions from './components/Permissions';
 import Logs from './components/Logs';
 import PettyCashForm from './components/PettyCashForm';
 import PublicNavigation from './components/PublicNavigation';
+import Login from './components/Login';
 
 function AppContent() {
   const theme = useSelector((state) => state.user.theme);
   const location = useLocation();
   const isPublicRoute = location.pathname.startsWith('/public');
+  const isLoginRoute = location.pathname === '/login';
 
   useEffect(() => {
     if (theme === 'dark') {
@@ -32,13 +34,24 @@ function AppContent() {
     return (
       <div className="min-h-screen bg-gray-50 dark:bg-gray-950 transition-colors duration-300">
         <PublicNavigation />
-        <div className="container mx-auto px-4 py-12 md:py-20">
+        <div className="container mx-auto px-4 py-8 md:py-12">
           <Routes>
             <Route path="/public/request" element={<PettyCashForm />} />
           </Routes>
         </div>
         <Toaster position="top-right" />
       </div>
+    );
+  }
+
+  if (isLoginRoute) {
+    return (
+      <>
+        <Routes>
+          <Route path="/login" element={<Login />} />
+        </Routes>
+        <Toaster position="top-right" />
+      </>
     );
   }
 
@@ -51,7 +64,6 @@ function AppContent() {
           <div className="container mx-auto px-4 py-8">
             <Routes>
               <Route path="/dashboard" element={<Dashboard />} />
-              <Route path="/form" element={<PettyCashForm />} />
               <Route path="/users" element={<Users />} />
               <Route path="/roles" element={<Roles />} />
               <Route path="/permissions" element={<Permissions />} />

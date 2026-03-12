@@ -15,7 +15,6 @@ const Sidebar = () => {
 
   const mainNav = [
     { path: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
-    { path: '/form', label: 'Request Form', icon: ClipboardList },
   ];
 
   const userManagementNav = [
