@@ -17,10 +17,11 @@ import PublicNavigation from './components/PublicNavigation';
 import Login from './components/Login';
 
 function AppContent() {
+  const currentUser = useSelector((state) => state.user.currentUser);
   const theme = useSelector((state) => state.user.theme);
   const location = useLocation();
   const isPublicRoute = location.pathname.startsWith('/public');
-  const isLoginRoute = location.pathname === '/login';
+  const isLoginRoute = location.pathname === '/public/login';
 
   useEffect(() => {
     if (theme === 'dark') {
@@ -37,6 +38,7 @@ function AppContent() {
         <div className="container mx-auto px-4 py-8 md:py-12">
           <Routes>
             <Route path="/public/request" element={<PettyCashForm />} />
+            <Route path="/public/login" element={<Login />} />
           </Routes>
         </div>
         <Toaster position="top-right" />
@@ -44,15 +46,8 @@ function AppContent() {
     );
   }
 
-  if (isLoginRoute) {
-    return (
-      <>
-        <Routes>
-          <Route path="/login" element={<Login />} />
-        </Routes>
-        <Toaster position="top-right" />
-      </>
-    );
+  if (!currentUser) {
+    return <Navigate to="/public/login" replace />;
   }
 
   return (

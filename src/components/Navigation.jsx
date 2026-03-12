@@ -20,7 +20,7 @@ const Navigation = () => {
   const handleLogout = () => {
     if (window.confirm('Are you sure you want to logout?')) {
       dispatch(logout());
-      // Logic for actual logout redirection if needed
+      navigate('/public/login');
     }
   };
 
