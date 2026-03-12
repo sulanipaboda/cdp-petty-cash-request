@@ -139,10 +139,17 @@ const PettyCashForm = () => {
                     </div>
 
                     <div className="text-center mb-8 relative z-10">
-                        <h1 className="text-3xl font-black text-black tracking-tight flex items-center justify-center gap-3">
-                            <span className="text-primary-700">Requisition</span> Portal
+                        <h1 className="flex items-baseline justify-center leading-none tracking-tight select-none">
+                            <span
+                                style={{ fontFamily: "'Georgia', 'Times New Roman', serif", fontStyle: 'italic', fontSize: '4rem' }}
+                                className="font-normal text-primary-600"
+                            >e</span>
+                            <span
+                                style={{ fontFamily: "'Inter', 'Helvetica Neue', Arial, sans-serif" }}
+                                className="text-4xl font-black text-black tracking-tight"
+                            >Petty</span>
                         </h1>
-                        <p className="text-gray-600 mt-2 text-[11px] font-bold uppercase tracking-[0.2em] leading-none">Petty Cash Management System</p>
+                        <p className="text-gray-500 mt-3 text-[11px] font-bold uppercase tracking-[0.25em] leading-none">Petty Cash Management System</p>
                     </div>
 
                     <form onSubmit={handleSubmit} className="space-y-6 relative z-10">
@@ -194,6 +201,7 @@ const PettyCashForm = () => {
                                     name="dateNeeded"
                                     value={formData.dateNeeded}
                                     onChange={(e) => handleDateChange(e, 'dateNeeded')}
+                                    min={new Date().toISOString().split('T')[0]}
                                     className="w-full pl-8 pb-2 bg-transparent border-b border-gray-300 focus:border-primary-600 outline-none transition-all text-[13px] font-bold text-black"
                                     required
                                 />
