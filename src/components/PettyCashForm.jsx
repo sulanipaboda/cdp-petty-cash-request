@@ -3,8 +3,8 @@ import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Calendar, User, MapPin, Package, FileText, Send, Upload, DollarSign, X, CheckCircle, ShieldCheck } from 'lucide-react';
 import toast from 'react-hot-toast';
-import { useDispatch } from 'react-redux';
-import { addRequest } from '../store/pettyCashSlice';
+import { useDispatch, useSelector } from 'react-redux';
+import { submitRequest } from '../store/pettyCashSlice';
 
 const PettyCashForm = () => {
     const dispatch = useDispatch();
@@ -19,6 +19,7 @@ const PettyCashForm = () => {
         receiptFile: null,
         receiptFileName: '',
     });
+    const submitStatus = useSelector(state => state.pettyCash?.status || 'idle');
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -85,7 +86,7 @@ const PettyCashForm = () => {
         }));
     };
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
 
         // Validate form
@@ -103,34 +104,35 @@ const PettyCashForm = () => {
 
         // Create new request
         const newRequest = {
-            id: Date.now().toString(),
             ...formData,
-            date: formatDateForDisplay(formData.date),
-            dateNeeded: formatDateForDisplay(formData.dateNeeded),
+            date: formatDateForInput(formData.date), 
+            dateNeeded: formatDateForInput(formData.dateNeeded),
             status: 'pending',
-            submittedAt: new Date().toISOString(),
             receiptFileName: formData.receiptFileName || null,
         };
 
-        // In a real app, you would upload the file to a server here
-        // For now, we'll just store the file name
-        delete newRequest.receiptFile; // Don't store the actual file in Redux
+        // Don't construct a full Date.now() ID, let the backend do it.
+        delete newRequest.receiptFile; 
 
-        dispatch(addRequest(newRequest));
-        toast.success('Request submitted successfully!');
+        try {
+            await dispatch(submitRequest(newRequest)).unwrap();
+            toast.success('Request submitted successfully!');
 
-        // Reset form
-        setFormData({
-            date: '',
-            fullName: '',
-            branchLocation: '',
-            dateNeeded: '',
-            stationaries: '',
-            requestType: 'New Purchase',
-            amount: '',
-            receiptFile: null,
-            receiptFileName: '',
-        });
+            // Reset form
+            setFormData({
+                date: '',
+                fullName: '',
+                branchLocation: '',
+                dateNeeded: '',
+                stationaries: '',
+                requestType: 'New Purchase',
+                amount: '',
+                receiptFile: null,
+                receiptFileName: '',
+            });
+        } catch (error) {
+             toast.error(error.message || 'Failed to submit request');
+        }
     };
 
     return (
@@ -364,12 +366,13 @@ const PettyCashForm = () => {
                     <div className="pt-6 border-t border-gray-100 dark:border-gray-800 flex flex-col items-center gap-4">
                         <motion.button
                             type="submit"
+                            disabled={submitStatus === 'loading'}
                             whileHover={{ scale: 1.02, translateY: -1 }}
                             whileTap={{ scale: 0.98 }}
-                            className="w-full max-w-xs bg-primary-600 text-white py-3 rounded-xl font-black text-[10px] uppercase tracking-[0.3em] shadow-lg shadow-primary-200 dark:shadow-none hover:bg-primary-700 transition-all flex items-center justify-center gap-3"
+                            className="w-full max-w-xs bg-primary-600 text-white py-3 rounded-xl font-black text-[10px] uppercase tracking-[0.3em] shadow-lg shadow-primary-200 dark:shadow-none hover:bg-primary-700 transition-all flex items-center justify-center gap-3 disabled:opacity-70 disabled:cursor-not-allowed"
                         >
                             <Send className="h-3.5 w-3.5" />
-                            Submit Requisition
+                            {submitStatus === 'loading' ? 'Submitting...' : 'Submit Requisition'}
                         </motion.button>
                         <div className="flex items-center gap-2 text-gray-400 dark:text-gray-500">
                             <ShieldCheck className="h-3.5 w-3.5" />

@@ -1,95 +1,39 @@
 // src/components/RoleForm.jsx
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { Shield, Key, FileText, Activity, Layers, Save, CheckSquare, Square } from 'lucide-react';
-
-const permissionsData = [
-    {
-        category: 'Access Management Permissions',
-        permissions: ['Permission Create', 'Permission Delete', 'Permission Index', 'Permission Update', 'Role Create', 'Role Delete', 'Role Index', 'Role Update']
-    },
-    {
-        category: 'Branch Management Permissions',
-        permissions: ['Branch Create', 'Branch Delete', 'Branch Index', 'Branch Toggle Status', 'Branch Update']
-    },
-    {
-        category: 'Country Management Permissions',
-        permissions: ['Country Create', 'Country Delete', 'Country Index', 'Country Toggle Status', 'Country Update']
-    },
-    {
-        category: 'Customer Management Permissions',
-        permissions: ['Customer Create', 'Customer Delete', 'Customer Force Delete', 'Customer Index', 'Customer Restore', 'Customer Toggle Status', 'Customer Update']
-    },
-    {
-        category: 'Dashboard Management Permissions',
-        permissions: ['Dashboard View']
-    },
-    {
-        category: 'Investment Management Permissions',
-        permissions: ['Investment Approve', 'Investment Certificate', 'Investment Create', 'Investment Delete', 'Investment Index', 'Investment Update']
-    },
-    {
-        category: 'Investment Product Permissions',
-        permissions: ['Investment Product Create', 'Investment Product Delete', 'Investment Product Index', 'Investment Product Toggle Status', 'Investment Product Update']
-    },
-    {
-        category: 'Level Management Permissions',
-        permissions: ['Level Create', 'Level Delete', 'Level Index', 'Level Update']
-    },
-    {
-        category: 'Province Management Permissions',
-        permissions: ['Province Create', 'Province Delete', 'Province Index', 'Province Toggle Status', 'Province Update']
-    },
-    {
-        category: 'Quotation Management Permissions',
-        permissions: ['Quotation Create', 'Quotation Delete', 'Quotation Force Delete', 'Quotation Index', 'Quotation Restore', 'Quotation Toggle Status', 'Quotation Update']
-    },
-    {
-        category: 'Receipt Management Permissions',
-        permissions: ['Receipt Create', 'Receipt Index']
-    },
-    {
-        category: 'Region Management Permissions',
-        permissions: ['Region Create', 'Region Delete', 'Region Index', 'Region Toggle Status', 'Region Update']
-    },
-    {
-        category: 'Report Management Permissions',
-        permissions: ['Report Index']
-    },
-    {
-        category: 'Target Management Permissions',
-        permissions: ['My Targets', 'Target Create', 'Target Delete', 'Target Index', 'Target Update']
-    },
-    {
-        category: 'Target Progress Permissions',
-        permissions: ['Target Progress Index']
-    },
-    {
-        category: 'User Management Permissions',
-        permissions: ['User Create', 'User Delete', 'User Index', 'User Toggle Status', 'User Update']
-    },
-    {
-        category: 'Zone Management Permissions',
-        permissions: ['Zone Create', 'Zone Delete', 'Zone Index', 'Zone Toggle Status', 'Zone Update']
-    }
-];
+import { useSelector } from 'react-redux';
+import { Shield, Key, Activity, Save, CheckSquare, Square } from 'lucide-react';
 
 const RoleForm = ({ onSubmit, initialData = null, onCancel }) => {
     const [formData, setFormData] = useState({
         name: '',
-        identityLabel: '',
         description: '',
-        status: 'Active',
-        permissions: []
+        permissions: []  // Array of permission IDs (what backend expects)
     });
+
+    // Load permissions from Redux store (fetched from backend)
+    const allPermissions = useSelector((state) => state.user.permissions || []);
+
+    // Group permissions by group_name for display
+    const groupedPermissions = allPermissions.reduce((groups, perm) => {
+        const group = perm.group_name || 'General';
+        if (!groups[group]) groups[group] = [];
+        groups[group].push(perm);
+        return groups;
+    }, {});
 
     useEffect(() => {
         if (initialData) {
-            setFormData(prev => ({
-                ...prev,
-                ...initialData,
-                permissions: initialData.permissions || []
-            }));
+            // Extract permission IDs from the nested permissions array
+            const permissionIds = Array.isArray(initialData.permissions)
+                ? initialData.permissions.map(p => typeof p === 'object' ? p.id : p)
+                : [];
+
+            setFormData({
+                name: initialData.name || '',
+                description: initialData.description || '',
+                permissions: permissionIds
+            });
         }
     }, [initialData]);
 
@@ -98,28 +42,29 @@ const RoleForm = ({ onSubmit, initialData = null, onCancel }) => {
         setFormData(prev => ({ ...prev, [name]: value }));
     };
 
-    const handlePermissionChange = (permission) => {
+    const handlePermissionChange = (permId) => {
         setFormData(prev => {
-            const newPermissions = prev.permissions.includes(permission)
-                ? prev.permissions.filter(p => p !== permission)
-                : [...prev.permissions, permission];
+            const newPermissions = prev.permissions.includes(permId)
+                ? prev.permissions.filter(id => id !== permId)
+                : [...prev.permissions, permId];
             return { ...prev, permissions: newPermissions };
         });
     };
 
-    const allPermissionNames = permissionsData.flatMap(p => p.permissions);
-    const isAllSelected = formData.permissions.length === allPermissionNames.length;
+    const allPermissionIds = allPermissions.map(p => p.id);
+    const isAllSelected = allPermissionIds.length > 0 && formData.permissions.length === allPermissionIds.length;
 
     const handleSelectAll = () => {
         if (isAllSelected) {
             setFormData(prev => ({ ...prev, permissions: [] }));
         } else {
-            setFormData(prev => ({ ...prev, permissions: allPermissionNames }));
+            setFormData(prev => ({ ...prev, permissions: allPermissionIds }));
         }
     };
 
     const handleSubmit = (e) => {
         e.preventDefault();
+        // Submit with permission IDs as backend expects
         onSubmit(formData);
     };
 
@@ -176,70 +121,28 @@ const RoleForm = ({ onSubmit, initialData = null, onCancel }) => {
                                 </div>
                             </div>
                             <div className="space-y-2">
-                                <label className="text-[9px] font-black text-gray-400 dark:text-gray-500 uppercase tracking-widest pl-1">Identity Label</label>
+                                <label className="text-[9px] font-black text-gray-400 dark:text-gray-500 uppercase tracking-widest pl-1">
+                                    Description <span className="text-gray-300 dark:text-gray-600 normal-case font-normal">(optional)</span>
+                                </label>
                                 <div className="relative group">
-                                    <Layers className="absolute left-5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-gray-400 group-focus-within:text-primary-500 transition-colors" />
+                                    <Activity className="absolute left-5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-gray-400 group-focus-within:text-primary-500 transition-colors" />
                                     <input
                                         type="text"
-                                        name="identityLabel"
-                                        value={formData.identityLabel}
-                                        onChange={handleChange}
-                                        placeholder="Identity Label"
-                                        className="w-full pl-12 pr-6 py-2.5 bg-gray-50/50 dark:bg-gray-800/50 border-2 border-transparent focus:border-primary-500/20 focus:bg-white dark:focus:bg-gray-800 rounded-xl outline-none transition-all text-[12px] font-bold text-gray-900 dark:text-gray-100"
-                                        required
-                                    />
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    {/* Section 02: Description & Status */}
-                    <div className="relative">
-                        <div className="flex items-center gap-3 mb-5">
-                            <span className="text-2xl font-black text-gray-100 dark:text-gray-800 tracking-tighter">02</span>
-                            <div className="h-px flex-1 bg-gray-100 dark:bg-gray-800"></div>
-                            <h2 className="text-[9px] font-black text-gray-400 uppercase tracking-[0.3em]">Metadata & Status</h2>
-                        </div>
-
-                        <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
-                            <div className="md:col-span-2 space-y-2">
-                                <label className="text-[9px] font-black text-gray-400 dark:text-gray-500 uppercase tracking-widest pl-1">Description</label>
-                                <div className="relative group">
-                                    <FileText className="absolute left-5 top-4 h-3.5 w-3.5 text-gray-400 group-focus-within:text-primary-500 transition-colors" />
-                                    <textarea
                                         name="description"
                                         value={formData.description}
                                         onChange={handleChange}
-                                        rows="1"
-                                        placeholder="Role scope..."
-                                        className="w-full pl-12 pr-6 py-2.5 bg-gray-50/50 dark:bg-gray-800/50 border-2 border-transparent focus:border-primary-500/20 focus:bg-white dark:focus:bg-gray-800 rounded-xl outline-none transition-all text-[12px] font-bold text-gray-900 dark:text-gray-100 resize-none"
-                                        required
+                                        placeholder="Role description..."
+                                        className="w-full pl-12 pr-6 py-2.5 bg-gray-50/50 dark:bg-gray-800/50 border-2 border-transparent focus:border-primary-500/20 focus:bg-white dark:focus:bg-gray-800 rounded-xl outline-none transition-all text-[12px] font-bold text-gray-900 dark:text-gray-100"
                                     />
-                                </div>
-                            </div>
-                            <div className="space-y-2">
-                                <label className="text-[9px] font-black text-gray-400 dark:text-gray-500 uppercase tracking-widest pl-1">Status</label>
-                                <div className="relative group">
-                                    <Activity className="absolute left-5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-gray-400 group-focus-within:text-primary-500 transition-colors" />
-                                    <select
-                                        name="status"
-                                        value={formData.status}
-                                        onChange={handleChange}
-                                        className="w-full pl-12 pr-6 py-2.5 bg-gray-50/50 dark:bg-gray-800/50 border-2 border-transparent focus:border-primary-500/20 focus:bg-white dark:focus:bg-gray-800 rounded-xl outline-none transition-all text-[12px] font-bold text-gray-900 dark:text-gray-100 appearance-none"
-                                        required
-                                    >
-                                        <option value="Active">Active</option>
-                                        <option value="Inactive">Inactive</option>
-                                    </select>
                                 </div>
                             </div>
                         </div>
                     </div>
 
-                    {/* Section 03: Capability Matrix */}
+                    {/* Section 02: Capability Matrix */}
                     <div className="relative">
                         <div className="flex items-center gap-3 mb-5">
-                            <span className="text-2xl font-black text-gray-100 dark:text-gray-800 tracking-tighter">03</span>
+                            <span className="text-2xl font-black text-gray-100 dark:text-gray-800 tracking-tighter">02</span>
                             <div className="h-px flex-1 bg-gray-100 dark:bg-gray-800"></div>
                             <h2 className="text-[9px] font-black text-gray-400 uppercase tracking-[0.3em]">Capability Matrix</h2>
                         </div>
@@ -247,7 +150,10 @@ const RoleForm = ({ onSubmit, initialData = null, onCancel }) => {
                         <div className="flex items-center justify-between mb-5 px-1">
                              <div className="flex items-center gap-2">
                                 <div className="h-1.5 w-1.5 rounded-full bg-primary-500"></div>
-                                <span className="text-[9px] font-black text-gray-900 dark:text-white uppercase tracking-widest">Access Controls</span>
+                                <span className="text-[9px] font-black text-gray-900 dark:text-white uppercase tracking-widest">
+                                    Access Controls
+                                    <span className="ml-2 text-primary-500 font-bold">({formData.permissions.length}/{allPermissionIds.length})</span>
+                                </span>
                              </div>
                              <button
                                 type="button"
@@ -261,37 +167,43 @@ const RoleForm = ({ onSubmit, initialData = null, onCancel }) => {
                              </button>
                         </div>
 
-                        <div className="grid grid-cols-1 gap-8">
-                            {permissionsData.map((group) => (
-                                <div key={group.category} className="space-y-4">
-                                    <h3 className="text-[9px] font-black text-gray-800 dark:text-gray-200 uppercase tracking-[0.2em] flex items-center gap-2">
-                                        <span className="h-1 w-1 rounded-full bg-primary-500"></span>
-                                        {group.category}
-                                    </h3>
-                                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
-                                        {group.permissions.map((permission) => (
-                                            <label 
-                                                key={permission} 
-                                                className={`flex items-center gap-3 p-2.5 rounded-xl border cursor-pointer transition-all duration-300 ${formData.permissions.includes(permission) ? 'bg-primary-50/30 dark:bg-primary-900/10 border-primary-500/20' : 'bg-transparent border-gray-50 dark:border-gray-800/50 hover:border-primary-500/10'}`}
-                                            >
-                                                <input
-                                                    type="checkbox"
-                                                    checked={formData.permissions.includes(permission)}
-                                                    onChange={() => handlePermissionChange(permission)}
-                                                    className="sr-only"
-                                                />
-                                                <div className={`p-1 rounded transition-all ${formData.permissions.includes(permission) ? 'bg-primary-600 text-white' : 'bg-gray-100 dark:bg-gray-800 text-transparent'}`}>
-                                                    <CheckSquare className="h-2.5 w-2.5" />
-                                                </div>
-                                                <span className={`text-[9px] font-bold tracking-tight transition-colors ${formData.permissions.includes(permission) ? 'text-gray-900 dark:text-white' : 'text-gray-400'}`}>
-                                                    {permission}
-                                                </span>
-                                            </label>
-                                        ))}
+                        {allPermissions.length === 0 ? (
+                            <div className="text-center py-8 text-gray-400 text-[11px] font-medium">
+                                Loading permissions...
+                            </div>
+                        ) : (
+                            <div className="grid grid-cols-1 gap-8">
+                                {Object.entries(groupedPermissions).map(([group, perms]) => (
+                                    <div key={group} className="space-y-4">
+                                        <h3 className="text-[9px] font-black text-gray-800 dark:text-gray-200 uppercase tracking-[0.2em] flex items-center gap-2">
+                                            <span className="h-1 w-1 rounded-full bg-primary-500"></span>
+                                            {group}
+                                        </h3>
+                                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+                                            {perms.map((perm) => (
+                                                <label 
+                                                    key={perm.id} 
+                                                    className={`flex items-center gap-3 p-2.5 rounded-xl border cursor-pointer transition-all duration-300 ${formData.permissions.includes(perm.id) ? 'bg-primary-50/30 dark:bg-primary-900/10 border-primary-500/20' : 'bg-transparent border-gray-50 dark:border-gray-800/50 hover:border-primary-500/10'}`}
+                                                >
+                                                    <input
+                                                        type="checkbox"
+                                                        checked={formData.permissions.includes(perm.id)}
+                                                        onChange={() => handlePermissionChange(perm.id)}
+                                                        className="sr-only"
+                                                    />
+                                                    <div className={`p-1 rounded transition-all flex-shrink-0 ${formData.permissions.includes(perm.id) ? 'bg-primary-600 text-white' : 'bg-gray-100 dark:bg-gray-800 text-transparent'}`}>
+                                                        <CheckSquare className="h-2.5 w-2.5" />
+                                                    </div>
+                                                    <span className={`text-[9px] font-bold tracking-tight transition-colors ${formData.permissions.includes(perm.id) ? 'text-gray-900 dark:text-white' : 'text-gray-400'}`}>
+                                                        {perm.name}
+                                                    </span>
+                                                </label>
+                                            ))}
+                                        </div>
                                     </div>
-                                </div>
-                            ))}
-                        </div>
+                                ))}
+                            </div>
+                        )}
                     </div>
 
                     {/* Actions */}

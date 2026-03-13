@@ -1,52 +1,38 @@
 // src/store/pettyCashSlice.js
-import { createSlice } from '@reduxjs/toolkit';
+import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
+import api from '../api/axios';
+
+export const fetchRequests = createAsyncThunk('pettyCash/fetchRequests', async (_, { rejectWithValue }) => {
+    try {
+        const response = await api.get('/petty-cashes');
+        // Extract the array from Laravel's paginated response structure (data.data)
+        return response.data.data?.data || response.data.data || response.data;
+    } catch (error) {
+        return rejectWithValue(error.response?.data || error.message);
+    }
+});
+
+export const submitRequest = createAsyncThunk('pettyCash/submitRequest', async (requestData, { rejectWithValue }) => {
+    try {
+        const response = await api.post('/petty-cashes', requestData);
+        // Assuming API returns the created object
+        return response.data.data || response.data;
+    } catch (error) {
+        return rejectWithValue(error.response?.data || error.message);
+    }
+});
 
 const initialState = {
-    requests: [
-        {
-            id: '1',
-            date: '2024-03-10',
-            fullName: 'John Doe',
-            branchLocation: 'Downtown Branch',
-            dateNeeded: '2024-03-15',
-            stationaries: 'Printer paper (5 packs)\nBallpoint pens (2 boxes)\nSticky notes (10 packs)',
-            requestType: 'New Purchase',
-            status: 'pending',
-            submittedAt: '2024-03-10T10:30:00Z',
-        },
-        {
-            id: '2',
-            date: '2024-03-09',
-            fullName: 'Jane Smith',
-            branchLocation: 'Uptown Branch',
-            dateNeeded: '2024-03-14',
-            stationaries: 'Folders (20 pcs)\nHighlighters (1 box)\nNotebooks (5 pcs)',
-            requestType: 'Reimbursement of Existing purchase',
-            status: 'approved',
-            submittedAt: '2024-03-09T14:20:00Z',
-        },
-        {
-            id: '3',
-            date: '2024-03-08',
-            fullName: 'Mike Johnson',
-            branchLocation: 'Airport Branch',
-            dateNeeded: '2024-03-13',
-            stationaries: 'Stapler (2 pcs)\nStaples (5 boxes)\nPaper clips (10 boxes)',
-            requestType: 'New Purchase',
-            status: 'rejected',
-            submittedAt: '2024-03-08T09:15:00Z',
-        },
-    ],
+    requests: [],
+    status: 'idle', // 'idle' | 'loading' | 'succeeded' | 'failed'
+    error: null,
 };
 
 const pettyCashSlice = createSlice({
     name: 'pettyCash',
     initialState,
     reducers: {
-        addRequest: (state, action) => {
-            state.requests.push(action.payload);
-        },
-        updateRequestStatus: (state, action) => {
+        updateRequestStatusLocally: (state, action) => {
             const { id, status } = action.payload;
             const request = state.requests.find(r => r.id === id);
             if (request) {
@@ -54,7 +40,26 @@ const pettyCashSlice = createSlice({
             }
         },
     },
+    extraReducers: (builder) => {
+        builder
+            // Fetch Requests
+            .addCase(fetchRequests.pending, (state) => {
+                state.status = 'loading';
+            })
+            .addCase(fetchRequests.fulfilled, (state, action) => {
+                state.status = 'succeeded';
+                state.requests = action.payload;
+            })
+            .addCase(fetchRequests.rejected, (state, action) => {
+                state.status = 'failed';
+                state.error = action.payload;
+            })
+            // Submit Request
+            .addCase(submitRequest.fulfilled, (state, action) => {
+                state.requests.unshift(action.payload);
+            });
+    },
 });
 
-export const { addRequest, updateRequestStatus } = pettyCashSlice.actions;
+export const { updateRequestStatusLocally } = pettyCashSlice.actions;
 export default pettyCashSlice.reducer;

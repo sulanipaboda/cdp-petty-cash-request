@@ -11,36 +11,46 @@ import {
     Search,
     Eye
 } from 'lucide-react';
-import { updateRequestStatus } from '../store/pettyCashSlice';
+import { fetchRequests, updateRequestStatusLocally } from '../store/pettyCashSlice';
 import RequestDetailsModal from './RequestDetailsModal';
 import toast from 'react-hot-toast';
 
 const Dashboard = () => {
     const dispatch = useDispatch();
-    const requests = useSelector((state) => state.pettyCash.requests);
+    const requests = useSelector((state) => state.pettyCash.requests || []);
     const [filter, setFilter] = useState('all');
     const [searchTerm, setSearchTerm] = useState('');
     const [selectedRequest, setSelectedRequest] = useState(null);
+    const fetchStatus = useSelector((state) => state.pettyCash.status);
 
-    // Calculate statistics
+    React.useEffect(() => {
+        if (fetchStatus === 'idle') {
+            dispatch(fetchRequests());
+        }
+    }, [fetchStatus, dispatch]);
+
+    // Calculate statistics with safety checks
     const stats = {
-        total: requests.length,
-        pending: requests.filter(r => r.status === 'pending').length,
-        approved: requests.filter(r => r.status === 'approved').length,
-        rejected: requests.filter(r => r.status === 'rejected').length,
+        total: Array.isArray(requests) ? requests.length : 0,
+        pending: Array.isArray(requests) ? requests.filter(r => r?.status === 'pending').length : 0,
+        approved: Array.isArray(requests) ? requests.filter(r => r?.status === 'approved').length : 0,
+        rejected: Array.isArray(requests) ? requests.filter(r => r?.status === 'rejected').length : 0,
     };
 
     const handleStatusUpdate = (id, status) => {
-        dispatch(updateRequestStatus({ id, status }));
+        // Here we just update locally. In a real scenario, you'd dispatch an async thunk to the backend:
+        // dispatch(updateRequestStatusAsync({ id, status })).unwrap().then(...)
+        dispatch(updateRequestStatusLocally({ id, status }));
         toast.success(`Request ${status} successfully!`);
     };
 
-    const filteredRequests = requests
+    const filteredRequests = (Array.isArray(requests) ? requests : [])
         .filter(request => {
             if (filter !== 'all' && request.status !== filter) return false;
             if (searchTerm) {
-                return request.fullName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                    request.branchLocation.toLowerCase().includes(searchTerm.toLowerCase());
+                const searchLower = searchTerm.toLowerCase();
+                return (request.fullName || '').toLowerCase().includes(searchLower) ||
+                    (request.branchLocation || '').toLowerCase().includes(searchLower);
             }
             return true;
         })
@@ -83,6 +93,11 @@ const Dashboard = () => {
             className="space-y-8"
         >
             {/* Header */}
+            {fetchStatus === 'loading' && (
+                <div className="absolute top-4 right-4 text-primary-600 animate-pulse text-sm font-bold">
+                    Loading data...
+                </div>
+            )}
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                 <div>
                     <h1 className="text-3xl font-black text-gray-900 dark:text-gray-100 uppercase tracking-tighter">Petty Cash Dashboard</h1>
@@ -200,11 +215,11 @@ const Dashboard = () => {
                                         <td className="px-6 py-5">
                                             <div className="flex items-center gap-3">
                                                 <div className="h-10 w-10 rounded-xl bg-gray-100 dark:bg-gray-800 flex items-center justify-center text-gray-500 font-bold text-xs uppercase border border-gray-200 dark:border-gray-700">
-                                                    {request.fullName.split(' ').map(n => n[0]).join('')}
+                                                    {(request.fullName || 'User').split(' ').filter(Boolean).map(n => n[0]).join('').slice(0, 2)}
                                                 </div>
                                                 <div className="flex flex-col">
-                                                    <span className="text-sm font-black text-gray-900 dark:text-gray-100 tracking-tight">{request.fullName}</span>
-                                                    <span className="text-[10px] text-gray-500 dark:text-gray-400 font-medium italic">ID: #REQ-{request.id.slice(-4)}</span>
+                                                    <span className="text-sm font-black text-gray-900 dark:text-gray-100 tracking-tight">{request.fullName || 'Unknown User'}</span>
+                                                    <span className="text-[10px] text-gray-500 dark:text-gray-400 font-medium italic">ID: #REQ-{String(request.id || '').slice(-4)}</span>
                                                 </div>
                                             </div>
                                         </td>

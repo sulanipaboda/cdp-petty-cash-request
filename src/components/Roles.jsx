@@ -3,15 +3,24 @@ import { useSelector, useDispatch } from 'react-redux';
 import DataTable from './common/DataTable';
 import Modal from './common/Modal';
 import RoleForm from './RoleForm';
-import { addRole, updateRole, deleteRole } from '../store/userSlice';
+import { 
+  fetchRoles, 
+  createRole, 
+  updateRoleAsync, 
+  deleteRoleAsync 
+} from '../store/userSlice';
 import toast from 'react-hot-toast';
 
 const Roles = () => {
-  const roles = useSelector((state) => state.user.roles);
+  const roles = useSelector((state) => state.user.roles || []);
   const dispatch = useDispatch();
 
   const [view, setView] = useState('list'); // 'list' or 'form'
   const [selectedRole, setSelectedRole] = useState(null);
+
+  React.useEffect(() => {
+    dispatch(fetchRoles());
+  }, [dispatch]);
 
   const columns = [
     { header: 'Role Name', key: 'name' },
@@ -42,21 +51,29 @@ const Roles = () => {
     setView('form');
   };
 
-  const handleSubmit = (formData) => {
-    if (selectedRole) {
-      dispatch(updateRole(formData));
-      toast.success('Role updated successfully');
-    } else {
-      dispatch(addRole({ ...formData, userCount: 0 }));
-      toast.success('Role added successfully');
+  const handleSubmit = async (formData) => {
+    try {
+      if (selectedRole) {
+        await dispatch(updateRoleAsync({ id: selectedRole.id, data: formData })).unwrap();
+        toast.success('Role updated successfully');
+      } else {
+        await dispatch(createRole({ ...formData, userCount: 0 })).unwrap();
+        toast.success('Role added successfully');
+      }
+      setView('list');
+    } catch (error) {
+      toast.error(error.message || 'Action failed');
     }
-    setView('list');
   };
 
-  const handleDelete = (id) => {
+  const handleDelete = async (id) => {
     if (window.confirm('Are you sure you want to delete this role?')) {
-      dispatch(deleteRole(id));
-      toast.success('Role deleted successfully');
+      try {
+        await dispatch(deleteRoleAsync(id)).unwrap();
+        toast.success('Role deleted successfully');
+      } catch (error) {
+        toast.error(error.message || 'Delete failed');
+      }
     }
   };
 

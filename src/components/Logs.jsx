@@ -1,42 +1,48 @@
 import React from 'react';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import DataTable from './common/DataTable';
 import { Terminal } from 'lucide-react';
+import { fetchAuditLogs } from '../store/userSlice';
 
 const Logs = () => {
-  const auditLogs = useSelector((state) => state.user.auditLogs);
+  const auditLogs = useSelector((state) => state.user.auditLogs || []);
+  const dispatch = useDispatch();
+
+  React.useEffect(() => {
+    dispatch(fetchAuditLogs());
+  }, [dispatch]);
 
   const columns = [
     { 
       header: 'Date & Time', 
-      key: 'timestamp',
-      render: (val) => <span className="text-gray-900 dark:text-gray-100 font-medium">{val}</span>
+      key: 'created_at',
+      render: (val) => <span className="text-gray-900 dark:text-gray-100 font-medium">{val ? new Date(val).toLocaleString() : 'N/A'}</span>
     },
-    { header: 'User', key: 'user' },
+    { 
+      header: 'User', 
+      key: 'user',
+      render: (user) => (
+        <div className="flex flex-col">
+          <span className="font-bold text-gray-900 dark:text-gray-100">{user?.name || 'System'}</span>
+          <span className="text-[10px] text-gray-400 uppercase tracking-tighter">{user?.email || ''}</span>
+        </div>
+      )
+    },
     { 
       header: 'Action', 
       key: 'action',
       render: (val) => (
-        <span className="px-2.5 py-1 bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 rounded-md text-xs font-bold uppercase tracking-wider">
+        <span className="px-2.5 py-1 bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 rounded-md text-[10px] font-black uppercase tracking-wider">
           {val}
         </span>
       )
     },
     { header: 'Module', key: 'module' },
     { 
-      header: 'Status', 
-      key: 'status',
-      render: (status) => (
-        <span className={`px-2.5 py-1 rounded-full text-xs font-bold uppercase tracking-wider ${
-          status === 'Success' 
-            ? 'bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400' 
-            : 'bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400'
-        }`}>
-          {status}
-        </span>
-      )
+      header: 'IP Address', 
+      key: 'ip_address',
+      render: (val) => <code className="text-[10px] font-mono text-gray-400">{val || '0.0.0.0'}</code>
     },
-    { header: 'IP Address', key: 'ipAddress' },
   ];
 
   return (

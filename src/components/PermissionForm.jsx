@@ -5,9 +5,8 @@ import { ShieldAlert, Package, Command, FileText, Save, X } from 'lucide-react';
 
 const PermissionForm = ({ onSubmit, initialData = null, onCancel }) => {
     const [formData, setFormData] = useState({
-        module: '',
-        action: '',
-        description: '',
+        group_name: '',
+        name: '',
     });
 
     useEffect(() => {
@@ -69,8 +68,8 @@ const PermissionForm = ({ onSubmit, initialData = null, onCancel }) => {
                                     <Package className="absolute left-5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-gray-400 group-focus-within:text-rose-500 transition-colors" />
                                     <input
                                         type="text"
-                                        name="module"
-                                        value={formData.module}
+                                        name="group_name"
+                                        value={formData.group_name}
                                         onChange={handleChange}
                                         placeholder="Target Module"
                                         className="w-full pl-12 pr-6 py-2.5 bg-gray-50/50 dark:bg-gray-800/50 border-2 border-transparent focus:border-rose-500/20 focus:bg-white dark:focus:bg-gray-800 rounded-xl outline-none transition-all text-[12px] font-bold text-gray-900 dark:text-gray-100"
@@ -85,8 +84,8 @@ const PermissionForm = ({ onSubmit, initialData = null, onCancel }) => {
                                     <Command className="absolute left-5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-gray-400 group-focus-within:text-rose-500 transition-colors" />
                                     <input
                                         type="text"
-                                        name="action"
-                                        value={formData.action}
+                                        name="name"
+                                        value={formData.name}
                                         onChange={handleChange}
                                         placeholder="Authorized Action"
                                         className="w-full pl-12 pr-6 py-2.5 bg-gray-50/50 dark:bg-gray-800/50 border-2 border-transparent focus:border-rose-500/20 focus:bg-white dark:focus:bg-gray-800 rounded-xl outline-none transition-all text-[12px] font-bold text-gray-900 dark:text-gray-100"
@@ -97,30 +96,7 @@ const PermissionForm = ({ onSubmit, initialData = null, onCancel }) => {
                         </div>
                     </div>
 
-                    {/* Section 02: Semantic Definition */}
-                    <div className="relative">
-                        <div className="flex items-center gap-3 mb-5">
-                            <span className="text-2xl font-black text-gray-100 dark:text-gray-800 tracking-tighter">02</span>
-                            <div className="h-px flex-1 bg-gray-100 dark:bg-gray-800"></div>
-                            <h2 className="text-[9px] font-black text-gray-400 uppercase tracking-[0.3em]">Semantic Definition</h2>
-                        </div>
 
-                        <div className="space-y-2">
-                            <label className="text-[9px] font-black text-gray-400 dark:text-gray-500 uppercase tracking-widest pl-1">Logic Description</label>
-                            <div className="relative group">
-                                <FileText className="absolute left-5 top-4 h-3.5 w-3.5 text-gray-400 group-focus-within:text-rose-500 transition-colors" />
-                                <textarea
-                                    name="description"
-                                    value={formData.description}
-                                    onChange={handleChange}
-                                    rows="1"
-                                    placeholder="Logic description..."
-                                    className="w-full pl-12 pr-6 py-2.5 bg-gray-50/50 dark:bg-gray-800/50 border-2 border-transparent focus:border-rose-500/20 focus:bg-white dark:focus:bg-gray-800 rounded-xl outline-none transition-all text-[12px] font-bold text-gray-900 dark:text-gray-100 resize-none md:leading-relaxed"
-                                    required
-                                />
-                            </div>
-                        </div>
-                    </div>
 
                     {/* Actions */}
                     <div className="pt-6 border-t border-gray-100 dark:border-gray-800 flex items-center justify-end gap-5">

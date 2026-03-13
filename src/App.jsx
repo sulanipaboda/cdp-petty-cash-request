@@ -1,6 +1,7 @@
 import { useLocation, BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
-import { Provider, useSelector } from 'react-redux';
+import { Provider, useSelector, useDispatch } from 'react-redux';
 import { store } from './store/store';
+import { fetchCurrentUser, fetchUsers, fetchRoles, fetchPermissions } from './store/userSlice';
 import { Toaster } from 'react-hot-toast';
 import { useEffect } from 'react';
 
@@ -17,7 +18,10 @@ import PublicNavigation from './components/PublicNavigation';
 import Login from './components/Login';
 
 function AppContent() {
+  const dispatch = useDispatch();
   const currentUser = useSelector((state) => state.user.currentUser);
+  const authStatus = useSelector((state) => state.user.authStatus);
+  const dataStatus = useSelector((state) => state.user.dataStatus);
   const theme = useSelector((state) => state.user.theme);
   const location = useLocation();
   const isPublicRoute = location.pathname.startsWith('/public');
@@ -30,6 +34,30 @@ function AppContent() {
       document.documentElement.classList.remove('dark');
     }
   }, [theme]);
+
+  useEffect(() => {
+    const token = localStorage.getItem('access_token');
+    if (token && !currentUser && authStatus === 'idle') {
+       dispatch(fetchCurrentUser());
+    }
+  }, [dispatch, currentUser, authStatus]);
+
+  useEffect(() => {
+    if (currentUser && dataStatus === 'idle') {
+      dispatch(fetchUsers());
+      dispatch(fetchRoles());
+      dispatch(fetchPermissions());
+    }
+  }, [dispatch, currentUser, dataStatus]);
+
+  // Handle loading state gracefully
+  if (authStatus === 'loading' && !isPublicRoute && !isLoginRoute) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
+        <div className="text-primary-600 font-bold animate-pulse">Loading Application...</div>
+      </div>
+    );
+  }
 
   if (isLoginRoute) {
     return (
@@ -54,7 +82,7 @@ function AppContent() {
     );
   }
 
-  if (!currentUser) {
+  if (!currentUser && authStatus !== 'loading') {
     return <Navigate to="/login" replace />;
   }
 

@@ -3,20 +3,28 @@ import { useSelector, useDispatch } from 'react-redux';
 import DataTable from './common/DataTable';
 import Modal from './common/Modal';
 import PermissionForm from './PermissionForm';
-import { addPermission, updatePermission, deletePermission } from '../store/userSlice';
+import { 
+  fetchPermissions, 
+  createPermission, 
+  updatePermissionAsync, 
+  deletePermissionAsync 
+} from '../store/userSlice';
 import toast from 'react-hot-toast';
 
 const Permissions = () => {
-  const permissions = useSelector((state) => state.user.permissions);
+  const permissions = useSelector((state) => state.user.permissions || []);
   const dispatch = useDispatch();
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedPermission, setSelectedPermission] = useState(null);
 
+  React.useEffect(() => {
+    dispatch(fetchPermissions());
+  }, [dispatch]);
+
   const columns = [
-    { header: 'Module', key: 'module' },
-    { header: 'Action', key: 'action' },
-    { header: 'Description', key: 'description' },
+    { header: 'Module', key: 'group_name' },
+    { header: 'Action', key: 'name' },
   ];
 
   const handleAdd = () => {
@@ -29,21 +37,29 @@ const Permissions = () => {
     setIsModalOpen(true);
   };
 
-  const handleSubmit = (formData) => {
-    if (selectedPermission) {
-      dispatch(updatePermission(formData));
-      toast.success('Permission updated successfully');
-    } else {
-      dispatch(addPermission(formData));
-      toast.success('Permission added successfully');
+  const handleSubmit = async (formData) => {
+    try {
+      if (selectedPermission) {
+        await dispatch(updatePermissionAsync({ id: selectedPermission.id, data: formData })).unwrap();
+        toast.success('Permission updated successfully');
+      } else {
+        await dispatch(createPermission(formData)).unwrap();
+        toast.success('Permission added successfully');
+      }
+      setIsModalOpen(false);
+    } catch (error) {
+      toast.error(error.message || 'Action failed');
     }
-    setIsModalOpen(false);
   };
 
-  const handleDelete = (id) => {
+  const handleDelete = async (id) => {
     if (window.confirm('Are you sure you want to delete this permission?')) {
-      dispatch(deletePermission(id));
-      toast.success('Permission deleted successfully');
+      try {
+        await dispatch(deletePermissionAsync(id)).unwrap();
+        toast.success('Permission deleted successfully');
+      } catch (error) {
+        toast.error(error.message || 'Delete failed');
+      }
     }
   };
 

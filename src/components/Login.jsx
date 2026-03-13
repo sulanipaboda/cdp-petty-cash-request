@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Mail, Lock } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { useDispatch, useSelector } from 'react-redux';
+import { loginUser } from '../store/userSlice';
 import toast from 'react-hot-toast';
 import logo from '../assets/logo.png';
 
@@ -11,19 +13,26 @@ const Login = () => {
         email: '',
         password: ''
     });
+    const dispatch = useDispatch();
+    const authStatus = useSelector(state => state.user.authStatus);
 
     const handleChange = (e) => {
         const { name, value } = e.target;
         setFormData(prev => ({ ...prev, [name]: value }));
     };
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
         if (formData.email && formData.password) {
-            toast.success('Access Granted');
-            navigate('/dashboard');
-        } else {
-            toast.error('Invalid Credentials');
+            try {
+                const actionResult = await dispatch(loginUser(formData)).unwrap();
+                if (actionResult) {
+                    toast.success('Access Granted');
+                    navigate('/dashboard');
+                }
+            } catch (err) {
+                 toast.error(err.message || 'Invalid Credentials');
+            }
         }
     };
 
@@ -103,9 +112,10 @@ const Login = () => {
                             type="submit"
                             whileHover={{ scale: 1.01 }}
                             whileTap={{ scale: 0.99 }}
-                            className="w-full bg-primary-600 text-white py-4 rounded-xl font-bold text-[14px] shadow-lg shadow-primary-200 hover:bg-primary-700 transition-all flex items-center justify-center uppercase tracking-widest"
+                            disabled={authStatus === 'loading'}
+                            className="w-full bg-primary-600 text-white py-4 rounded-xl font-bold text-[14px] shadow-lg shadow-primary-200 hover:bg-primary-700 transition-all flex items-center justify-center uppercase tracking-widest disabled:opacity-70 disabled:cursor-not-allowed"
                         >
-                            Log In
+                            {authStatus === 'loading' ? 'Logging in...' : 'Log In'}
                         </motion.button>
 
                     </form>

@@ -1,45 +1,174 @@
 // src/store/userSlice.js
-import { createSlice } from '@reduxjs/toolkit';
+import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
+import api from '../api/axios';
+
+export const loginUser = createAsyncThunk('user/login', async (credentials, { rejectWithValue }) => {
+  try {
+    const response = await api.post('/login', credentials);
+    const data = response.data.data;
+    const token = data.auth_token || data.access_token || response.data.access_token || response.data.token;
+    if (token) {
+      localStorage.setItem('access_token', token);
+    }
+    // Return the user object from the nested data structure
+    return data.user || response.data.user || response.data;
+  } catch (error) {
+    return rejectWithValue(error.response?.data || error.message);
+  }
+});
+
+export const logoutUser = createAsyncThunk('user/logout', async (_, { rejectWithValue }) => {
+  try {
+    await api.post('/logout');
+    localStorage.removeItem('access_token');
+    return null;
+  } catch (error) {
+    // Even if backend fails, clear local session
+    localStorage.removeItem('access_token');
+    return rejectWithValue(error.response?.data || error.message);
+  }
+});
+
+export const fetchCurrentUser = createAsyncThunk('user/fetchMe', async (_, { rejectWithValue }) => {
+  try {
+    const response = await api.get('/me');
+    // Extract user from response.data.data.user
+    return response.data.data?.user || response.data.data || response.data;
+  } catch (error) {
+    localStorage.removeItem('access_token');
+    return rejectWithValue(error.response?.data || error.message);
+  }
+});
+export const fetchUsers = createAsyncThunk('user/fetchUsers', async (_, { rejectWithValue }) => {
+  try {
+    const response = await api.get('/users');
+    // Extract array from Laravel paginated response structure
+    return response.data.data?.data || response.data.data || response.data;
+  } catch (error) {
+    return rejectWithValue(error.response?.data || error.message);
+  }
+});
+
+export const createUser = createAsyncThunk('user/createUser', async (userData, { rejectWithValue }) => {
+  try {
+    const response = await api.post('/users', userData);
+    return response.data.data;
+  } catch (error) {
+    return rejectWithValue(error.response?.data || error.message);
+  }
+});
+
+export const updateUserAsync = createAsyncThunk('user/updateUser', async ({ id, data }, { rejectWithValue }) => {
+  try {
+    const response = await api.put(`/users/${id}`, data);
+    return response.data.data;
+  } catch (error) {
+    return rejectWithValue(error.response?.data || error.message);
+  }
+});
+
+export const deleteUserAsync = createAsyncThunk('user/deleteUser', async (id, { rejectWithValue }) => {
+  try {
+    await api.delete(`/users/${id}`);
+    return id;
+  } catch (error) {
+    return rejectWithValue(error.response?.data || error.message);
+  }
+});
+
+export const fetchRoles = createAsyncThunk('user/fetchRoles', async (_, { rejectWithValue }) => {
+  try {
+    const response = await api.get('/roles');
+    // Extract array from Laravel response structure
+    return response.data.data?.data || response.data.data || response.data;
+  } catch (error) {
+    return rejectWithValue(error.response?.data || error.message);
+  }
+});
+
+export const createRole = createAsyncThunk('user/createRole', async (roleData, { rejectWithValue }) => {
+  try {
+    const response = await api.post('/roles', roleData);
+    return response.data.data;
+  } catch (error) {
+    return rejectWithValue(error.response?.data || error.message);
+  }
+});
+
+export const updateRoleAsync = createAsyncThunk('user/updateRole', async ({ id, data }, { rejectWithValue }) => {
+  try {
+    const response = await api.put(`/roles/${id}`, data);
+    return response.data.data;
+  } catch (error) {
+    return rejectWithValue(error.response?.data || error.message);
+  }
+});
+
+export const deleteRoleAsync = createAsyncThunk('user/deleteRole', async (id, { rejectWithValue }) => {
+  try {
+    await api.delete(`/roles/${id}`);
+    return id;
+  } catch (error) {
+    return rejectWithValue(error.response?.data || error.message);
+  }
+});
+
+export const fetchPermissions = createAsyncThunk('user/fetchPermissions', async (_, { rejectWithValue }) => {
+  try {
+    const response = await api.get('/permissions?per_page=1000');
+    // Extract array from Laravel response structure
+    return response.data.data?.data || response.data.data || response.data;
+  } catch (error) {
+    return rejectWithValue(error.response?.data || error.message);
+  }
+});
+
+export const createPermission = createAsyncThunk('user/createPermission', async (permissionData, { rejectWithValue }) => {
+  try {
+    const response = await api.post('/permissions', permissionData);
+    return response.data.data;
+  } catch (error) {
+    return rejectWithValue(error.response?.data || error.message);
+  }
+});
+
+export const updatePermissionAsync = createAsyncThunk('user/updatePermission', async ({ id, data }, { rejectWithValue }) => {
+  try {
+    const response = await api.put(`/permissions/${id}`, data);
+    return response.data.data;
+  } catch (error) {
+    return rejectWithValue(error.response?.data || error.message);
+  }
+});
+
+export const deletePermissionAsync = createAsyncThunk('user/deletePermission', async (id, { rejectWithValue }) => {
+  try {
+    await api.delete(`/permissions/${id}`);
+    return id;
+  } catch (error) {
+    return rejectWithValue(error.response?.data || error.message);
+  }
+});
+
+export const fetchAuditLogs = createAsyncThunk('user/fetchAuditLogs', async (_, { rejectWithValue }) => {
+  try {
+    const response = await api.get('/activity-logs');
+    // Extract array from Laravel paginated response structure
+    return response.data.data?.data || response.data.data || response.data;
+  } catch (error) {
+    return rejectWithValue(error.response?.data || error.message);
+  }
+});
 
 const initialState = {
-  users: [
-    { id: '1', name: 'Admin User', email: 'admin@cdp.com', role: 'System Administrator', status: 'Active', createdAt: '2024-01-15' },
-    { id: '2', name: 'Finance Manager', email: 'finance@cdp.com', role: 'Finance Manager', status: 'Active', createdAt: '2024-01-20' },
-    { id: '3', name: 'Branch Officer', email: 'officer@cdp.com', role: 'Branch Officer', status: 'Inactive', createdAt: '2024-02-05' },
-    { id: '4', name: 'HR Executive', email: 'hr@cdp.com', role: 'HR Manager', status: 'Active', createdAt: '2024-03-01' },
-    { id: '5', name: 'IT Support', email: 'it@cdp.com', role: 'IT Administrator', status: 'Active', createdAt: '2024-03-10' },
-  ],
-  roles: [
-    { id: '1', name: 'System Administrator', description: 'Full system access', userCount: 1, status: 'Active' },
-    { id: '2', name: 'Finance Manager', description: 'Approval and reporting access', userCount: 1, status: 'Active' },
-    { id: '3', name: 'Branch Officer', description: 'Request submission access', userCount: 1, status: 'Active' },
-    { id: '4', name: 'HR Manager', description: 'HR related access', userCount: 1, status: 'Active' },
-  ],
-  permissions: [
-    { id: '1', module: 'Requests', action: 'Create', description: 'Submit new petty cash requests' },
-    { id: '2', module: 'Requests', action: 'Approve', description: 'Approve or reject requests' },
-    { id: '3', module: 'Users', action: 'Manage', description: 'Full user management' },
-    { id: '4', module: 'System', action: 'Configure', description: 'System settings' },
-  ],
-  auditLogs: [
-    { id: '1', timestamp: '2024-03-11 10:30:15', user: 'Admin User', action: 'Created User', module: 'User Management', status: 'Success', ipAddress: '192.168.1.1' },
-    { id: '2', timestamp: '2024-03-11 11:15:22', user: 'Finance Manager', action: 'Approved Request', module: 'Petty Cash', status: 'Success', ipAddress: '192.168.1.5' },
-    { id: '3', timestamp: '2024-03-11 12:05:45', user: 'Admin User', action: 'Updated Role', module: 'Role Management', status: 'Success', ipAddress: '192.168.1.1' },
-    { id: '4', timestamp: '2024-03-11 14:20:10', user: 'Branch Officer', action: 'Failed Login', module: 'Authentication', status: 'Failed', ipAddress: '192.168.1.12' },
-    { id: '5', timestamp: '2024-03-11 15:整点:00', user: 'Admin User', action: 'Deleted Permission', module: 'Permission Management', status: 'Success', ipAddress: '192.168.1.1' },
-    { id: '6', timestamp: '2024-03-11 15:45:30', user: 'HR Executive', action: 'Created User', module: 'User Management', status: 'Success', ipAddress: '192.168.1.8' },
-    { id: '7', timestamp: '2024-03-11 16:10:15', user: 'System Administrator', action: 'Configured SMTP', module: 'System Settings', status: 'Success', ipAddress: '10.0.0.1' },
-    { id: '8', timestamp: '2024-03-11 16:55:40', user: 'Finance Manager', action: 'Rejected Request', module: 'Petty Cash', status: 'Success', ipAddress: '192.168.1.5' },
-    { id: '9', timestamp: '2024-03-11 17:05:12', user: 'Admin User', action: 'Created Role', module: 'Role Management', status: 'Success', ipAddress: '192.168.1.1' },
-    { id: '10', timestamp: '2024-03-11 17:15:45', user: 'IT Support', action: 'Reset Password', module: 'User Management', status: 'Success', ipAddress: '192.168.1.10' },
-  ],
-  currentUser: {
-    id: '1',
-    name: 'Admin User',
-    role: 'System Administrator',
-    email: 'admin@cdp.com',
-    avatar: null
-  },
+  users: [],
+  roles: [],
+  permissions: [],
+  auditLogs: [],
+  currentUser: null,
+  authStatus: 'idle',
+  authError: null,
+  dataStatus: 'idle', // 'idle' | 'loading' | 'succeeded' | 'failed'
   theme: 'light',
 };
 
@@ -86,6 +215,105 @@ const userSlice = createSlice({
     deletePermission: (state, action) => {
       state.permissions = state.permissions.filter(p => p.id !== action.payload);
     },
+  },
+  extraReducers: (builder) => {
+    builder
+      // Login
+      .addCase(loginUser.pending, (state) => {
+        state.authStatus = 'loading';
+        state.authError = null;
+      })
+      .addCase(loginUser.fulfilled, (state, action) => {
+        state.authStatus = 'succeeded';
+        state.currentUser = action.payload;
+      })
+      .addCase(loginUser.rejected, (state, action) => {
+        state.authStatus = 'failed';
+        state.authError = action.payload;
+      })
+      // Logout
+      .addCase(logoutUser.fulfilled, (state) => {
+        state.currentUser = null;
+        state.authStatus = 'idle';
+      })
+      .addCase(logoutUser.rejected, (state) => {
+        state.currentUser = null;
+        state.authStatus = 'idle';
+      })
+      // Fetch Current User
+      .addCase(fetchCurrentUser.pending, (state) => {
+        state.authStatus = 'loading';
+      })
+      .addCase(fetchCurrentUser.fulfilled, (state, action) => {
+        state.authStatus = 'succeeded';
+        state.currentUser = action.payload;
+      })
+      .addCase(fetchCurrentUser.rejected, (state, action) => {
+        state.authStatus = 'failed';
+        state.currentUser = null;
+      })
+      // Fetch Users
+      .addCase(fetchUsers.pending, (state) => {
+        state.dataStatus = 'loading';
+      })
+      .addCase(fetchUsers.fulfilled, (state, action) => {
+        state.dataStatus = 'succeeded';
+        state.users = action.payload;
+      })
+      .addCase(fetchUsers.rejected, (state) => {
+        state.dataStatus = 'failed';
+      })
+      // Create User
+      .addCase(createUser.fulfilled, (state, action) => {
+        state.users.push(action.payload);
+      })
+      // Update User
+      .addCase(updateUserAsync.fulfilled, (state, action) => {
+        const index = state.users.findIndex(u => u.id === action.payload.id);
+        if (index !== -1) state.users[index] = action.payload;
+      })
+      // Delete User
+      .addCase(deleteUserAsync.fulfilled, (state, action) => {
+        state.users = state.users.filter(u => u.id !== action.payload);
+      })
+      // Fetch Roles
+      .addCase(fetchRoles.fulfilled, (state, action) => {
+        state.roles = action.payload;
+      })
+      // Create Role
+      .addCase(createRole.fulfilled, (state, action) => {
+        state.roles.push(action.payload);
+      })
+      // Update Role
+      .addCase(updateRoleAsync.fulfilled, (state, action) => {
+        const index = state.roles.findIndex(r => r.id === action.payload.id);
+        if (index !== -1) state.roles[index] = action.payload;
+      })
+      // Delete Role
+      .addCase(deleteRoleAsync.fulfilled, (state, action) => {
+        state.roles = state.roles.filter(r => r.id !== action.payload);
+      })
+      // Fetch Permissions
+      .addCase(fetchPermissions.fulfilled, (state, action) => {
+        state.permissions = action.payload;
+      })
+      // Create Permission
+      .addCase(createPermission.fulfilled, (state, action) => {
+        state.permissions.push(action.payload);
+      })
+      // Update Permission
+      .addCase(updatePermissionAsync.fulfilled, (state, action) => {
+        const index = state.permissions.findIndex(p => p.id === action.payload.id);
+        if (index !== -1) state.permissions[index] = action.payload;
+      })
+      // Delete Permission
+      .addCase(deletePermissionAsync.fulfilled, (state, action) => {
+        state.permissions = state.permissions.filter(p => p.id !== action.payload);
+      })
+      // Audit Logs
+      .addCase(fetchAuditLogs.fulfilled, (state, action) => {
+        state.auditLogs = action.payload;
+      });
   },
 });
 

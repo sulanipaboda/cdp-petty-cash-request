@@ -3,15 +3,24 @@ import { useSelector, useDispatch } from 'react-redux';
 import DataTable from './common/DataTable';
 import Modal from './common/Modal';
 import UserForm from './UserForm';
-import { addUser, updateUser, deleteUser } from '../store/userSlice';
+import { 
+  fetchUsers, 
+  createUser, 
+  updateUserAsync, 
+  deleteUserAsync 
+} from '../store/userSlice';
 import toast from 'react-hot-toast';
 
 const Users = () => {
-  const users = useSelector((state) => state.user.users);
+  const users = useSelector((state) => state.user.users || []);
   const dispatch = useDispatch();
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedUser, setSelectedUser] = useState(null);
+
+  React.useEffect(() => {
+    dispatch(fetchUsers());
+  }, [dispatch]);
 
   const columns = [
     { header: 'Name', key: 'name' },
@@ -43,21 +52,29 @@ const Users = () => {
     setIsModalOpen(true);
   };
 
-  const handleSubmit = (formData) => {
-    if (selectedUser) {
-      dispatch(updateUser(formData));
-      toast.success('User updated successfully');
-    } else {
-      dispatch(addUser({ ...formData, createdAt: new Date().toISOString().split('T')[0] }));
-      toast.success('User added successfully');
+  const handleSubmit = async (formData) => {
+    try {
+      if (selectedUser) {
+        await dispatch(updateUserAsync({ id: selectedUser.id, data: formData })).unwrap();
+        toast.success('User updated successfully');
+      } else {
+        await dispatch(createUser({ ...formData, createdAt: new Date().toISOString().split('T')[0] })).unwrap();
+        toast.success('User added successfully');
+      }
+      setIsModalOpen(false);
+    } catch (error) {
+      toast.error(error.message || 'Action failed');
     }
-    setIsModalOpen(false);
   };
 
-  const handleDelete = (id) => {
+  const handleDelete = async (id) => {
     if (window.confirm('Are you sure you want to delete this user?')) {
-      dispatch(deleteUser(id));
-      toast.success('User deleted successfully');
+      try {
+        await dispatch(deleteUserAsync(id)).unwrap();
+        toast.success('User deleted successfully');
+      } catch (error) {
+        toast.error(error.message || 'Delete failed');
+      }
     }
   };
 

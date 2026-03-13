@@ -28,16 +28,18 @@ const DataTable = ({
 
   // Advanced Search Logic
   const filteredData = useMemo(() => {
+    if (!Array.isArray(data)) return [];
+    
     return data.filter(item => {
       // Global search
-      const matchesSearch = Object.values(item).some(val => 
-        String(val).toLowerCase().includes(searchTerm.toLowerCase())
+      const matchesSearch = Object.values(item || {}).some(val => 
+        String(val || '').toLowerCase().includes(searchTerm.toLowerCase())
       );
       
       // Advanced filters (field specific)
       const matchesAdvanced = Object.entries(advancedFilters).every(([key, value]) => {
         if (!value) return true;
-        return String(item[key]).toLowerCase().includes(String(value).toLowerCase());
+        return String((item || {})[key] || '').toLowerCase().includes(String(value).toLowerCase());
       });
 
       return matchesSearch && matchesAdvanced;

@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import { Sun, Moon, User, LogOut, ChevronDown, Bell, Settings } from 'lucide-react';
-import { setTheme, logout } from '../store/userSlice';
+import { setTheme, logoutUser } from '../store/userSlice';
 import logo from '../assets/logo.png';
 
 const Navigation = () => {
@@ -17,12 +17,23 @@ const Navigation = () => {
     dispatch(setTheme(theme === 'light' ? 'dark' : 'light'));
   };
 
-  const handleLogout = () => {
+  const handleLogout = async () => {
     if (window.confirm('Are you sure you want to logout?')) {
-      dispatch(logout());
+      await dispatch(logoutUser());
       window.location.href = '/login';
     }
   };
+
+  const getRoleName = () => {
+    if (!currentUser) return '';
+    if (currentUser.role) return currentUser.role;
+    if (Array.isArray(currentUser.roles) && currentUser.roles.length > 0) {
+      return currentUser.roles[0].name;
+    }
+    return 'User';
+  };
+
+  const roleName = getRoleName();
 
   return (
     <nav className="bg-white dark:bg-gray-900 shadow-sm border-b border-gray-200 dark:border-gray-800 sticky top-0 z-50 w-full transition-colors duration-300">
@@ -67,7 +78,7 @@ const Navigation = () => {
                 >
                   <div className="flex flex-col items-end hidden sm:flex">
                     <span className="text-xs font-bold text-gray-900 dark:text-gray-100 tracking-tight">{currentUser.name}</span>
-                    <span className="text-[10px] text-gray-500 dark:text-gray-400 font-medium">@{currentUser.role.split(' ')[0].toLowerCase()}</span>
+                    <span className="text-[10px] text-gray-500 dark:text-gray-400 font-medium">@{roleName.split(' ')[0].toLowerCase()}</span>
                   </div>
                   <div className="h-8 w-8 rounded-xl bg-primary-600 flex items-center justify-center text-white shadow-lg shadow-primary-200 dark:shadow-none">
                     <User className="h-4 w-4" />
@@ -84,7 +95,7 @@ const Navigation = () => {
                     <div className="absolute right-0 mt-2 w-64 bg-white dark:bg-gray-900 rounded-2xl shadow-2xl border border-gray-100 dark:border-gray-800 py-2 z-50 animate-in fade-in zoom-in duration-200">
                       <div className="px-4 py-3 border-b border-gray-100 dark:border-gray-800">
                         <p className="text-sm font-black text-gray-900 dark:text-gray-100 uppercase tracking-tight">{currentUser.name}</p>
-                        <p className="text-[10px] text-gray-500 dark:text-gray-400 font-bold uppercase tracking-widest mt-0.5">{currentUser.role}</p>
+                        <p className="text-[10px] text-gray-500 dark:text-gray-400 font-bold uppercase tracking-widest mt-0.5">{roleName}</p>
                       </div>
                       <div className="p-1.5 mt-1 border-t border-gray-100 dark:border-gray-800">
                         <button 
