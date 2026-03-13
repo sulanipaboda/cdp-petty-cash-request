@@ -44,7 +44,10 @@ const UserForm = ({ onSubmit, initialData = null, onCancel }) => {
     const handleSubmit = (e) => {
         e.preventDefault();
         // Build payload — exclude empty password on edit
-        const payload = { ...formData };
+        const payload = { 
+            ...formData,
+            user_type: 'admin' // System requirement for admin login
+        };
         if (isEditing && !payload.password) {
             delete payload.password;
         }

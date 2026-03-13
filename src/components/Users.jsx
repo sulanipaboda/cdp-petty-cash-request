@@ -25,21 +25,29 @@ const Users = () => {
   const columns = [
     { header: 'Name', key: 'name' },
     { header: 'Email', key: 'email' },
-    { header: 'Role', key: 'role' },
+    { 
+      header: 'Role', 
+      key: 'roles',
+      render: (roles) => roles && roles.length > 0 ? roles[0].name : 'No Role'
+    },
     { 
       header: 'Status', 
-      key: 'status',
-      render: (status) => (
+      key: 'is_active',
+      render: (isActive) => (
         <span className={`px-2.5 py-1 rounded-full text-xs font-bold uppercase tracking-wider ${
-          status === 'Active' 
+          isActive 
             ? 'bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400' 
             : 'bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-400'
         }`}>
-          {status}
+          {isActive ? 'Active' : 'Inactive'}
         </span>
       )
     },
-    { header: 'Joined Date', key: 'createdAt' },
+    { 
+      header: 'Joined Date', 
+      key: 'created_at',
+      render: (val) => val ? new Date(val).toLocaleDateString() : 'N/A'
+    },
   ];
 
   const handleAdd = () => {

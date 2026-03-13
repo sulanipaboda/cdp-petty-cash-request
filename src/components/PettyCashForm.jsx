@@ -4,14 +4,19 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Calendar, User, MapPin, Package, FileText, Send, Upload, DollarSign, X, CheckCircle, ShieldCheck, Hash, Briefcase, Layers, UserCheck } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { useDispatch, useSelector } from 'react-redux';
-import { addRequest } from '../store/pettyCashSlice';
+import { fetchCategories, submitRequest } from '../store/pettyCashSlice';
 import logo from '../assets/logo.png';
+import { useEffect } from 'react';
 
 const PettyCashForm = () => {
     const dispatch = useDispatch();
     const { categories, requests } = useSelector(state => state.pettyCash);
     const { users, currentUser } = useSelector(state => state.user);
     const isAdmin = currentUser?.role === 'System Administrator' || currentUser?.role === 'Finance Manager';
+
+    useEffect(() => {
+        dispatch(fetchCategories());
+    }, [dispatch]);
 
     const [formData, setFormData] = useState({
         fullName: '',
@@ -69,7 +74,7 @@ const PettyCashForm = () => {
         setFormData(prev => ({ ...prev, [fieldName]: e.target.value }));
     };
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
         
         // Basic validation
@@ -84,32 +89,47 @@ const PettyCashForm = () => {
             return;
         }
 
-        const newRequest = {
-            id: Date.now().toString(),
-            ...formData,
-            amount: parseFloat(formData.amount),
-            submittedAt: new Date().toISOString(),
-            date: new Date().toISOString().split('T')[0], // Internal date format
-        };
-        delete newRequest.receiptFile;
+        const data = new FormData();
+        
+        // Map frontend fields to backend snake_case fields
+        data.append('full_name', formData.fullName);
+        data.append('branch_location', formData.branchLocation);
+        data.append('department', formData.department || '');
+        data.append('date_needed', formData.dateNeeded);
+        data.append('category_id', formData.category); // category state holds the ID
+        data.append('description', formData.description || '');
+        data.append('amount', formData.amount);
+        
+        // Transform Request Type to backend expected values
+        const backendType = formData.requestType === 'Reimbursement' ? 'reimbursement' : 'new_purchase';
+        data.append('type', backendType);
 
-        dispatch(addRequest(newRequest));
-        toast.success('Submitted Successfully');
-        setFormData({
-            fullName: currentUser?.name || '',
-            branchLocation: '',
-            department: '',
-            dateNeeded: '',
-            category: '',
-            description: '',
-            requestType: 'New Purchase',
-            amount: '',
-            status: 'pending',
-            paymentStatus: 'pending',
-            approvedBy: '',
-            receiptFile: null,
-            receiptFileName: '',
-        });
+        // Handle file upload
+        if (formData.receiptFile) {
+            data.append('receipt_image_path', formData.receiptFile);
+        }
+
+        try {
+            await dispatch(submitRequest(data)).unwrap();
+            toast.success('Submitted Successfully');
+            setFormData({
+                fullName: currentUser?.name || '',
+                branchLocation: '',
+                department: '',
+                dateNeeded: '',
+                category: '',
+                description: '',
+                requestType: 'New Purchase',
+                amount: '',
+                status: 'pending',
+                paymentStatus: 'pending',
+                approvedBy: '',
+                receiptFile: null,
+                receiptFileName: '',
+            });
+        } catch (error) {
+            toast.error(error.message || 'Submission failed');
+        }
     };
 
     return (

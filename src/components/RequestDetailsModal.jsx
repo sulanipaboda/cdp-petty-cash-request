@@ -1,7 +1,7 @@
 // src/components/RequestDetailsModal.jsx
 import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Calendar, User, MapPin, Package, FileText, Clock, CheckCircle, XCircle } from 'lucide-react';
+import { X, Calendar, User, MapPin, Package, FileText, Clock, CheckCircle, XCircle, Hash } from 'lucide-react';
 
 const RequestDetailsModal = ({ request, onClose, onUpdateStatus }) => {
   if (!request) return null;
@@ -69,23 +69,23 @@ const RequestDetailsModal = ({ request, onClose, onUpdateStatus }) => {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <DetailItem
                 icon={Calendar}
-                label="Request Date"
-                value={formatDate(request.date)}
+                label="Requested On"
+                value={formatDate(request.created_at)}
               />
               <DetailItem
                 icon={User}
                 label="Full Name"
-                value={request.fullName}
+                value={request.full_name}
               />
               <DetailItem
                 icon={MapPin}
                 label="Branch Location"
-                value={request.branchLocation}
+                value={request.branch_location}
               />
               <DetailItem
                 icon={Calendar}
                 label="Date Needed"
-                value={formatDate(request.dateNeeded)}
+                value={formatDate(request.date_needed)}
               />
             </div>
 
@@ -94,7 +94,12 @@ const RequestDetailsModal = ({ request, onClose, onUpdateStatus }) => {
               <DetailItem
                 icon={FileText}
                 label="Request Type"
-                value={request.requestType}
+                value={(request.type || '').replace('_', ' ').toUpperCase()}
+              />
+              <DetailItem
+                icon={Hash}
+                label="Reference Number"
+                value={request.reference_number}
               />
             </div>
 
@@ -103,8 +108,8 @@ const RequestDetailsModal = ({ request, onClose, onUpdateStatus }) => {
               <div className="flex items-start gap-3">
                 <Package className="h-5 w-5 text-primary-600 mt-0.5" />
                 <div>
-                  <p className="text-sm font-medium text-gray-700">Stationaries Needed</p>
-                  <p className="text-sm text-gray-600 mt-1 whitespace-pre-wrap">{request.stationaries}</p>
+                  <p className="text-sm font-medium text-gray-700">Description of Expenditure</p>
+                  <p className="text-sm text-gray-600 mt-1 whitespace-pre-wrap">{request.description || 'No description provided.'}</p>
                 </div>
               </div>
             </div>
@@ -112,7 +117,7 @@ const RequestDetailsModal = ({ request, onClose, onUpdateStatus }) => {
             {/* Submission Info */}
             <div className="border-t pt-4">
               <p className="text-xs text-gray-500">
-                Submitted on: {new Date(request.submittedAt).toLocaleString()}
+                Created at: {new Date(request.created_at).toLocaleString()}
               </p>
             </div>
           </div>

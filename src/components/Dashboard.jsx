@@ -11,7 +11,7 @@ import {
     Search,
     Eye
 } from 'lucide-react';
-import { fetchRequests, updateRequestStatusLocally } from '../store/pettyCashSlice';
+import { fetchRequests, updateRequestStatusLocally, updateRequestStatusAsync } from '../store/pettyCashSlice';
 import RequestDetailsModal from './RequestDetailsModal';
 import toast from 'react-hot-toast';
 
@@ -37,11 +37,13 @@ const Dashboard = () => {
         rejected: Array.isArray(requests) ? requests.filter(r => r?.status === 'rejected').length : 0,
     };
 
-    const handleStatusUpdate = (id, status) => {
-        // Here we just update locally. In a real scenario, you'd dispatch an async thunk to the backend:
-        // dispatch(updateRequestStatusAsync({ id, status })).unwrap().then(...)
-        dispatch(updateRequestStatusLocally({ id, status }));
-        toast.success(`Request ${status} successfully!`);
+    const handleStatusUpdate = async (id, status) => {
+        try {
+            await dispatch(updateRequestStatusAsync({ id, status })).unwrap();
+            toast.success(`Request ${status} successfully!`);
+        } catch (error) {
+            toast.error(error.message || `Failed to update status`);
+        }
     };
 
     const filteredRequests = (Array.isArray(requests) ? requests : [])
@@ -49,12 +51,12 @@ const Dashboard = () => {
             if (filter !== 'all' && request.status !== filter) return false;
             if (searchTerm) {
                 const searchLower = searchTerm.toLowerCase();
-                return (request.fullName || '').toLowerCase().includes(searchLower) ||
-                    (request.branchLocation || '').toLowerCase().includes(searchLower);
+                return (request.full_name || '').toLowerCase().includes(searchLower) ||
+                    (request.branch_location || '').toLowerCase().includes(searchLower);
             }
             return true;
         })
-        .sort((a, b) => new Date(b.submittedAt) - new Date(a.submittedAt));
+        .sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
 
     const getStatusBadge = (status) => {
         const statusConfig = {
@@ -208,26 +210,26 @@ const Dashboard = () => {
                                     >
                                         <td className="px-6 py-5">
                                             <div className="flex flex-col">
-                                                <span className="text-sm font-bold text-gray-900 dark:text-gray-100">{new Date(request.date).toLocaleDateString(undefined, { day: 'numeric', month: 'short' })}</span>
-                                                <span className="text-[10px] text-gray-400 font-medium uppercase">{new Date(request.date).getFullYear()}</span>
+                                                <span className="text-sm font-bold text-gray-900 dark:text-gray-100">{request.created_at ? new Date(request.created_at).toLocaleDateString(undefined, { day: 'numeric', month: 'short' }) : 'N/A'}</span>
+                                                <span className="text-[10px] text-gray-400 font-medium uppercase">{request.created_at ? new Date(request.created_at).getFullYear() : 'N/A'}</span>
                                             </div>
                                         </td>
                                         <td className="px-6 py-5">
                                             <div className="flex items-center gap-3">
                                                 <div className="h-10 w-10 rounded-xl bg-gray-100 dark:bg-gray-800 flex items-center justify-center text-gray-500 font-bold text-xs uppercase border border-gray-200 dark:border-gray-700">
-                                                    {(request.fullName || 'User').split(' ').filter(Boolean).map(n => n[0]).join('').slice(0, 2)}
+                                                    {(request.full_name || 'User').split(' ').filter(Boolean).map(n => n[0]).join('').slice(0, 2)}
                                                 </div>
                                                 <div className="flex flex-col">
-                                                    <span className="text-sm font-black text-gray-900 dark:text-gray-100 tracking-tight">{request.fullName || 'Unknown User'}</span>
-                                                    <span className="text-[10px] text-gray-500 dark:text-gray-400 font-medium italic">ID: #REQ-{String(request.id || '').slice(-4)}</span>
+                                                    <span className="text-sm font-black text-gray-900 dark:text-gray-100 tracking-tight">{request.full_name || 'Unknown User'}</span>
+                                                    <span className="text-[10px] text-gray-500 dark:text-gray-400 font-medium italic">ID: {request.reference_number || `#REQ-${String(request.id || '').slice(-4)}`}</span>
                                                 </div>
                                             </div>
                                         </td>
                                         <td className="px-6 py-5">
-                                            <span className="text-sm font-bold text-gray-600 dark:text-gray-300 uppercase tracking-tighter">{request.branchLocation}</span>
+                                            <span className="text-sm font-bold text-gray-600 dark:text-gray-300 uppercase tracking-tighter">{request.branch_location}</span>
                                         </td>
                                         <td className="px-6 py-5">
-                                            <span className="text-xs font-black text-gray-500 dark:text-gray-400 uppercase tracking-widest">{request.requestType}</span>
+                                            <span className="text-xs font-black text-gray-500 dark:text-gray-400 uppercase tracking-widest">{(request.type || '').replace('_', ' ')}</span>
                                         </td>
                                         <td className="px-6 py-5">{getStatusBadge(request.status)}</td>
                                         <td className="px-6 py-5">
