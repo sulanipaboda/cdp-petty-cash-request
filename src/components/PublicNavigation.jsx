@@ -18,16 +18,10 @@ const PublicNavigation = () => {
     <nav className="bg-white/80 dark:bg-gray-900/80 backdrop-blur-md sticky top-0 z-50 w-full border-b border-gray-100 dark:border-gray-800 transition-all duration-300">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-20">
-          {/* Logo Section */}
-          <Link to="/" className="flex items-center space-x-4 group">
-            <div className="p-2 bg-primary-600 rounded-2xl group-hover:rotate-6 transition-transform duration-300 shadow-lg shadow-primary-200 dark:shadow-none">
-              <img src={logo} alt="CDP Logo" className="h-8 w-auto brightness-0 invert" />
-            </div>
-            <div className="flex flex-col">
-              <span className="font-black text-gray-900 dark:text-gray-100 text-xl leading-none uppercase tracking-tighter">Petty Cash</span>
-              <span className="text-[10px] text-gray-500 dark:text-gray-400 uppercase tracking-[0.3em] font-black mt-1">Request Portal</span>
-            </div>
-          </Link>
+          {/* Empty Left Section or Minimal Title */}
+          <div className="flex items-center space-x-4">
+            <span className="font-black text-gray-900 dark:text-gray-100 text-xl leading-none uppercase tracking-tighter hidden sm:block">Petty Cash Request</span>
+          </div>
 
           {/* Actions */}
           <div className="flex items-center space-x-4">
