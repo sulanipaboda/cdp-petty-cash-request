@@ -3,7 +3,7 @@ import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, Calendar, User, MapPin, Package, FileText, Clock, CheckCircle, XCircle, Hash } from 'lucide-react';
 
-const RequestDetailsModal = ({ request, onClose, onUpdateStatus }) => {
+const RequestDetailsModal = ({ request, onClose, onUpdateStatus, canUpdateStatus }) => {
   if (!request) return null;
 
   const formatDate = (dateString) => {
@@ -123,7 +123,7 @@ const RequestDetailsModal = ({ request, onClose, onUpdateStatus }) => {
           </div>
 
           {/* Actions */}
-          {request.status === 'pending' && (
+          {request.status === 'pending' && canUpdateStatus && (
             <div className="border-t px-6 py-4 bg-gray-50 flex justify-end gap-3">
               <button
                 onClick={() => {

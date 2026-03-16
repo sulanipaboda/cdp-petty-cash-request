@@ -11,8 +11,16 @@ import {
     Search,
     Eye
 } from 'lucide-react';
-import { fetchRequests, updateRequestStatusLocally, updateRequestStatusAsync } from '../store/pettyCashSlice';
+import { 
+    fetchRequests, 
+    updateRequestStatusLocally, 
+    updateRequestStatusAsync,
+    verifyPettyCash,
+    approvePettyCash,
+    updatePaymentStatusAsync
+} from '../store/pettyCashSlice';
 import RequestDetailsModal from './RequestDetailsModal';
+import WorkflowActionModal from './WorkflowActionModal';
 import toast from 'react-hot-toast';
 
 const Dashboard = () => {
@@ -20,8 +28,32 @@ const Dashboard = () => {
     const requests = useSelector((state) => state.pettyCash.requests || []);
     const [filter, setFilter] = useState('all');
     const [searchTerm, setSearchTerm] = useState('');
+    const currentUser = useSelector((state) => state.user.currentUser);
     const [selectedRequest, setSelectedRequest] = useState(null);
+    const [workflowModal, setWorkflowModal] = useState({
+        isOpen: false,
+        type: '', // 'verification', 'approval', 'payment'
+        requestId: null,
+        title: '',
+        placeholder: ''
+    });
     const fetchStatus = useSelector((state) => state.pettyCash.status);
+
+    // Permission check helper
+    const hasPermission = (permissionName) => {
+        if (!currentUser) return false;
+        const roles = currentUser.roles || [];
+        if (roles.some(role => role.name === 'Super Admin')) return true;
+        return roles.some(role => 
+            (role.permissions || []).some(p => p.name === permissionName)
+        );
+    };
+
+    const canViewDetails = hasPermission('Petty Cash Index');
+    const canUpdateStatus = hasPermission('Petty Cash Update Status');
+    const canVerify = hasPermission('Petty Cash Verify');
+    const canApprove = hasPermission('Petty Cash Approve');
+    const canUpdatePayment = hasPermission('Petty Cash Update Payment Status');
 
     React.useEffect(() => {
         if (fetchStatus === 'idle') {
@@ -38,11 +70,47 @@ const Dashboard = () => {
     };
 
     const handleStatusUpdate = async (id, status) => {
+        if (!canUpdateStatus) {
+            toast.error("You don't have permission to update status");
+            return;
+        }
         try {
             await dispatch(updateRequestStatusAsync({ id, status })).unwrap();
             toast.success(`Request ${status} successfully!`);
         } catch (error) {
             toast.error(error.message || `Failed to update status`);
+        }
+    };
+
+    const handleWorkflowAction = (requestId, type) => {
+        const config = {
+            verification: { title: 'Verify Request', placeholder: 'Add verification notes...' },
+            approval: { title: 'Approve Request', placeholder: 'Add approval comments...' },
+            payment: { title: 'Update Payment Status', placeholder: 'Add payment details...' }
+        };
+
+        setWorkflowModal({
+            isOpen: true,
+            type,
+            requestId,
+            ...config[type]
+        });
+    };
+
+    const handleWorkflowSubmit = async (description) => {
+        const { requestId, type } = workflowModal;
+        try {
+            if (type === 'verification') {
+                await dispatch(verifyPettyCash({ id: requestId, status: 'verified', description })).unwrap();
+            } else if (type === 'approval') {
+                await dispatch(approvePettyCash({ id: requestId, status: 'approved', description })).unwrap();
+            } else if (type === 'payment') {
+                await dispatch(updatePaymentStatusAsync({ id: requestId, payment_status: 'paid', description })).unwrap();
+            }
+            toast.success(`${type.charAt(0).toUpperCase() + type.slice(1)} updated successfully!`);
+            setWorkflowModal({ ...workflowModal, isOpen: false });
+        } catch (error) {
+            toast.error(error.message || `Failed to update ${type}`);
         }
     };
 
@@ -189,12 +257,16 @@ const Dashboard = () => {
                     <table className="w-full text-left">
                         <thead className="bg-gray-50 dark:bg-gray-800/50 border-b border-gray-100 dark:border-gray-800">
                             <tr>
-                                <th className="px-6 py-5 text-[10px] font-black text-gray-400 dark:text-gray-500 uppercase tracking-[0.2em]">Application Date</th>
-                                <th className="px-6 py-5 text-[10px] font-black text-gray-400 dark:text-gray-500 uppercase tracking-[0.2em]">Requester Info</th>
-                                <th className="px-6 py-5 text-[10px] font-black text-gray-400 dark:text-gray-500 uppercase tracking-[0.2em]">Branch Location</th>
+                                <th className="px-6 py-5 text-[10px] font-black text-gray-400 dark:text-gray-500 uppercase tracking-[0.2em]">Date</th>
+                                <th className="px-6 py-5 text-[10px] font-black text-gray-400 dark:text-gray-500 uppercase tracking-[0.2em]">Name</th>
                                 <th className="px-6 py-5 text-[10px] font-black text-gray-400 dark:text-gray-500 uppercase tracking-[0.2em]">Type</th>
-                                <th className="px-6 py-5 text-[10px] font-black text-gray-400 dark:text-gray-500 uppercase tracking-[0.2em]">Status State</th>
-                                <th className="px-6 py-5 text-[10px] font-black text-gray-400 dark:text-gray-500 uppercase tracking-[0.2em] text-right">Operations</th>
+                                <th className="px-6 py-5 text-[10px] font-black text-gray-400 dark:text-gray-500 uppercase tracking-[0.2em] text-center">Verification</th>
+                                <th className="px-6 py-5 text-[10px] font-black text-gray-400 dark:text-gray-500 uppercase tracking-[0.2em] text-center">Approval</th>
+                                <th className="px-6 py-5 text-[10px] font-black text-gray-400 dark:text-gray-500 uppercase tracking-[0.2em] text-center">Payment</th>
+                                <th className="px-6 py-5 text-[10px] font-black text-gray-400 dark:text-gray-500 uppercase tracking-[0.2em] border-b border-gray-100 dark:border-gray-800">Status</th>
+                                {(canViewDetails || canUpdateStatus) && (
+                                    <th className="px-6 py-5 text-[10px] font-black text-gray-400 dark:text-gray-500 uppercase tracking-[0.2em] text-right border-b border-gray-100 dark:border-gray-800">Operations</th>
+                                )}
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-gray-100 dark:divide-gray-800">
@@ -226,41 +298,87 @@ const Dashboard = () => {
                                             </div>
                                         </td>
                                         <td className="px-6 py-5">
-                                            <span className="text-sm font-bold text-gray-600 dark:text-gray-300 uppercase tracking-tighter">{request.branch_location}</span>
-                                        </td>
-                                        <td className="px-6 py-5">
                                             <span className="text-xs font-black text-gray-500 dark:text-gray-400 uppercase tracking-widest">{(request.type || '').replace('_', ' ')}</span>
                                         </td>
-                                        <td className="px-6 py-5">{getStatusBadge(request.status)}</td>
                                         <td className="px-6 py-5">
-                                            <div className="flex items-center justify-end gap-1">
+                                            <div className="flex justify-center">
                                                 <button
-                                                    onClick={() => setSelectedRequest(request)}
-                                                    className="p-2 text-gray-400 hover:text-primary-600 dark:hover:text-primary-400 hover:bg-primary-50 dark:hover:bg-primary-900/20 rounded-xl transition-all"
-                                                    title="View Full Profile"
+                                                    onClick={() => handleWorkflowAction(request.id, 'verification')}
+                                                    disabled={!canVerify || request.status !== 'pending'}
+                                                    className={`px-3 py-1.5 text-[10px] font-black uppercase tracking-widest rounded-lg border transition-all ${
+                                                        canVerify && request.status === 'pending'
+                                                            ? 'bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 border-blue-100 dark:border-blue-800 hover:bg-blue-100 cursor-pointer'
+                                                            : 'bg-gray-50 dark:bg-gray-800/50 text-gray-400 dark:text-gray-600 border-gray-100 dark:border-gray-800 cursor-not-allowed opacity-50'
+                                                    }`}
                                                 >
-                                                    <Eye className="h-5 w-5" />
+                                                    Verify
                                                 </button>
-                                                {request.status === 'pending' && (
-                                                    <div className="flex items-center bg-gray-50 dark:bg-gray-800/50 p-1 rounded-xl ml-1 border border-gray-100 dark:border-gray-700">
-                                                        <button
-                                                            onClick={() => handleStatusUpdate(request.id, 'approved')}
-                                                            className="p-1.5 text-green-500 hover:text-green-600 hover:bg-green-50 dark:hover:bg-green-900/30 rounded-lg transition-all"
-                                                            title="Authorize"
-                                                        >
-                                                            <CheckCircle className="h-4 w-4" />
-                                                        </button>
-                                                        <button
-                                                            onClick={() => handleStatusUpdate(request.id, 'rejected')}
-                                                            className="p-1.5 text-red-500 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-900/30 rounded-lg transition-all"
-                                                            title="Dismiss"
-                                                        >
-                                                            <XCircle className="h-4 w-4" />
-                                                        </button>
-                                                    </div>
-                                                )}
                                             </div>
                                         </td>
+                                        <td className="px-6 py-5">
+                                            <div className="flex justify-center">
+                                                <button
+                                                    onClick={() => handleWorkflowAction(request.id, 'approval')}
+                                                    disabled={!canApprove || request.status !== 'verified'}
+                                                    className={`px-3 py-1.5 text-[10px] font-black uppercase tracking-widest rounded-lg border transition-all ${
+                                                        canApprove && request.status === 'verified'
+                                                            ? 'bg-purple-50 dark:bg-purple-900/20 text-purple-600 dark:text-purple-400 border-purple-100 dark:border-purple-800 hover:bg-purple-100 cursor-pointer'
+                                                            : 'bg-gray-50 dark:bg-gray-800/50 text-gray-400 dark:text-gray-600 border-gray-100 dark:border-gray-800 cursor-not-allowed opacity-50'
+                                                    }`}
+                                                >
+                                                    Verify
+                                                </button>
+                                            </div>
+                                        </td>
+                                        <td className="px-6 py-5">
+                                            <div className="flex justify-center">
+                                                <button
+                                                    onClick={() => handleWorkflowAction(request.id, 'payment')}
+                                                    disabled={!canUpdatePayment || request.status !== 'approved'}
+                                                    className={`px-3 py-1.5 text-[10px] font-black uppercase tracking-widest rounded-lg border transition-all ${
+                                                        canUpdatePayment && request.status === 'approved'
+                                                            ? 'bg-amber-50 dark:bg-amber-900/20 text-amber-600 dark:text-amber-400 border-amber-100 dark:border-amber-800 hover:bg-amber-100 cursor-pointer'
+                                                            : 'bg-gray-50 dark:bg-gray-800/50 text-gray-400 dark:text-gray-600 border-gray-100 dark:border-gray-800 cursor-not-allowed opacity-50'
+                                                    }`}
+                                                >
+                                                    Verify
+                                                </button>
+                                            </div>
+                                        </td>
+                                        <td className="px-6 py-5">{getStatusBadge(request.status)}</td>
+                                        {(canViewDetails || canUpdateStatus) && (
+                                            <td className="px-6 py-5">
+                                                <div className="flex items-center justify-end gap-1">
+                                                    {canViewDetails && (
+                                                        <button
+                                                            onClick={() => setSelectedRequest(request)}
+                                                            className="p-2 text-gray-400 hover:text-primary-600 dark:hover:text-primary-400 hover:bg-primary-50 dark:hover:bg-primary-900/20 rounded-xl transition-all"
+                                                            title="View Full Profile"
+                                                        >
+                                                            <Eye className="h-5 w-5" />
+                                                        </button>
+                                                    )}
+                                                    {canUpdateStatus && request.status === 'pending' && (
+                                                        <div className="flex items-center bg-gray-50 dark:bg-gray-800/50 p-1 rounded-xl ml-1 border border-gray-100 dark:border-gray-700">
+                                                            <button
+                                                                onClick={() => handleStatusUpdate(request.id, 'approved')}
+                                                                className="p-1.5 text-green-500 hover:text-green-600 hover:bg-green-50 dark:hover:bg-green-900/30 rounded-lg transition-all"
+                                                                title="Authorize"
+                                                            >
+                                                                <CheckCircle className="h-4 w-4" />
+                                                            </button>
+                                                            <button
+                                                                onClick={() => handleStatusUpdate(request.id, 'rejected')}
+                                                                className="p-1.5 text-red-500 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-900/30 rounded-lg transition-all"
+                                                                title="Dismiss"
+                                                            >
+                                                                <XCircle className="h-4 w-4" />
+                                                            </button>
+                                                        </div>
+                                                    )}
+                                                </div>
+                                            </td>
+                                        )}
                                     </motion.tr>
                                 ))}
                             </AnimatePresence>
@@ -284,6 +402,16 @@ const Dashboard = () => {
                 request={selectedRequest}
                 onClose={() => setSelectedRequest(null)}
                 onUpdateStatus={handleStatusUpdate}
+                canUpdateStatus={canUpdateStatus}
+            />
+
+            {/* Workflow Action Modal */}
+            <WorkflowActionModal
+                isOpen={workflowModal.isOpen}
+                onClose={() => setWorkflowModal({ ...workflowModal, isOpen: false })}
+                onSubmit={handleWorkflowSubmit}
+                title={workflowModal.title}
+                placeholder={workflowModal.placeholder}
             />
         </motion.div>
     );

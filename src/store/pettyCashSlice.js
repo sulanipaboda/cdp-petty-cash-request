@@ -61,6 +61,33 @@ export const updateRequestStatusAsync = createAsyncThunk('pettyCash/updateStatus
     }
 });
 
+export const verifyPettyCash = createAsyncThunk('pettyCash/verify', async ({ id, status, description }, { rejectWithValue }) => {
+    try {
+        const response = await api.patch(`/petty-cashes/${id}/verify`, { status, description });
+        return response.data.data || response.data;
+    } catch (error) {
+        return rejectWithValue(error.response?.data || error.message);
+    }
+});
+
+export const approvePettyCash = createAsyncThunk('pettyCash/approve', async ({ id, status, description }, { rejectWithValue }) => {
+    try {
+        const response = await api.patch(`/petty-cashes/${id}/approve`, { status, description });
+        return response.data.data || response.data;
+    } catch (error) {
+        return rejectWithValue(error.response?.data || error.message);
+    }
+});
+
+export const updatePaymentStatusAsync = createAsyncThunk('pettyCash/updatePaymentStatus', async ({ id, payment_status, description }, { rejectWithValue }) => {
+    try {
+        const response = await api.patch(`/petty-cashes/${id}/payment-status`, { payment_status, description });
+        return response.data.data || response.data;
+    } catch (error) {
+        return rejectWithValue(error.response?.data || error.message);
+    }
+});
+
 const initialState = {
     categories: [],
     branches: [],
@@ -116,6 +143,30 @@ const pettyCashSlice = createSlice({
             })
             // Update Status
             .addCase(updateRequestStatusAsync.fulfilled, (state, action) => {
+                const updatedRequest = action.payload;
+                const index = state.requests.findIndex(r => r.id === updatedRequest.id);
+                if (index !== -1) {
+                    state.requests[index] = updatedRequest;
+                }
+            })
+            // Verify
+            .addCase(verifyPettyCash.fulfilled, (state, action) => {
+                const updatedRequest = action.payload;
+                const index = state.requests.findIndex(r => r.id === updatedRequest.id);
+                if (index !== -1) {
+                    state.requests[index] = updatedRequest;
+                }
+            })
+            // Approve
+            .addCase(approvePettyCash.fulfilled, (state, action) => {
+                const updatedRequest = action.payload;
+                const index = state.requests.findIndex(r => r.id === updatedRequest.id);
+                if (index !== -1) {
+                    state.requests[index] = updatedRequest;
+                }
+            })
+            // Payment Status
+            .addCase(updatePaymentStatusAsync.fulfilled, (state, action) => {
                 const updatedRequest = action.payload;
                 const index = state.requests.findIndex(r => r.id === updatedRequest.id);
                 if (index !== -1) {
