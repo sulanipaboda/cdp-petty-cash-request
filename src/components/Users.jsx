@@ -7,7 +7,8 @@ import {
   fetchUsers, 
   createUser, 
   updateUserAsync, 
-  deleteUserAsync 
+  deleteUserAsync,
+  toggleUserStatus 
 } from '../store/userSlice';
 import toast from 'react-hot-toast';
 
@@ -86,8 +87,13 @@ const Users = () => {
     }
   };
 
-  const handleView = (user) => {
-    toast.success(`Viewing details for ${user.name}`);
+  const handleToggleStatus = async (id) => {
+    try {
+      await dispatch(toggleUserStatus(id)).unwrap();
+      toast.success('User status updated');
+    } catch (error) {
+      toast.error(error.message || 'Update failed');
+    }
   };
 
   return (
@@ -107,10 +113,11 @@ const Users = () => {
         data={users}
         columns={columns}
         onEdit={handleEdit}
-        onView={handleView}
+        onView={(user) => handleToggleStatus(user.id)}
         onDelete={handleDelete}
         searchPlaceholder="Search by name, email or role..."
       />
+
 
       <Modal
         isOpen={isModalOpen}

@@ -4,24 +4,27 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Calendar, User, MapPin, Package, FileText, Send, Upload, DollarSign, X, CheckCircle, ShieldCheck, Hash, Briefcase, Layers, UserCheck } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { useDispatch, useSelector } from 'react-redux';
-import { fetchCategories, submitRequest } from '../store/pettyCashSlice';
+import { fetchCategories, fetchBranches, fetchDepartments, submitRequest } from '../store/pettyCashSlice';
 import logo from '../assets/logo.png';
 import { useEffect } from 'react';
 
 const PettyCashForm = () => {
     const dispatch = useDispatch();
-    const { categories, requests } = useSelector(state => state.pettyCash);
+    const { categories, branches, departments, requests } = useSelector(state => state.pettyCash);
     const { users, currentUser } = useSelector(state => state.user);
     const isAdmin = currentUser?.role === 'System Administrator' || currentUser?.role === 'Finance Manager';
 
     useEffect(() => {
         dispatch(fetchCategories());
+        dispatch(fetchBranches());
+        dispatch(fetchDepartments());
     }, [dispatch]);
 
     const [formData, setFormData] = useState({
         fullName: '',
-        branchLocation: '',
-        department: '',
+        email: '',
+        branchId: '',
+        departmentId: '',
         dateNeeded: '',
         category: '',
         description: '',
@@ -78,7 +81,7 @@ const PettyCashForm = () => {
         e.preventDefault();
         
         // Basic validation
-        if (!formData.fullName || !formData.branchLocation ||
+        if (!formData.fullName || !formData.email || !formData.branchId ||
             !formData.dateNeeded || !formData.category || !formData.amount) {
             toast.error('Please fill in all required fields');
             return;
@@ -93,8 +96,9 @@ const PettyCashForm = () => {
         
         // Map frontend fields to backend snake_case fields
         data.append('full_name', formData.fullName);
-        data.append('branch_location', formData.branchLocation);
-        data.append('department', formData.department || '');
+        data.append('email', formData.email);
+        data.append('branch_id', formData.branchId);
+        data.append('department_id', formData.departmentId || '');
         data.append('date_needed', formData.dateNeeded);
         data.append('category_id', formData.category); // category state holds the ID
         data.append('description', formData.description || '');
@@ -113,9 +117,10 @@ const PettyCashForm = () => {
             await dispatch(submitRequest(data)).unwrap();
             toast.success('Submitted Successfully');
             setFormData({
-                fullName: currentUser?.name || '',
-                branchLocation: '',
-                department: '',
+                fullName: '',
+                email: '',
+                branchId: '',
+                departmentId: '',
                 dateNeeded: '',
                 category: '',
                 description: '',
@@ -131,6 +136,7 @@ const PettyCashForm = () => {
             toast.error(error.message || 'Submission failed');
         }
     };
+
 
     return (
         <div className="min-h-screen bg-transparent flex items-center justify-center p-4 relative overflow-hidden">
@@ -173,8 +179,7 @@ const PettyCashForm = () => {
                     </div>
 
                     <form onSubmit={handleSubmit} className="space-y-6 relative z-10">
-                        {/* 3-Column Grid for Primary Fields */}
-                        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                             {/* Row 1 */}
                             <div className="relative group mt-2">
                                 <User className="absolute left-0 bottom-2 h-5 w-5 text-primary-600" />
@@ -189,27 +194,50 @@ const PettyCashForm = () => {
                                 />
                             </div>
                             <div className="relative group mt-2">
-                                <MapPin className="absolute left-0 bottom-2 h-5 w-5 text-gray-400 group-focus-within:text-primary-600 transition-colors" />
+                                <UserCheck className="absolute left-0 bottom-2 h-5 w-5 text-primary-600" />
                                 <input
-                                    type="text"
-                                    name="branchLocation"
-                                    value={formData.branchLocation}
+                                    type="email"
+                                    name="email"
+                                    value={formData.email}
                                     onChange={handleChange}
-                                    placeholder="Branch / Location"
+                                    placeholder="Work Email"
                                     className="w-full pl-8 pb-2 bg-transparent border-b border-gray-300 focus:border-primary-600 outline-none transition-all text-[13px] font-bold text-black placeholder:text-gray-500"
                                     required
                                 />
                             </div>
-                            <div className="relative group mt-2">
-                                <Briefcase className="absolute left-0 bottom-2 h-5 w-5 text-gray-400 group-focus-within:text-primary-600 transition-colors" />
-                                <input
-                                    type="text"
-                                    name="department"
-                                    value={formData.department}
+                        </div>
+
+                        {/* 3-Column Grid for Primary Fields */}
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                            <div className="relative group mt-6">
+                                <MapPin className="absolute left-0 bottom-2 h-5 w-5 text-gray-400 group-focus-within:text-primary-600 transition-colors" />
+                                <select
+                                    name="branchId"
+                                    value={formData.branchId}
                                     onChange={handleChange}
-                                    placeholder="Department (Optional)"
-                                    className="w-full pl-8 pb-2 bg-transparent border-b border-gray-300 focus:border-primary-600 outline-none transition-all text-[13px] font-bold text-black placeholder:text-gray-500"
-                                />
+                                    className="w-full pl-8 pb-2 bg-transparent border-b border-gray-300 focus:border-primary-600 outline-none transition-all text-[13px] font-bold text-black appearance-none cursor-pointer"
+                                    required
+                                >
+                                    <option value="" disabled className="text-gray-500">Select Branch</option>
+                                    {branches.map(branch => (
+                                        <option key={branch.id} value={branch.id} className="text-black">{branch.name}</option>
+                                    ))}
+                                </select>
+                            </div>
+                            <div className="relative group mt-6">
+                                <Briefcase className="absolute left-0 bottom-2 h-5 w-5 text-gray-400 group-focus-within:text-primary-600 transition-colors" />
+                                <select
+                                    name="departmentId"
+                                    value={formData.departmentId}
+                                    onChange={handleChange}
+                                    className="w-full pl-8 pb-2 bg-transparent border-b border-gray-300 focus:border-primary-600 outline-none transition-all text-[13px] font-bold text-black appearance-none cursor-pointer"
+                                    required
+                                >
+                                    <option value="" disabled className="text-gray-500">Select Department</option>
+                                    {departments.map(dept => (
+                                        <option key={dept.id} value={dept.id} className="text-black">{dept.name}</option>
+                                    ))}
+                                </select>
                             </div>
 
                             {/* Row 2 */}
@@ -256,6 +284,7 @@ const PettyCashForm = () => {
                                 <span className="absolute right-0 bottom-2 text-[10px] font-black text-primary-600 uppercase tracking-widest">LKR</span>
                             </div>
                         </div>
+
 
                         {/* Full Width Sections */}
                         <div className="space-y-4 pt-4 border-t border-gray-100 mt-6">

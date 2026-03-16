@@ -4,6 +4,7 @@ import { Link, useLocation } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import { Sun, Moon, User, LogOut, ChevronDown, Bell, Settings } from 'lucide-react';
 import { setTheme, logoutUser } from '../store/userSlice';
+import { fetchUnreadNotifications, markAsRead, markAllRead } from '../store/notificationSlice';
 import logo from '../assets/logo.png';
 
 const Navigation = () => {
@@ -11,17 +12,28 @@ const Navigation = () => {
   const dispatch = useDispatch();
   const theme = useSelector((state) => state.user.theme);
   const currentUser = useSelector((state) => state.user.currentUser);
+  const { items: notifications, unreadCount } = useSelector((state) => state.notifications);
   const [isProfileOpen, setIsProfileOpen] = useState(false);
+  const [isNotificationsOpen, setIsNotificationsOpen] = useState(false);
 
   const toggleTheme = () => {
     dispatch(setTheme(theme === 'light' ? 'dark' : 'light'));
   };
 
-  const handleLogout = async () => {
-    if (window.confirm('Are you sure you want to logout?')) {
-      await dispatch(logoutUser());
-      window.location.href = '/login';
+  React.useEffect(() => {
+    if (currentUser) {
+      dispatch(fetchUnreadNotifications());
+      // Refresh notifications every minute
+      const interval = setInterval(() => {
+        dispatch(fetchUnreadNotifications());
+      }, 60000);
+      return () => clearInterval(interval);
     }
+  }, [dispatch, currentUser]);
+
+  const handleLogout = async () => {
+    await dispatch(logoutUser());
+    window.location.href = '/login';
   };
 
   const getRoleName = () => {
@@ -63,11 +75,79 @@ const Navigation = () => {
               {theme === 'light' ? <Moon className="h-5 w-5" /> : <Sun className="h-5 w-5" />}
             </button>
 
-            {/* Notifications (Mock) */}
-            <button className="p-2 text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-xl transition-all duration-200 relative">
-              <Bell className="h-5 w-5" />
-              <span className="absolute top-2 right-2 w-2 h-2 bg-red-500 rounded-full border-2 border-white dark:border-gray-900"></span>
-            </button>
+            {/* Notifications */}
+            <div className="relative">
+              <button 
+                onClick={() => setIsNotificationsOpen(!isNotificationsOpen)}
+                className="p-2 text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-xl transition-all duration-200 relative group"
+              >
+                <Bell className={`h-5 w-5 transition-transform duration-200 ${isNotificationsOpen ? 'scale-110' : 'group-hover:rotate-12'}`} />
+                {unreadCount > 0 && (
+                  <span className="absolute top-2 right-2 w-2 h-2 bg-red-500 rounded-full border-2 border-white dark:border-gray-900 animate-pulse"></span>
+                )}
+              </button>
+
+              {isNotificationsOpen && (
+                <>
+                  <div className="fixed inset-0 z-40" onClick={() => setIsNotificationsOpen(false)}></div>
+                  <div className="absolute right-0 mt-2 w-80 sm:w-96 bg-white dark:bg-gray-900 rounded-2xl shadow-2xl border border-gray-100 dark:border-gray-800 flex flex-col z-50 animate-in fade-in zoom-in duration-200">
+                    <div className="px-5 py-4 border-b border-gray-100 dark:border-gray-800 flex items-center justify-between">
+                      <h3 className="text-sm font-black text-gray-900 dark:text-gray-100 uppercase tracking-tighter">Notifications</h3>
+                      {unreadCount > 0 && (
+                        <button 
+                          onClick={() => dispatch(markAllRead())}
+                          className="text-[10px] font-bold text-primary-600 hover:text-primary-700 uppercase tracking-widest transition-colors"
+                        >
+                          Mark all as read
+                        </button>
+                      )}
+                    </div>
+
+                    <div className="max-h-[400px] overflow-y-auto p-2">
+                       {notifications.length === 0 ? (
+                         <div className="py-12 text-center">
+                           <Bell className="h-10 w-10 text-gray-100 dark:text-gray-800 mx-auto mb-3" />
+                           <p className="text-[11px] font-bold text-gray-400 uppercase tracking-widest">No new notifications</p>
+                         </div>
+                       ) : (
+                         <div className="space-y-1">
+                           {notifications.map((notification) => (
+                             <div 
+                               key={notification.id}
+                               onClick={() => dispatch(markAsRead(notification.id))}
+                               className={`p-3 rounded-xl transition-all cursor-pointer border-2 border-transparent ${!notification.read_at ? 'bg-primary-50/30 dark:bg-primary-900/10 border-primary-500/10' : 'hover:bg-gray-50 dark:hover:bg-gray-800/50'}`}
+                             >
+                               <div className="flex gap-3">
+                                 <div className={`h-8 w-8 rounded-lg flex-shrink-0 flex items-center justify-center ${!notification.read_at ? 'bg-primary-600 text-white' : 'bg-gray-100 dark:bg-gray-800 text-gray-400'}`}>
+                                   <Settings className="h-4 w-4" />
+                                 </div>
+                                 <div className="flex-1 min-w-0">
+                                   <p className={`text-[12px] leading-snug ${!notification.read_at ? 'font-black text-gray-900 dark:text-white' : 'font-medium text-gray-500 dark:text-gray-400'}`}>
+                                     {notification.data?.message || notification.message || 'New Update'}
+                                   </p>
+                                   <p className="text-[9px] font-bold text-gray-400 mt-1 uppercase tracking-wider">
+                                     {new Date(notification.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} • {new Date(notification.created_at).toLocaleDateString()}
+                                   </p>
+                                 </div>
+                                 {!notification.read_at && (
+                                   <div className="h-2 w-2 rounded-full bg-primary-600 mt-1.5 shadow-lg shadow-primary-200"></div>
+                                 )}
+                               </div>
+                             </div>
+                           ))}
+                         </div>
+                       )}
+                    </div>
+
+                    <div className="p-2 border-t border-gray-100 dark:border-gray-800">
+                      <button className="w-full py-2.5 text-[10px] font-black text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 uppercase tracking-[0.2em] transition-colors rounded-xl hover:bg-gray-50 dark:hover:bg-gray-800">
+                        View Audit Logs
+                      </button>
+                    </div>
+                  </div>
+                </>
+              )}
+            </div>
 
             {/* Profile Dropdown */}
             {currentUser && (

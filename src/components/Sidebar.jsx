@@ -7,7 +7,10 @@ import {
   Users as UsersIcon, 
   ShieldCheck, 
   Key,
-  History
+  History,
+  MapPin,
+  Tag,
+  Building2
 } from 'lucide-react';
 
 const Sidebar = () => {
@@ -21,6 +24,12 @@ const Sidebar = () => {
     { path: '/users', label: 'Users', icon: UsersIcon },
     { path: '/roles', label: 'Roles', icon: ShieldCheck },
     { path: '/permissions', label: 'Permissions', icon: Key },
+  ];
+
+  const masterDataNav = [
+    { path: '/branches', label: 'Branches', icon: MapPin },
+    { path: '/categories', label: 'Categories', icon: Tag },
+    { path: '/departments', label: 'Departments', icon: Building2 },
   ];
 
   const systemNav = [
@@ -60,6 +69,30 @@ const Sidebar = () => {
           <p className="px-4 text-[10px] font-semibold text-gray-400 dark:text-gray-500 uppercase tracking-widest mb-2">User Management</p>
           <div className="space-y-1">
             {userManagementNav.map((item) => {
+              const Icon = item.icon;
+              const isActive = location.pathname === item.path;
+              return (
+                <Link
+                  key={item.path}
+                  to={item.path}
+                  className={`flex items-center space-x-3 px-4 py-2.5 rounded-lg text-sm font-medium transition-all duration-200 ${
+                    isActive
+                      ? 'bg-primary-50 dark:bg-primary-900/20 text-primary-700 dark:text-primary-400 shadow-sm'
+                      : 'text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800 hover:text-gray-900 dark:hover:text-gray-100'
+                  }`}
+                >
+                  <Icon className={`h-4 w-4 ${isActive ? 'text-primary-600 dark:text-primary-400' : 'text-gray-400 dark:text-gray-600'}`} />
+                  <span>{item.label}</span>
+                </Link>
+              );
+            })}
+          </div>
+        </div>
+
+        <div>
+          <p className="px-4 text-[10px] font-semibold text-gray-400 dark:text-gray-500 uppercase tracking-widest mb-2">Master Data</p>
+          <div className="space-y-1">
+            {masterDataNav.map((item) => {
               const Icon = item.icon;
               const isActive = location.pathname === item.path;
               return (

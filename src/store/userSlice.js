@@ -76,10 +76,20 @@ export const deleteUserAsync = createAsyncThunk('user/deleteUser', async (id, { 
   }
 });
 
+export const toggleUserStatus = createAsyncThunk('user/toggleStatus', async (id, { rejectWithValue }) => {
+  try {
+    const response = await api.patch(`/users/${id}/toggle-status`);
+    return response.data.data;
+  } catch (error) {
+    return rejectWithValue(error.response?.data || error.message);
+  }
+});
+
+
 export const fetchRoles = createAsyncThunk('user/fetchRoles', async (_, { rejectWithValue }) => {
   try {
     const response = await api.get('/roles');
-    // Extract array from Laravel response structure
+    // Extract array from Laravel paginated response structure
     return response.data.data?.data || response.data.data || response.data;
   } catch (error) {
     return rejectWithValue(error.response?.data || error.message);
@@ -115,13 +125,13 @@ export const deleteRoleAsync = createAsyncThunk('user/deleteRole', async (id, { 
 
 export const fetchPermissions = createAsyncThunk('user/fetchPermissions', async (_, { rejectWithValue }) => {
   try {
-    const response = await api.get('/permissions?per_page=1000');
-    // Extract array from Laravel response structure
-    return response.data.data?.data || response.data.data || response.data;
+    const response = await api.get('/permissions/list');
+    return response.data.data;
   } catch (error) {
     return rejectWithValue(error.response?.data || error.message);
   }
 });
+
 
 export const createPermission = createAsyncThunk('user/createPermission', async (permissionData, { rejectWithValue }) => {
   try {
@@ -222,7 +232,7 @@ const userSlice = createSlice({
       .addCase(loginUser.pending, (state) => {
         state.authStatus = 'loading';
         state.authError = null;
-      })
+    })
       .addCase(loginUser.fulfilled, (state, action) => {
         state.authStatus = 'succeeded';
         state.currentUser = action.payload;
@@ -276,7 +286,15 @@ const userSlice = createSlice({
       .addCase(deleteUserAsync.fulfilled, (state, action) => {
         state.users = state.users.filter(u => u.id !== action.payload);
       })
+      // Toggle User Status
+      .addCase(toggleUserStatus.fulfilled, (state, action) => {
+        const index = state.users.findIndex(u => u.id === action.payload.id);
+        if (index !== -1) {
+          state.users[index].is_active = action.payload.is_active;
+        }
+      })
       // Fetch Roles
+
       .addCase(fetchRoles.fulfilled, (state, action) => {
         state.roles = action.payload;
       })

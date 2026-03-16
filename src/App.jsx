@@ -14,6 +14,9 @@ import Roles from './components/Roles';
 import Permissions from './components/Permissions';
 import Logs from './components/Logs';
 import PettyCashForm from './components/PettyCashForm';
+import Branches from './components/Branches';
+import Categories from './components/Categories';
+import Departments from './components/Departments';
 import PublicNavigation from './components/PublicNavigation';
 import Login from './components/Login';
 
@@ -63,7 +66,7 @@ function AppContent() {
     return (
       <>
         <Login />
-        <Toaster position="top-right" />
+        <Toaster position="bottom-right" />
       </>
     );
   }
@@ -74,12 +77,13 @@ function AppContent() {
         <Routes>
           <Route path="/public/request" element={<PettyCashForm />} />
         </Routes>
-        <Toaster position="top-right" />
+        <Toaster position="bottom-right" />
       </div>
     );
   }
 
-  if (!currentUser && authStatus !== 'loading') {
+  const hasToken = localStorage.getItem('access_token');
+  if (!currentUser && !hasToken && authStatus !== 'loading') {
     return <Navigate to="/login" replace />;
   }
 
@@ -96,12 +100,15 @@ function AppContent() {
               <Route path="/roles" element={<Roles />} />
               <Route path="/permissions" element={<Permissions />} />
               <Route path="/logs" element={<Logs />} />
+              <Route path="/branches" element={<Branches />} />
+              <Route path="/categories" element={<Categories />} />
+              <Route path="/departments" element={<Departments />} />
               <Route path="*" element={<Navigate to="/dashboard" />} />
             </Routes>
           </div>
         </main>
       </div>
-      <Toaster position="top-right" />
+      <Toaster position="bottom-right" />
     </div>
   );
 }

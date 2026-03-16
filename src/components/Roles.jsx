@@ -24,21 +24,6 @@ const Roles = () => {
 
   const columns = [
     { header: 'Role Name', key: 'name' },
-    { header: 'Description', key: 'description' },
-    { header: 'User Count', key: 'userCount' },
-    { 
-      header: 'Status', 
-      key: 'status',
-      render: (status) => (
-        <span className={`px-2.5 py-1 rounded-full text-xs font-bold uppercase tracking-wider ${
-          status === 'Active' 
-            ? 'bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400' 
-            : 'bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-400'
-        }`}>
-          {status}
-        </span>
-      )
-    },
   ];
 
   const handleAdd = () => {

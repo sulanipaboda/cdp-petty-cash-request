@@ -15,13 +15,30 @@ export const fetchRequests = createAsyncThunk('pettyCash/fetchRequests', async (
 export const fetchCategories = createAsyncThunk('pettyCash/fetchCategories', async (_, { rejectWithValue }) => {
     try {
         const response = await api.get('/categories/list');
-        // Handle Laravel response: { data: [...] } or { data: { data: [...] } }
-        const categories = response.data.data?.data || response.data.data || response.data;
-        return Array.isArray(categories) ? categories : [];
+        return response.data.data;
     } catch (error) {
         return rejectWithValue(error.response?.data || error.message);
     }
 });
+
+export const fetchBranches = createAsyncThunk('pettyCash/fetchBranches', async (_, { rejectWithValue }) => {
+    try {
+        const response = await api.get('/branches/list');
+        return response.data.data;
+    } catch (error) {
+        return rejectWithValue(error.response?.data || error.message);
+    }
+});
+
+export const fetchDepartments = createAsyncThunk('pettyCash/fetchDepartments', async (_, { rejectWithValue }) => {
+    try {
+        const response = await api.get('/departments/list');
+        return response.data.data;
+    } catch (error) {
+        return rejectWithValue(error.response?.data || error.message);
+    }
+});
+
 
 export const submitRequest = createAsyncThunk('pettyCash/submitRequest', async (formData, { rejectWithValue }) => {
     try {
@@ -46,10 +63,13 @@ export const updateRequestStatusAsync = createAsyncThunk('pettyCash/updateStatus
 
 const initialState = {
     categories: [],
+    branches: [],
+    departments: [],
     requests: [],
     status: 'idle', // 'idle' | 'loading' | 'succeeded' | 'failed'
     error: null,
 };
+
 
 const pettyCashSlice = createSlice({
     name: 'pettyCash',
@@ -81,7 +101,16 @@ const pettyCashSlice = createSlice({
             .addCase(fetchCategories.fulfilled, (state, action) => {
                 state.categories = action.payload;
             })
+            // Fetch Branches
+            .addCase(fetchBranches.fulfilled, (state, action) => {
+                state.branches = action.payload;
+            })
+            // Fetch Departments
+            .addCase(fetchDepartments.fulfilled, (state, action) => {
+                state.departments = action.payload;
+            })
             // Submit Request
+
             .addCase(submitRequest.fulfilled, (state, action) => {
                 state.requests.unshift(action.payload);
             })

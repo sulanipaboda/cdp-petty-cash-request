@@ -14,6 +14,9 @@ const UserForm = ({ onSubmit, initialData = null, onCancel }) => {
         password: '',
         role: '',
         is_active: true,
+        can_login: true,
+        notify_petty_cash_request: false,
+        notify_petty_cash_payment: false,
     });
 
     const roles = useSelector((state) => state.user.roles || []);
@@ -32,6 +35,9 @@ const UserForm = ({ onSubmit, initialData = null, onCancel }) => {
                 password: '', // don't pre-fill password on edit
                 role: roleName,
                 is_active: initialData.is_active !== undefined ? initialData.is_active : true,
+                can_login: initialData.can_login !== undefined ? initialData.can_login : true,
+                notify_petty_cash_request: initialData.notify_petty_cash_request || false,
+                notify_petty_cash_payment: initialData.notify_petty_cash_payment || false,
             });
         }
     }, [initialData]);
@@ -203,6 +209,51 @@ const UserForm = ({ onSubmit, initialData = null, onCancel }) => {
                                         <option value="false">Inactive</option>
                                     </select>
                                 </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Section 03: Notifications */}
+                    <div className="relative">
+                        <div className="flex items-center gap-3 mb-5">
+                            <span className="text-2xl font-black text-gray-100 dark:text-gray-800 tracking-tighter">03</span>
+                            <div className="h-px flex-1 bg-gray-100 dark:bg-gray-800"></div>
+                            <h2 className="text-[9px] font-black text-gray-400 uppercase tracking-[0.3em]">Notification Preferences</h2>
+                        </div>
+
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                            <div className="flex items-center justify-between p-4 bg-gray-50/50 dark:bg-gray-800/50 rounded-2xl border-2 border-transparent hover:border-primary-500/10 transition-all">
+                                <div>
+                                    <h3 className="text-sm font-bold text-gray-900 dark:text-gray-100">Petty Cash Requests</h3>
+                                    <p className="text-[10px] text-gray-500 dark:text-gray-400 font-medium">Receive alerts for new cash requests</p>
+                                </div>
+                                <label className="relative inline-flex items-center cursor-pointer">
+                                    <input 
+                                        type="checkbox" 
+                                        name="notify_petty_cash_request"
+                                        checked={formData.notify_petty_cash_request}
+                                        onChange={handleChange}
+                                        className="sr-only peer" 
+                                    />
+                                    <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-primary-600"></div>
+                                </label>
+                            </div>
+
+                            <div className="flex items-center justify-between p-4 bg-gray-50/50 dark:bg-gray-800/50 rounded-2xl border-2 border-transparent hover:border-primary-500/10 transition-all">
+                                <div>
+                                    <h3 className="text-sm font-bold text-gray-900 dark:text-gray-100">Petty Cash Payments</h3>
+                                    <p className="text-[10px] text-gray-500 dark:text-gray-400 font-medium">Receive alerts for processed payments</p>
+                                </div>
+                                <label className="relative inline-flex items-center cursor-pointer">
+                                    <input 
+                                        type="checkbox" 
+                                        name="notify_petty_cash_payment"
+                                        checked={formData.notify_petty_cash_payment}
+                                        onChange={handleChange}
+                                        className="sr-only peer" 
+                                    />
+                                    <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-primary-600"></div>
+                                </label>
                             </div>
                         </div>
                     </div>
