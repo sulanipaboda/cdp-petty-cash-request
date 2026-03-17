@@ -37,7 +37,7 @@ const Users = () => {
       render: (isActive) => (
         <span className={`px-2.5 py-1 rounded-full text-xs font-bold uppercase tracking-wider ${
           isActive 
-            ? 'bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400' 
+            ? 'bg-primary-100 dark:bg-primary-900/30 text-primary-700 dark:text-primary-400' 
             : 'bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-400'
         }`}>
           {isActive ? 'Active' : 'Inactive'}

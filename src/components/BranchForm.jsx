@@ -51,7 +51,7 @@ const BranchForm = ({ onSubmit, initialData = null, onCancel }) => {
                 className="bg-white dark:bg-gray-900 rounded-[2.5rem] shadow-[0_40px_80px_-20px_rgba(0,0,0,0.08)] dark:shadow-none border border-gray-100 dark:border-gray-800 overflow-hidden"
             >
                 {/* Hero Header */}
-                <div className="relative bg-gray-900 dark:bg-gray-800 px-6 py-6 overflow-hidden">
+                <div className="relative bg-primary-600 px-6 py-6 overflow-hidden">
                     <div className="absolute top-0 right-0 -translate-y-1/4 translate-x-1/4 opacity-10">
                         <MapPin className="h-40 w-40 text-white" />
                     </div>
@@ -63,7 +63,7 @@ const BranchForm = ({ onSubmit, initialData = null, onCancel }) => {
                             <h1 className="text-lg font-black text-white uppercase tracking-tighter leading-none">
                                 {isEditing ? 'Refine Branch' : 'Branch Initialization'}
                             </h1>
-                            <p className="text-gray-400 mt-1 text-[9px] font-medium opacity-80 uppercase tracking-widest leading-none">
+                            <p className="text-primary-50 mt-1 text-[9px] font-medium opacity-80 uppercase tracking-widest leading-none">
                                 Geographic & Logistics Profile
                             </p>
                         </div>
@@ -83,14 +83,14 @@ const BranchForm = ({ onSubmit, initialData = null, onCancel }) => {
                             <div className="space-y-2">
                                 <label className="text-[9px] font-black text-gray-400 dark:text-gray-500 uppercase tracking-widest pl-1">Branch Name</label>
                                 <div className="relative group">
-                                    <MapPin className="absolute left-5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-gray-400 group-focus-within:text-primary-500 transition-colors" />
+                                    <MapPin className="absolute left-5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-gray-400 group-focus-within:text-primary-600 transition-colors" />
                                     <input
                                         type="text"
                                         name="name"
                                         value={formData.name}
                                         onChange={handleChange}
                                         placeholder="e.g. Colombo Head Office"
-                                        className="w-full pl-12 pr-6 py-2.5 bg-gray-50/50 dark:bg-gray-800/50 border-2 border-transparent focus:border-primary-500/20 focus:bg-white dark:focus:bg-gray-800 rounded-xl outline-none transition-all text-[12px] font-bold text-gray-900 dark:text-gray-100"
+                                        className="w-full pl-12 pr-6 py-2.5 bg-gray-50/50 dark:bg-gray-800/50 border-2 border-transparent focus:border-primary-600/20 focus:bg-white dark:focus:bg-gray-800 rounded-xl outline-none transition-all text-[12px] font-bold text-gray-900 dark:text-gray-100"
                                         required
                                     />
                                 </div>
@@ -99,14 +99,14 @@ const BranchForm = ({ onSubmit, initialData = null, onCancel }) => {
                             <div className="space-y-2">
                                 <label className="text-[9px] font-black text-gray-400 dark:text-gray-500 uppercase tracking-widest pl-1">Branch Code</label>
                                 <div className="relative group">
-                                    <Hash className="absolute left-5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-gray-400 group-focus-within:text-primary-500 transition-colors" />
+                                    <Hash className="absolute left-5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-gray-400 group-focus-within:text-primary-600 transition-colors" />
                                     <input
                                         type="text"
                                         name="code"
                                         value={formData.code}
                                         onChange={handleChange}
                                         placeholder="e.g. CHO-001"
-                                        className="w-full pl-12 pr-6 py-2.5 bg-gray-50/50 dark:bg-gray-800/50 border-2 border-transparent focus:border-primary-500/20 focus:bg-white dark:focus:bg-gray-800 rounded-xl outline-none transition-all text-[12px] font-bold text-gray-900 dark:text-gray-100"
+                                        className="w-full pl-12 pr-6 py-2.5 bg-gray-50/50 dark:bg-gray-800/50 border-2 border-transparent focus:border-primary-600/20 focus:bg-white dark:focus:bg-gray-800 rounded-xl outline-none transition-all text-[12px] font-bold text-gray-900 dark:text-gray-100"
                                         required
                                     />
                                 </div>
@@ -126,14 +126,14 @@ const BranchForm = ({ onSubmit, initialData = null, onCancel }) => {
                             <div className="space-y-2">
                                 <label className="text-[9px] font-black text-gray-400 dark:text-gray-500 uppercase tracking-widest pl-1">City</label>
                                 <div className="relative group">
-                                    <Map className="absolute left-5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-gray-400 group-focus-within:text-primary-500 transition-colors" />
+                                    <Map className="absolute left-5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-gray-400 group-focus-within:text-primary-600 transition-colors" />
                                     <input
                                         type="text"
                                         name="city"
                                         value={formData.city}
                                         onChange={handleChange}
                                         placeholder="e.g. Colombo"
-                                        className="w-full pl-12 pr-6 py-2.5 bg-gray-50/50 dark:bg-gray-800/50 border-2 border-transparent focus:border-primary-500/20 focus:bg-white dark:focus:bg-gray-800 rounded-xl outline-none transition-all text-[12px] font-bold text-gray-900 dark:text-gray-100"
+                                        className="w-full pl-12 pr-6 py-2.5 bg-gray-50/50 dark:bg-gray-800/50 border-2 border-transparent focus:border-primary-600/20 focus:bg-white dark:focus:bg-gray-800 rounded-xl outline-none transition-all text-[12px] font-bold text-gray-900 dark:text-gray-100"
                                         required
                                     />
                                 </div>
@@ -142,14 +142,14 @@ const BranchForm = ({ onSubmit, initialData = null, onCancel }) => {
                             <div className="space-y-2">
                                 <label className="text-[9px] font-black text-gray-400 dark:text-gray-500 uppercase tracking-widest pl-1">Email Address</label>
                                 <div className="relative group">
-                                    <Mail className="absolute left-5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-gray-400 group-focus-within:text-primary-500 transition-colors" />
+                                    <Mail className="absolute left-5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-gray-400 group-focus-within:text-primary-600 transition-colors" />
                                     <input
                                         type="email"
                                         name="email"
                                         value={formData.email}
                                         onChange={handleChange}
                                         placeholder="e.g. colombo@company.com"
-                                        className="w-full pl-12 pr-6 py-2.5 bg-gray-50/50 dark:bg-gray-800/50 border-2 border-transparent focus:border-primary-500/20 focus:bg-white dark:focus:bg-gray-800 rounded-xl outline-none transition-all text-[12px] font-bold text-gray-900 dark:text-gray-100"
+                                        className="w-full pl-12 pr-6 py-2.5 bg-gray-50/50 dark:bg-gray-800/50 border-2 border-transparent focus:border-primary-600/20 focus:bg-white dark:focus:bg-gray-800 rounded-xl outline-none transition-all text-[12px] font-bold text-gray-900 dark:text-gray-100"
                                         required
                                     />
                                 </div>
@@ -158,14 +158,14 @@ const BranchForm = ({ onSubmit, initialData = null, onCancel }) => {
                             <div className="space-y-2">
                                 <label className="text-[9px] font-black text-gray-400 dark:text-gray-500 uppercase tracking-widest pl-1">Phone Number</label>
                                 <div className="relative group">
-                                    <Phone className="absolute left-5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-gray-400 group-focus-within:text-primary-500 transition-colors" />
+                                    <Phone className="absolute left-5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-gray-400 group-focus-within:text-primary-600 transition-colors" />
                                     <input
                                         type="text"
                                         name="phone_primary"
                                         value={formData.phone_primary}
                                         onChange={handleChange}
                                         placeholder="e.g. +94 11 234 5678"
-                                        className="w-full pl-12 pr-6 py-2.5 bg-gray-50/50 dark:bg-gray-800/50 border-2 border-transparent focus:border-primary-500/20 focus:bg-white dark:focus:bg-gray-800 rounded-xl outline-none transition-all text-[12px] font-bold text-gray-900 dark:text-gray-100"
+                                        className="w-full pl-12 pr-6 py-2.5 bg-gray-50/50 dark:bg-gray-800/50 border-2 border-transparent focus:border-primary-600/20 focus:bg-white dark:focus:bg-gray-800 rounded-xl outline-none transition-all text-[12px] font-bold text-gray-900 dark:text-gray-100"
                                     />
                                 </div>
                             </div>
@@ -173,12 +173,12 @@ const BranchForm = ({ onSubmit, initialData = null, onCancel }) => {
                             <div className="space-y-2">
                                 <label className="text-[9px] font-black text-gray-400 dark:text-gray-500 uppercase tracking-widest pl-1">Operational Status</label>
                                 <div className="relative group">
-                                    <Activity className="absolute left-5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-gray-400 group-focus-within:text-primary-500 transition-colors" />
+                                    <Activity className="absolute left-5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-gray-400 group-focus-within:text-primary-600 transition-colors" />
                                     <select
                                         name="is_active"
                                         value={formData.is_active}
                                         onChange={(e) => setFormData(prev => ({ ...prev, is_active: e.target.value === 'true' }))}
-                                        className="w-full pl-12 pr-6 py-2.5 bg-gray-50/50 dark:bg-gray-800/50 border-2 border-transparent focus:border-primary-500/20 focus:bg-white dark:focus:bg-gray-800 rounded-xl outline-none transition-all text-[12px] font-bold text-gray-900 dark:text-gray-100 appearance-none"
+                                        className="w-full pl-12 pr-6 py-2.5 bg-gray-50/50 dark:bg-gray-800/50 border-2 border-transparent focus:border-primary-600/20 focus:bg-white dark:focus:bg-gray-800 rounded-xl outline-none transition-all text-[12px] font-bold text-gray-900 dark:text-gray-100 appearance-none"
                                         required
                                     >
                                         <option value="true">Active</option>
@@ -190,14 +190,14 @@ const BranchForm = ({ onSubmit, initialData = null, onCancel }) => {
                             <div className="md:col-span-2 space-y-2">
                                 <label className="text-[9px] font-black text-gray-400 dark:text-gray-500 uppercase tracking-widest pl-1">Physical Address</label>
                                 <div className="relative group">
-                                    <Home className="absolute left-5 top-6 h-3.5 w-3.5 text-gray-400 group-focus-within:text-primary-500 transition-colors" />
+                                    <Home className="absolute left-5 top-6 h-3.5 w-3.5 text-gray-400 group-focus-within:text-primary-600 transition-colors" />
                                     <textarea
                                         name="address_line1"
                                         value={formData.address_line1}
                                         onChange={handleChange}
                                         rows="3"
                                         placeholder="Enter full branch address..."
-                                        className="w-full pl-12 pr-6 py-2.5 bg-gray-50/50 dark:bg-gray-800/50 border-2 border-transparent focus:border-primary-500/20 focus:bg-white dark:focus:bg-gray-800 rounded-xl outline-none transition-all text-[12px] font-bold text-gray-900 dark:text-gray-100"
+                                        className="w-full pl-12 pr-6 py-2.5 bg-gray-50/50 dark:bg-gray-800/50 border-2 border-transparent focus:border-primary-600/20 focus:bg-white dark:focus:bg-gray-800 rounded-xl outline-none transition-all text-[12px] font-bold text-gray-900 dark:text-gray-100"
                                     />
                                 </div>
                             </div>
@@ -209,7 +209,7 @@ const BranchForm = ({ onSubmit, initialData = null, onCancel }) => {
                         <button
                             type="button"
                             onClick={onCancel}
-                            className="text-[9px] font-black text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 uppercase tracking-[0.2em] transition-colors"
+                            className="text-[9px] font-black text-gray-400 hover:text-primary-600 dark:hover:text-primary-400 uppercase tracking-[0.2em] transition-colors"
                         >
                             Cancel
                         </button>

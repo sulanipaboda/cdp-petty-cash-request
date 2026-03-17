@@ -3,13 +3,26 @@ import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, Send, MessageSquare } from 'lucide-react';
 
-const WorkflowActionModal = ({ isOpen, onClose, onSubmit, title, placeholder }) => {
+const WorkflowActionModal = ({ isOpen, onClose, onSubmit, title, placeholder, viewOnly = false, content = '', imageUrl = null }) => {
     const [description, setDescription] = useState('');
+
+    // Update description if content changes (for view-only mode)
+    React.useEffect(() => {
+        if (viewOnly) {
+            setDescription(content);
+        } else {
+            setDescription('');
+        }
+    }, [viewOnly, content, isOpen]);
 
     if (!isOpen) return null;
 
     const handleSubmit = (e) => {
         e.preventDefault();
+        if (viewOnly) {
+            onClose();
+            return;
+        }
         onSubmit(description);
         setDescription('');
         onClose();
@@ -51,32 +64,70 @@ const WorkflowActionModal = ({ isOpen, onClose, onSubmit, title, placeholder }) 
                     <form onSubmit={handleSubmit} className="p-6 space-y-4">
                         <div className="space-y-2">
                             <label className="text-[10px] font-black text-gray-400 dark:text-gray-500 uppercase tracking-[0.2em] px-1">
-                                Add Description / Comments
+                                {viewOnly ? 'Submitted Message' : 'Add Description / Comments'}
                             </label>
                             <textarea
                                 value={description}
-                                onChange={(e) => setDescription(e.target.value)}
+                                onChange={(e) => !viewOnly && setDescription(e.target.value)}
                                 placeholder={placeholder || "Enter your comments here..."}
-                                className="w-full h-32 px-4 py-3 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-2xl focus:ring-2 focus:ring-primary-500 dark:focus:ring-primary-600 outline-none transition-all placeholder:text-gray-400 text-gray-900 dark:text-gray-100 font-medium resize-none shadow-inner"
-                                required
+                                className={`w-full h-24 px-4 py-3 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-2xl outline-none transition-all placeholder:text-gray-400 text-gray-900 dark:text-gray-100 font-medium resize-none shadow-inner ${viewOnly ? 'cursor-default opacity-80' : 'focus:ring-2 focus:ring-primary-500 dark:focus:ring-primary-600'}`}
+                                required={!viewOnly}
+                                readOnly={viewOnly}
                             />
                         </div>
 
+                        {imageUrl && (
+                            <div className="space-y-2">
+                                <label className="text-[10px] font-black text-gray-400 dark:text-gray-500 uppercase tracking-[0.2em] px-1">
+                                    Attachment / Receipt
+                                </label>
+                                <div className="relative group rounded-2xl overflow-hidden border border-gray-100 dark:border-gray-800">
+                                    <img 
+                                        src={imageUrl} 
+                                        alt="Receipt" 
+                                        className="w-full h-48 object-cover transition-transform duration-500 group-hover:scale-110"
+                                        onError={(e) => {
+                                            e.target.onerror = null;
+                                            e.target.src = 'https://placehold.co/600x400?text=Receipt+Not+Found';
+                                        }}
+                                    />
+                                    <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                                        <a 
+                                            href={imageUrl} 
+                                            target="_blank" 
+                                            rel="noopener noreferrer"
+                                            className="px-4 py-2 bg-white text-gray-900 rounded-xl text-[10px] font-black uppercase tracking-widest shadow-xl transform translate-y-2 group-hover:translate-y-0 transition-all"
+                                        >
+                                            View Full Image
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        )}
+
                         {/* Actions */}
                         <div className="flex gap-3 pt-2">
-                            <button
-                                type="button"
-                                onClick={onClose}
-                                className="flex-1 px-6 py-3 rounded-2xl text-[11px] font-black uppercase tracking-widest text-gray-500 dark:text-gray-400 border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800 transition-all font-bold"
-                            >
-                                Cancel
-                            </button>
+                            {!viewOnly && (
+                                <button
+                                    type="button"
+                                    onClick={onClose}
+                                    className="flex-1 px-6 py-3 rounded-2xl text-[11px] font-black uppercase tracking-widest text-gray-500 dark:text-gray-400 border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800 transition-all font-bold"
+                                >
+                                    Cancel
+                                </button>
+                            )}
                             <button
                                 type="submit"
-                                className="flex-1 px-6 py-3 rounded-2xl bg-primary-600 hover:bg-primary-700 text-white text-[11px] font-black uppercase tracking-widest shadow-lg shadow-primary-200 dark:shadow-none transition-all flex items-center justify-center gap-2"
+                                className={`flex-1 px-6 py-3 rounded-2xl bg-primary-600 hover:bg-primary-700 text-white text-[11px] font-black uppercase tracking-widest shadow-lg shadow-primary-200 dark:shadow-none transition-all flex items-center justify-center gap-2`}
                             >
-                                <Send className="h-4 w-4" />
-                                Submit
+                                {viewOnly ? (
+                                    <>Acknowledge</>
+                                ) : (
+                                    <>
+                                        <Send className="h-4 w-4" />
+                                        Submit
+                                    </>
+                                )}
                             </button>
                         </div>
                     </form>

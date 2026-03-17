@@ -38,7 +38,7 @@ const Departments = () => {
           onClick={() => handleToggleStatus(row.id)}
           className={`px-2.5 py-1 rounded-full text-xs font-bold uppercase tracking-wider transition-colors ${
             isActive 
-              ? 'bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400 hover:bg-green-200' 
+              ? 'bg-primary-100 dark:bg-primary-900/30 text-primary-700 dark:text-primary-400 hover:bg-primary-200' 
               : 'bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400 hover:bg-red-200'
           }`}
         >

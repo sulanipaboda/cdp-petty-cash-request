@@ -35,6 +35,9 @@ const PettyCashForm = () => {
         approvedBy: '',
         receiptFile: null,
         receiptFileName: '',
+        accountNumber: '',
+        bankName: '',
+        bankBranch: '',
     });
 
     const handleChange = (e) => {
@@ -108,6 +111,11 @@ const PettyCashForm = () => {
         const backendType = formData.requestType === 'Reimbursement' ? 'reimbursement' : 'new_purchase';
         data.append('type', backendType);
 
+        // Handle bank details
+        data.append('account_number', formData.accountNumber);
+        data.append('bank_name', formData.bankName);
+        data.append('bank_branch', formData.bankBranch);
+
         // Handle file upload
         if (formData.receiptFile) {
             data.append('receipt_image_path', formData.receiptFile);
@@ -131,6 +139,9 @@ const PettyCashForm = () => {
                 approvedBy: '',
                 receiptFile: null,
                 receiptFileName: '',
+                accountNumber: '',
+                bankName: '',
+                bankBranch: '',
             });
         } catch (error) {
             toast.error(error.message || 'Submission failed');
@@ -282,6 +293,43 @@ const PettyCashForm = () => {
                                     required
                                 />
                                 <span className="absolute right-0 bottom-2 text-[10px] font-black text-primary-600 uppercase tracking-widest">LKR</span>
+                            </div>
+                        </div>
+
+                        {/* Bank Details Section */}
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                            <div className="relative group mt-2">
+                                <input
+                                    type="text"
+                                    name="accountNumber"
+                                    value={formData.accountNumber}
+                                    onChange={handleChange}
+                                    placeholder="Account Number"
+                                    className="w-full pb-2 bg-transparent border-b border-gray-300 focus:border-primary-600 outline-none transition-all text-[13px] font-bold text-black placeholder:text-gray-500"
+                                    required
+                                />
+                            </div>
+                            <div className="relative group mt-2">
+                                <input
+                                    type="text"
+                                    name="bankName"
+                                    value={formData.bankName}
+                                    onChange={handleChange}
+                                    placeholder="Bank Name"
+                                    className="w-full pb-2 bg-transparent border-b border-gray-300 focus:border-primary-600 outline-none transition-all text-[13px] font-bold text-black placeholder:text-gray-500"
+                                    required
+                                />
+                            </div>
+                            <div className="relative group mt-2">
+                                <input
+                                    type="text"
+                                    name="bankBranch"
+                                    value={formData.bankBranch}
+                                    onChange={handleChange}
+                                    placeholder="Bank Branch"
+                                    className="w-full pb-2 bg-transparent border-b border-gray-300 focus:border-primary-600 outline-none transition-all text-[13px] font-bold text-black placeholder:text-gray-500"
+                                    required
+                                />
                             </div>
                         </div>
 

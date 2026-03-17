@@ -76,7 +76,7 @@ const RoleForm = ({ onSubmit, initialData = null, onCancel }) => {
                 className="bg-white dark:bg-gray-900 rounded-[2.5rem] shadow-[0_40px_80px_-20px_rgba(0,0,0,0.08)] dark:shadow-none border border-gray-100 dark:border-gray-800 overflow-hidden"
             >
                 {/* Hero Header */}
-                <div className="relative bg-gray-900 dark:bg-gray-800 px-6 py-6 overflow-hidden">
+                <div className="relative bg-primary-600 px-6 py-6 overflow-hidden">
                     <div className="absolute top-0 right-0 -translate-y-1/4 translate-x-1/4 opacity-10">
                         <Shield className="h-40 w-40 text-white" />
                     </div>
@@ -88,13 +88,12 @@ const RoleForm = ({ onSubmit, initialData = null, onCancel }) => {
                             <h1 className="text-lg font-black text-white uppercase tracking-tighter leading-none">
                                 {initialData ? 'Refine Role' : 'Role Initialization'}
                             </h1>
-                            <p className="text-gray-400 mt-1 text-[9px] font-medium opacity-80 uppercase tracking-widest leading-none">
+                            <p className="text-primary-50 mt-1 text-[9px] font-medium opacity-80 uppercase tracking-widest leading-none">
                                 Permissions & Access Control
                             </p>
                         </div>
                     </div>
                 </div>
-
                 <form onSubmit={handleSubmit} className="p-6 space-y-6">
                     {/* Section 01: Role Blueprint */}
                     <div className="relative">
@@ -108,14 +107,14 @@ const RoleForm = ({ onSubmit, initialData = null, onCancel }) => {
                             <div className="space-y-2">
                                 <label className="text-[9px] font-black text-gray-400 dark:text-gray-500 uppercase tracking-widest pl-1">Role Name</label>
                                 <div className="relative group">
-                                    <Key className="absolute left-5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-gray-400 group-focus-within:text-primary-500 transition-colors" />
+                                    <Key className="absolute left-5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-gray-400 group-focus-within:text-primary-600 transition-colors" />
                                     <input
                                         type="text"
                                         name="name"
                                         value={formData.name}
                                         onChange={handleChange}
                                         placeholder="Role Name"
-                                        className="w-full pl-12 pr-6 py-2.5 bg-gray-50/50 dark:bg-gray-800/50 border-2 border-transparent focus:border-primary-500/20 focus:bg-white dark:focus:bg-gray-800 rounded-xl outline-none transition-all text-[12px] font-bold text-gray-900 dark:text-gray-100"
+                                        className="w-full pl-12 pr-6 py-2.5 bg-gray-50/50 dark:bg-gray-800/50 border-2 border-transparent focus:border-primary-600/20 focus:bg-white dark:focus:bg-gray-800 rounded-xl outline-none transition-all text-[12px] font-bold text-gray-900 dark:text-gray-100"
                                         required
                                     />
                                 </div>
@@ -125,14 +124,14 @@ const RoleForm = ({ onSubmit, initialData = null, onCancel }) => {
                                     Description <span className="text-gray-300 dark:text-gray-600 normal-case font-normal">(optional)</span>
                                 </label>
                                 <div className="relative group">
-                                    <Activity className="absolute left-5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-gray-400 group-focus-within:text-primary-500 transition-colors" />
+                                    <Activity className="absolute left-5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-gray-400 group-focus-within:text-primary-600 transition-colors" />
                                     <input
                                         type="text"
                                         name="description"
                                         value={formData.description}
                                         onChange={handleChange}
                                         placeholder="Role description..."
-                                        className="w-full pl-12 pr-6 py-2.5 bg-gray-50/50 dark:bg-gray-800/50 border-2 border-transparent focus:border-primary-500/20 focus:bg-white dark:focus:bg-gray-800 rounded-xl outline-none transition-all text-[12px] font-bold text-gray-900 dark:text-gray-100"
+                                        className="w-full pl-12 pr-6 py-2.5 bg-gray-50/50 dark:bg-gray-800/50 border-2 border-transparent focus:border-primary-600/20 focus:bg-white dark:focus:bg-gray-800 rounded-xl outline-none transition-all text-[12px] font-bold text-gray-900 dark:text-gray-100"
                                     />
                                 </div>
                             </div>
@@ -148,23 +147,23 @@ const RoleForm = ({ onSubmit, initialData = null, onCancel }) => {
                         </div>
 
                         <div className="flex items-center justify-between mb-5 px-1">
-                             <div className="flex items-center gap-2">
-                                <div className="h-1.5 w-1.5 rounded-full bg-primary-500"></div>
+                            <div className="flex items-center gap-2">
+                                <div className="h-1.5 w-1.5 rounded-full bg-primary-600"></div>
                                 <span className="text-[9px] font-black text-gray-900 dark:text-white uppercase tracking-widest">
                                     Access Controls
-                                    <span className="ml-2 text-primary-500 font-bold">({formData.permissions.length}/{allPermissionIds.length})</span>
+                                    <span className="ml-2 text-primary-600 font-bold">({formData.permissions.length}/{allPermissionIds.length})</span>
                                 </span>
-                             </div>
-                             <button
+                            </div>
+                            <button
                                 type="button"
                                 onClick={handleSelectAll}
                                 className="flex items-center gap-2 group"
-                             >
-                                <span className="text-[8px] font-black text-gray-400 group-hover:text-primary-500 uppercase tracking-widest transition-colors">Select All</span>
+                            >
+                                <span className="text-[8px] font-black text-gray-400 group-hover:text-primary-600 uppercase tracking-widest transition-colors">Select All</span>
                                 <div className={`p-0.5 rounded transition-colors ${isAllSelected ? 'bg-primary-600 text-white' : 'bg-gray-100 dark:bg-gray-800 text-gray-400'}`}>
                                     {isAllSelected ? <CheckSquare className="h-3 w-3" /> : <Square className="h-3 w-3" />}
                                 </div>
-                             </button>
+                            </button>
                         </div>
 
                         {allPermissions.length === 0 ? (
@@ -176,14 +175,14 @@ const RoleForm = ({ onSubmit, initialData = null, onCancel }) => {
                                 {Object.entries(groupedPermissions).map(([group, perms]) => (
                                     <div key={group} className="space-y-4">
                                         <h3 className="text-[9px] font-black text-gray-800 dark:text-gray-200 uppercase tracking-[0.2em] flex items-center gap-2">
-                                            <span className="h-1 w-1 rounded-full bg-primary-500"></span>
+                                            <span className="h-1 w-1 rounded-full bg-primary-600"></span>
                                             {group}
                                         </h3>
                                         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
                                             {perms.map((perm) => (
-                                                <label 
-                                                    key={perm.id} 
-                                                    className={`flex items-center gap-3 p-2.5 rounded-xl border cursor-pointer transition-all duration-300 ${formData.permissions.includes(perm.id) ? 'bg-primary-50/30 dark:bg-primary-900/10 border-primary-500/20' : 'bg-transparent border-gray-50 dark:border-gray-800/50 hover:border-primary-500/10'}`}
+                                                <label
+                                                    key={perm.id}
+                                                    className={`flex items-center gap-3 p-2.5 rounded-xl border cursor-pointer transition-all duration-300 ${formData.permissions.includes(perm.id) ? 'bg-primary-50/30 dark:bg-primary-900/10 border-primary-600/20' : 'bg-transparent border-gray-50 dark:border-gray-800/50 hover:border-primary-600/10'}`}
                                                 >
                                                     <input
                                                         type="checkbox"
@@ -211,7 +210,7 @@ const RoleForm = ({ onSubmit, initialData = null, onCancel }) => {
                         <button
                             type="button"
                             onClick={onCancel}
-                            className="text-[9px] font-black text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 uppercase tracking-[0.2em] transition-colors"
+                            className="text-[9px] font-black text-gray-400 hover:text-primary-600 dark:hover:text-primary-400 uppercase tracking-[0.2em] transition-colors"
                         >
                             Cancel
                         </button>

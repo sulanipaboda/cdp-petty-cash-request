@@ -65,7 +65,7 @@ const DataTable = ({
   return (
     <div className="bg-white dark:bg-gray-900 rounded-xl shadow-sm border border-gray-200 dark:border-gray-800 overflow-hidden transition-colors duration-300">
       {/* Table Header */}
-      <div className="p-6 border-b border-gray-100 dark:border-gray-800">
+      <div className="px-6 py-4 border-b border-gray-100 dark:border-gray-800">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div>
             <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100">{title}</h2>
@@ -138,16 +138,16 @@ const DataTable = ({
           <thead>
             <tr className="bg-gray-50/50 dark:bg-gray-800/50">
               {columns.map((col, idx) => (
-                <th key={idx} className="px-6 py-4 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                <th key={idx} className="px-4 py-3 text-[9px] font-black text-gray-500 dark:text-gray-400 uppercase tracking-widest">
                   {col.header}
                 </th>
               ))}
-              <th className="px-6 py-4 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider text-right">
+              <th className="px-4 py-3 text-[9px] font-black text-gray-500 dark:text-gray-400 uppercase tracking-widest text-right">
                 Actions
               </th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-gray-100 dark:divide-gray-800 text-sm">
+          <tbody className="divide-y divide-gray-100 dark:divide-gray-800 text-xs text-[11px]">
             <AnimatePresence mode='wait'>
               {paginatedData.length > 0 ? (
                 paginatedData.map((item, rowIdx) => (
@@ -160,32 +160,32 @@ const DataTable = ({
                     className="hover:bg-gray-50/80 dark:hover:bg-gray-800/50 transition-colors"
                   >
                     {columns.map((col, colIdx) => (
-                      <td key={colIdx} className="px-6 py-4 text-gray-700 dark:text-gray-300 font-medium">
+                      <td key={colIdx} className="px-4 py-3 text-gray-700 dark:text-gray-300 font-medium">
                         {col.render ? col.render(item[col.key], item) : item[col.key]}
                       </td>
                     ))}
-                    <td className="px-6 py-4 text-right">
+                    <td className="px-4 py-3 text-right">
                       <div className="flex items-center justify-end gap-2">
                         <button 
                           onClick={() => onView && onView(item)}
-                          className="p-1.5 text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-md transition-colors"
+                          className="p-1 text-primary-600 dark:text-primary-400 hover:bg-primary-50 dark:hover:bg-primary-900/20 rounded-md transition-colors"
                           title="View"
                         >
-                          <Eye className="h-4 w-4" />
+                          <Eye className="h-3.5 w-3.5" />
                         </button>
                         <button 
                           onClick={() => onEdit && onEdit(item)}
-                          className="p-1.5 text-amber-600 dark:text-amber-400 hover:bg-amber-50 dark:hover:bg-amber-900/20 rounded-md transition-colors"
+                          className="p-1 text-primary-600 dark:text-primary-400 hover:bg-primary-50 dark:hover:bg-primary-900/20 rounded-md transition-colors"
                           title="Edit"
                         >
-                          <Edit2 className="h-4 w-4" />
+                          <Edit2 className="h-3.5 w-3.5" />
                         </button>
                         <button 
                           onClick={() => onDelete && onDelete(item.id)}
-                          className="p-1.5 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-md transition-colors"
+                          className="p-1 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-md transition-colors"
                           title="Delete"
                         >
-                          <Trash2 className="h-4 w-4" />
+                          <Trash2 className="h-3.5 w-3.5" />
                         </button>
                       </div>
                     </td>
@@ -207,7 +207,7 @@ const DataTable = ({
       </div>
 
       {/* Pagination Footer */}
-      <div className="p-6 border-t border-gray-100 dark:border-gray-800 flex flex-col md:flex-row md:items-center justify-between gap-4">
+      <div className="px-6 py-4 border-t border-gray-100 dark:border-gray-800 flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div className="flex items-center gap-4">
           <span className="text-sm text-gray-500 dark:text-gray-400">Rows per page</span>
           <select 
