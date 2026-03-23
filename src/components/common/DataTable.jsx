@@ -166,27 +166,33 @@ const DataTable = ({
                     ))}
                     <td className="px-4 py-3 text-right">
                       <div className="flex items-center justify-end gap-2">
-                        <button 
-                          onClick={() => onView && onView(item)}
-                          className="p-1 text-primary-600 dark:text-primary-400 hover:bg-primary-50 dark:hover:bg-primary-900/20 rounded-md transition-colors"
-                          title="View"
-                        >
-                          <Eye className="h-3.5 w-3.5" />
-                        </button>
-                        <button 
-                          onClick={() => onEdit && onEdit(item)}
-                          className="p-1 text-primary-600 dark:text-primary-400 hover:bg-primary-50 dark:hover:bg-primary-900/20 rounded-md transition-colors"
-                          title="Edit"
-                        >
-                          <Edit2 className="h-3.5 w-3.5" />
-                        </button>
-                        <button 
-                          onClick={() => onDelete && onDelete(item.id)}
-                          className="p-1 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-md transition-colors"
-                          title="Delete"
-                        >
-                          <Trash2 className="h-3.5 w-3.5" />
-                        </button>
+                        {onView && (
+                          <button 
+                            onClick={() => onView(item)}
+                            className="p-1 text-primary-600 dark:text-primary-400 hover:bg-primary-50 dark:hover:bg-primary-900/20 rounded-md transition-colors"
+                            title="View"
+                          >
+                            <Eye className="h-3.5 w-3.5" />
+                          </button>
+                        )}
+                        {onEdit && (
+                          <button 
+                            onClick={() => onEdit(item)}
+                            className="p-1 text-primary-600 dark:text-primary-400 hover:bg-primary-50 dark:hover:bg-primary-900/20 rounded-md transition-colors"
+                            title="Edit"
+                          >
+                            <Edit2 className="h-3.5 w-3.5" />
+                          </button>
+                        )}
+                        {onDelete && (
+                          <button 
+                            onClick={() => onDelete(item.id)}
+                            className="p-1 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-md transition-colors"
+                            title="Delete"
+                          >
+                            <Trash2 className="h-3.5 w-3.5" />
+                          </button>
+                        )}
                       </div>
                     </td>
                   </motion.tr>

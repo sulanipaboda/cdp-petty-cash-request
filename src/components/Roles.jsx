@@ -17,6 +17,7 @@ const Roles = () => {
 
   const [view, setView] = useState('list'); // 'list' or 'form'
   const [selectedRole, setSelectedRole] = useState(null);
+  const [isReadOnly, setIsReadOnly] = useState(false);
 
   React.useEffect(() => {
     dispatch(fetchRoles());
@@ -28,11 +29,19 @@ const Roles = () => {
 
   const handleAdd = () => {
     setSelectedRole(null);
+    setIsReadOnly(false);
     setView('form');
   };
 
   const handleEdit = (role) => {
     setSelectedRole(role);
+    setIsReadOnly(false);
+    setView('form');
+  };
+
+  const handleView = (role) => {
+    setSelectedRole(role);
+    setIsReadOnly(true);
     setView('form');
   };
 
@@ -68,10 +77,10 @@ const Roles = () => {
         <div className="flex items-center justify-between mb-8 pb-4 border-b border-gray-100 dark:border-gray-800 text-primary-600">
           <div>
             <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100 uppercase tracking-tight">
-              {selectedRole ? 'Edit Role' : 'Create New Role'}
+              {isReadOnly ? 'View Role' : (selectedRole ? 'Edit Role' : 'Create New Role')}
             </h1>
             <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
-              Configure role permissions and identity settings below.
+              {isReadOnly ? 'View Mode' : 'Configure role permissions and identity settings below.'}
             </p>
           </div>
           <button
@@ -87,6 +96,7 @@ const Roles = () => {
           onSubmit={handleSubmit}
           initialData={selectedRole}
           onCancel={() => setView('list')}
+          isReadOnly={isReadOnly}
         />
       </div>
     );
@@ -108,6 +118,7 @@ const Roles = () => {
         title="Roles List"
         data={roles}
         columns={columns}
+        onView={handleView}
         onEdit={handleEdit}
         onDelete={handleDelete}
         searchPlaceholder="Search by role name or description..."

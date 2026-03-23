@@ -18,6 +18,7 @@ const Users = () => {
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedUser, setSelectedUser] = useState(null);
+  const [isReadOnly, setIsReadOnly] = useState(false);
 
   React.useEffect(() => {
     dispatch(fetchUsers());
@@ -53,11 +54,19 @@ const Users = () => {
 
   const handleAdd = () => {
     setSelectedUser(null);
+    setIsReadOnly(false);
     setIsModalOpen(true);
   };
 
   const handleEdit = (user) => {
     setSelectedUser(user);
+    setIsReadOnly(false);
+    setIsModalOpen(true);
+  };
+
+  const handleView = (user) => {
+    setSelectedUser(user);
+    setIsReadOnly(true);
     setIsModalOpen(true);
   };
 
@@ -113,7 +122,7 @@ const Users = () => {
         data={users}
         columns={columns}
         onEdit={handleEdit}
-        onView={(user) => handleToggleStatus(user.id)}
+        onView={handleView}
         onDelete={handleDelete}
         searchPlaceholder="Search by name, email or role..."
       />
@@ -122,11 +131,12 @@ const Users = () => {
       <Modal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
-        title={selectedUser ? 'Edit User' : 'Add New User'}
+        title={isReadOnly ? 'User Details' : selectedUser ? 'Edit User' : 'Add New User'}
       >
         <UserForm
           onSubmit={handleSubmit}
           initialData={selectedUser}
+          isReadOnly={isReadOnly}
           onCancel={() => setIsModalOpen(false)}
         />
       </Modal>

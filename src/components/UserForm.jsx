@@ -4,7 +4,7 @@ import { motion } from 'framer-motion';
 import { User, Mail, Shield, Activity, Save, Lock, AtSign } from 'lucide-react';
 import { useSelector } from 'react-redux';
 
-const UserForm = ({ onSubmit, initialData = null, onCancel }) => {
+const UserForm = ({ onSubmit, initialData = null, onCancel, isReadOnly = false }) => {
     const isEditing = !!initialData;
 
     const [formData, setFormData] = useState({
@@ -78,10 +78,10 @@ const UserForm = ({ onSubmit, initialData = null, onCancel }) => {
                         </div>
                         <div>
                             <h1 className="text-lg font-black text-white uppercase tracking-tighter leading-none">
-                                {isEditing ? 'Update Profile' : 'New Identity'}
+                                {isReadOnly ? 'View Profile' : isEditing ? 'Update Profile' : 'New Identity'}
                             </h1>
                             <p className="text-primary-100 mt-1 text-[9px] font-medium opacity-80 uppercase tracking-widest leading-none">
-                                User Management Console
+                                {isReadOnly ? 'View Mode' : 'User Management Console'}
                             </p>
                         </div>
                     </div>
@@ -107,8 +107,9 @@ const UserForm = ({ onSubmit, initialData = null, onCancel }) => {
                                         value={formData.name}
                                         onChange={handleChange}
                                         placeholder="Full Name"
-                                        className="w-full pl-12 pr-6 py-2.5 bg-gray-50/50 dark:bg-gray-800/50 border-2 border-transparent focus:border-primary-500/20 focus:bg-white dark:focus:bg-gray-800 rounded-xl outline-none transition-all text-[12px] font-bold text-gray-900 dark:text-gray-100"
+                                        className="w-full pl-12 pr-6 py-2.5 bg-gray-50/50 dark:bg-gray-800/50 border-2 border-transparent focus:border-primary-500/20 focus:bg-white dark:focus:bg-gray-800 rounded-xl outline-none transition-all text-[12px] font-bold text-gray-900 dark:text-gray-100 disabled:opacity-70 disabled:cursor-not-allowed"
                                         required
+                                        disabled={isReadOnly}
                                     />
                                 </div>
                             </div>
@@ -123,8 +124,9 @@ const UserForm = ({ onSubmit, initialData = null, onCancel }) => {
                                         value={formData.username}
                                         onChange={handleChange}
                                         placeholder="Username (unique)"
-                                        className="w-full pl-12 pr-6 py-2.5 bg-gray-50/50 dark:bg-gray-800/50 border-2 border-transparent focus:border-primary-500/20 focus:bg-white dark:focus:bg-gray-800 rounded-xl outline-none transition-all text-[12px] font-bold text-gray-900 dark:text-gray-100"
+                                        className="w-full pl-12 pr-6 py-2.5 bg-gray-50/50 dark:bg-gray-800/50 border-2 border-transparent focus:border-primary-500/20 focus:bg-white dark:focus:bg-gray-800 rounded-xl outline-none transition-all text-[12px] font-bold text-gray-900 dark:text-gray-100 disabled:opacity-70 disabled:cursor-not-allowed"
                                         required
+                                        disabled={isReadOnly}
                                     />
                                 </div>
                             </div>
@@ -139,8 +141,9 @@ const UserForm = ({ onSubmit, initialData = null, onCancel }) => {
                                         value={formData.email}
                                         onChange={handleChange}
                                         placeholder="Email"
-                                        className="w-full pl-12 pr-6 py-2.5 bg-gray-50/50 dark:bg-gray-800/50 border-2 border-transparent focus:border-primary-500/20 focus:bg-white dark:focus:bg-gray-800 rounded-xl outline-none transition-all text-[12px] font-bold text-gray-900 dark:text-gray-100"
+                                        className="w-full pl-12 pr-6 py-2.5 bg-gray-50/50 dark:bg-gray-800/50 border-2 border-transparent focus:border-primary-500/20 focus:bg-white dark:focus:bg-gray-800 rounded-xl outline-none transition-all text-[12px] font-bold text-gray-900 dark:text-gray-100 disabled:opacity-70 disabled:cursor-not-allowed"
                                         required
+                                        disabled={isReadOnly}
                                     />
                                 </div>
                             </div>
@@ -157,9 +160,10 @@ const UserForm = ({ onSubmit, initialData = null, onCancel }) => {
                                         value={formData.password}
                                         onChange={handleChange}
                                         placeholder={isEditing ? '••••••••' : 'Min. 8 characters'}
-                                        className="w-full pl-12 pr-6 py-2.5 bg-gray-50/50 dark:bg-gray-800/50 border-2 border-transparent focus:border-primary-500/20 focus:bg-white dark:focus:bg-gray-800 rounded-xl outline-none transition-all text-[12px] font-bold text-gray-900 dark:text-gray-100"
+                                        className="w-full pl-12 pr-6 py-2.5 bg-gray-50/50 dark:bg-gray-800/50 border-2 border-transparent focus:border-primary-500/20 focus:bg-white dark:focus:bg-gray-800 rounded-xl outline-none transition-all text-[12px] font-bold text-gray-900 dark:text-gray-100 disabled:opacity-70 disabled:cursor-not-allowed"
                                         required={!isEditing}
                                         minLength={8}
+                                        disabled={isReadOnly}
                                     />
                                 </div>
                             </div>
@@ -183,8 +187,9 @@ const UserForm = ({ onSubmit, initialData = null, onCancel }) => {
                                         name="role"
                                         value={formData.role}
                                         onChange={handleChange}
-                                        className="w-full pl-12 pr-6 py-2.5 bg-gray-50/50 dark:bg-gray-800/50 border-2 border-transparent focus:border-primary-500/20 focus:bg-white dark:focus:bg-gray-800 rounded-xl outline-none transition-all text-[12px] font-bold text-gray-900 dark:text-gray-100 appearance-none"
+                                        className="w-full pl-12 pr-6 py-2.5 bg-gray-50/50 dark:bg-gray-800/50 border-2 border-transparent focus:border-primary-500/20 focus:bg-white dark:focus:bg-gray-800 rounded-xl outline-none transition-all text-[12px] font-bold text-gray-900 dark:text-gray-100 appearance-none disabled:opacity-70 disabled:cursor-not-allowed"
                                         required
+                                        disabled={isReadOnly}
                                     >
                                         <option value="">Select Role</option>
                                         {roles.map(role => (
@@ -202,8 +207,9 @@ const UserForm = ({ onSubmit, initialData = null, onCancel }) => {
                                         name="is_active"
                                         value={formData.is_active}
                                         onChange={(e) => setFormData(prev => ({ ...prev, is_active: e.target.value === 'true' }))}
-                                        className="w-full pl-12 pr-6 py-2.5 bg-gray-50/50 dark:bg-gray-800/50 border-2 border-transparent focus:border-primary-500/20 focus:bg-white dark:focus:bg-gray-800 rounded-xl outline-none transition-all text-[12px] font-bold text-gray-900 dark:text-gray-100 appearance-none"
+                                        className="w-full pl-12 pr-6 py-2.5 bg-gray-50/50 dark:bg-gray-800/50 border-2 border-transparent focus:border-primary-500/20 focus:bg-white dark:focus:bg-gray-800 rounded-xl outline-none transition-all text-[12px] font-bold text-gray-900 dark:text-gray-100 appearance-none disabled:opacity-70 disabled:cursor-not-allowed"
                                         required
+                                        disabled={isReadOnly}
                                     >
                                         <option value="true">Active</option>
                                         <option value="false">Inactive</option>
@@ -234,6 +240,7 @@ const UserForm = ({ onSubmit, initialData = null, onCancel }) => {
                                         checked={formData.notify_petty_cash_request}
                                         onChange={handleChange}
                                         className="sr-only peer" 
+                                        disabled={isReadOnly}
                                     />
                                     <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-primary-600"></div>
                                 </label>
@@ -251,6 +258,7 @@ const UserForm = ({ onSubmit, initialData = null, onCancel }) => {
                                         checked={formData.notify_petty_cash_payment}
                                         onChange={handleChange}
                                         className="sr-only peer" 
+                                        disabled={isReadOnly}
                                     />
                                     <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-primary-600"></div>
                                 </label>
@@ -263,19 +271,21 @@ const UserForm = ({ onSubmit, initialData = null, onCancel }) => {
                         <button
                             type="button"
                             onClick={onCancel}
-                            className="text-[9px] font-black text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 uppercase tracking-[0.2em] transition-colors"
+                            className={`text-[9px] font-black uppercase tracking-[0.2em] transition-colors ${isReadOnly ? 'bg-gray-100 dark:bg-gray-800 text-gray-600 px-6 py-2.5 rounded-xl hover:bg-gray-200' : 'text-gray-400 hover:text-gray-900 dark:hover:text-gray-100'}`}
                         >
-                            Discard
+                            {isReadOnly ? 'Close' : 'Discard'}
                         </button>
-                        <motion.button
-                            type="submit"
-                            whileHover={{ scale: 1.02, translateY: -1 }}
-                            whileTap={{ scale: 0.98 }}
-                            className="bg-primary-600 text-white px-6 py-2.5 rounded-xl font-black text-[9px] uppercase tracking-[0.2em] shadow-lg shadow-primary-200 dark:shadow-none hover:bg-primary-700 transition-all flex items-center gap-2"
-                        >
-                            <Save className="h-3.5 w-3.5" />
-                            {isEditing ? 'Sync' : 'Create'}
-                        </motion.button>
+                        {!isReadOnly && (
+                            <motion.button
+                                type="submit"
+                                whileHover={{ scale: 1.02, translateY: -1 }}
+                                whileTap={{ scale: 0.98 }}
+                                className="bg-primary-600 text-white px-6 py-2.5 rounded-xl font-black text-[9px] uppercase tracking-[0.2em] shadow-lg shadow-primary-200 dark:shadow-none hover:bg-primary-700 transition-all flex items-center gap-2"
+                            >
+                                <Save className="h-3.5 w-3.5" />
+                                {isEditing ? 'Sync' : 'Create'}
+                            </motion.button>
+                        )}
                     </div>
                 </form>
             </motion.div>

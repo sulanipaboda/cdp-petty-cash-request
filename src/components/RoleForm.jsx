@@ -4,7 +4,7 @@ import { motion } from 'framer-motion';
 import { useSelector } from 'react-redux';
 import { Shield, Key, Activity, Save, CheckSquare, Square } from 'lucide-react';
 
-const RoleForm = ({ onSubmit, initialData = null, onCancel }) => {
+const RoleForm = ({ onSubmit, initialData = null, onCancel, isReadOnly = false }) => {
     const [formData, setFormData] = useState({
         name: '',
         description: '',
@@ -55,6 +55,7 @@ const RoleForm = ({ onSubmit, initialData = null, onCancel }) => {
     const isAllSelected = allPermissionIds.length > 0 && formData.permissions.length === allPermissionIds.length;
 
     const handleSelectAll = () => {
+        if (isReadOnly) return;
         if (isAllSelected) {
             setFormData(prev => ({ ...prev, permissions: [] }));
         } else {
@@ -86,10 +87,10 @@ const RoleForm = ({ onSubmit, initialData = null, onCancel }) => {
                         </div>
                         <div>
                             <h1 className="text-lg font-black text-white uppercase tracking-tighter leading-none">
-                                {initialData ? 'Refine Role' : 'Role Initialization'}
+                                {isReadOnly ? 'View Role' : (initialData ? 'Refine Role' : 'Role Initialization')}
                             </h1>
                             <p className="text-primary-50 mt-1 text-[9px] font-medium opacity-80 uppercase tracking-widest leading-none">
-                                Permissions & Access Control
+                                {isReadOnly ? 'View Mode' : 'Permissions & Access Control'}
                             </p>
                         </div>
                     </div>
@@ -114,8 +115,9 @@ const RoleForm = ({ onSubmit, initialData = null, onCancel }) => {
                                         value={formData.name}
                                         onChange={handleChange}
                                         placeholder="Role Name"
-                                        className="w-full pl-12 pr-6 py-2.5 bg-gray-50/50 dark:bg-gray-800/50 border-2 border-transparent focus:border-primary-600/20 focus:bg-white dark:focus:bg-gray-800 rounded-xl outline-none transition-all text-[12px] font-bold text-gray-900 dark:text-gray-100"
+                                        className={`w-full pl-12 pr-6 py-2.5 bg-gray-50/50 dark:bg-gray-800/50 border-2 border-transparent focus:border-primary-600/20 focus:bg-white dark:focus:bg-gray-800 rounded-xl outline-none transition-all text-[12px] font-bold text-gray-900 dark:text-gray-100 ${isReadOnly ? 'opacity-70 cursor-not-allowed' : ''}`}
                                         required
+                                        disabled={isReadOnly}
                                     />
                                 </div>
                             </div>
@@ -131,7 +133,8 @@ const RoleForm = ({ onSubmit, initialData = null, onCancel }) => {
                                         value={formData.description}
                                         onChange={handleChange}
                                         placeholder="Role description..."
-                                        className="w-full pl-12 pr-6 py-2.5 bg-gray-50/50 dark:bg-gray-800/50 border-2 border-transparent focus:border-primary-600/20 focus:bg-white dark:focus:bg-gray-800 rounded-xl outline-none transition-all text-[12px] font-bold text-gray-900 dark:text-gray-100"
+                                        className={`w-full pl-12 pr-6 py-2.5 bg-gray-50/50 dark:bg-gray-800/50 border-2 border-transparent focus:border-primary-600/20 focus:bg-white dark:focus:bg-gray-800 rounded-xl outline-none transition-all text-[12px] font-bold text-gray-900 dark:text-gray-100 ${isReadOnly ? 'opacity-70 cursor-not-allowed' : ''}`}
+                                        disabled={isReadOnly}
                                     />
                                 </div>
                             </div>
@@ -159,7 +162,7 @@ const RoleForm = ({ onSubmit, initialData = null, onCancel }) => {
                                 onClick={handleSelectAll}
                                 className="flex items-center gap-2 group"
                             >
-                                <span className="text-[8px] font-black text-gray-400 group-hover:text-primary-600 uppercase tracking-widest transition-colors">Select All</span>
+                                <span className={`text-[8px] font-black group-hover:text-primary-600 uppercase tracking-widest transition-colors ${isReadOnly ? 'text-gray-300 pointer-events-none' : 'text-gray-400'}`}>Select All</span>
                                 <div className={`p-0.5 rounded transition-colors ${isAllSelected ? 'bg-primary-600 text-white' : 'bg-gray-100 dark:bg-gray-800 text-gray-400'}`}>
                                     {isAllSelected ? <CheckSquare className="h-3 w-3" /> : <Square className="h-3 w-3" />}
                                 </div>
@@ -187,8 +190,9 @@ const RoleForm = ({ onSubmit, initialData = null, onCancel }) => {
                                                     <input
                                                         type="checkbox"
                                                         checked={formData.permissions.includes(perm.id)}
-                                                        onChange={() => handlePermissionChange(perm.id)}
+                                                        onChange={() => !isReadOnly && handlePermissionChange(perm.id)}
                                                         className="sr-only"
+                                                        disabled={isReadOnly}
                                                     />
                                                     <div className={`p-1 rounded transition-all flex-shrink-0 ${formData.permissions.includes(perm.id) ? 'bg-primary-600 text-white' : 'bg-gray-100 dark:bg-gray-800 text-transparent'}`}>
                                                         <CheckSquare className="h-2.5 w-2.5" />
@@ -210,19 +214,21 @@ const RoleForm = ({ onSubmit, initialData = null, onCancel }) => {
                         <button
                             type="button"
                             onClick={onCancel}
-                            className="text-[9px] font-black text-gray-400 hover:text-primary-600 dark:hover:text-primary-400 uppercase tracking-[0.2em] transition-colors"
+                            className={`text-[9px] font-black uppercase tracking-[0.2em] transition-colors ${isReadOnly ? 'bg-gray-100 dark:bg-gray-800 text-gray-600 px-6 py-2.5 rounded-xl hover:bg-gray-200 dark:hover:bg-gray-700' : 'text-gray-400 hover:text-primary-600 dark:hover:text-primary-400'}`}
                         >
-                            Cancel
+                            {isReadOnly ? 'Close' : 'Cancel'}
                         </button>
-                        <motion.button
-                            type="submit"
-                            whileHover={{ scale: 1.02, translateY: -1 }}
-                            whileTap={{ scale: 0.98 }}
-                            className="bg-primary-600 text-white px-6 py-2.5 rounded-xl font-black text-[9px] uppercase tracking-[0.2em] shadow-lg shadow-primary-200 dark:shadow-none hover:bg-primary-700 transition-all flex items-center gap-2"
-                        >
-                            <Save className="h-3.5 w-3.5" />
-                            {initialData ? 'Sync' : 'Initialize'}
-                        </motion.button>
+                        {!isReadOnly && (
+                            <motion.button
+                                type="submit"
+                                whileHover={{ scale: 1.02, translateY: -1 }}
+                                whileTap={{ scale: 0.98 }}
+                                className="bg-primary-600 text-white px-6 py-2.5 rounded-xl font-black text-[9px] uppercase tracking-[0.2em] shadow-lg shadow-primary-200 dark:shadow-none hover:bg-primary-700 transition-all flex items-center gap-2"
+                            >
+                                <Save className="h-3.5 w-3.5" />
+                                {initialData ? 'Sync' : 'Initialize'}
+                            </motion.button>
+                        )}
                     </div>
                 </form>
             </motion.div>

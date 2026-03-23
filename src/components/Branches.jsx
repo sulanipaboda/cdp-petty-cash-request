@@ -18,6 +18,7 @@ const Branches = () => {
 
   const [view, setView] = useState('list'); // 'list' or 'form'
   const [selectedBranch, setSelectedBranch] = useState(null);
+  const [isReadOnly, setIsReadOnly] = useState(false);
 
   React.useEffect(() => {
     dispatch(fetchBranches());
@@ -56,11 +57,19 @@ const Branches = () => {
 
   const handleAdd = () => {
     setSelectedBranch(null);
+    setIsReadOnly(false);
     setView('form');
   };
 
   const handleEdit = (branch) => {
     setSelectedBranch(branch);
+    setIsReadOnly(false);
+    setView('form');
+  };
+
+  const handleView = (branch) => {
+    setSelectedBranch(branch);
+    setIsReadOnly(true);
     setView('form');
   };
 
@@ -96,10 +105,10 @@ const Branches = () => {
         <div className="flex items-center justify-between mb-8 pb-4 border-b border-gray-100 dark:border-gray-800 text-primary-600">
           <div>
             <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100 uppercase tracking-tight">
-              {selectedBranch ? 'Edit Branch' : 'Create New Branch'}
+              {isReadOnly ? 'Branch Details' : selectedBranch ? 'Edit Branch' : 'Create New Branch'}
             </h1>
             <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
-              Configure branch details and location settings below.
+              {isReadOnly ? 'View Mode' : 'Configure branch details and location settings below.'}
             </p>
           </div>
           <button
@@ -114,6 +123,7 @@ const Branches = () => {
         <BranchForm
           onSubmit={handleSubmit}
           initialData={selectedBranch}
+          isReadOnly={isReadOnly}
           onCancel={() => setView('list')}
         />
       </div>
@@ -137,6 +147,7 @@ const Branches = () => {
         data={branches}
         columns={columns}
         onEdit={handleEdit}
+        onView={handleView}
         onDelete={handleDelete}
         searchPlaceholder="Search branches by name, code or city..."
       />

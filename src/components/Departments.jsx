@@ -20,6 +20,7 @@ const Departments = () => {
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedDepartment, setSelectedDepartment] = useState(null);
+  const [isReadOnly, setIsReadOnly] = useState(false);
 
   React.useEffect(() => {
     dispatch(fetchDepartments());
@@ -59,11 +60,19 @@ const Departments = () => {
 
   const handleAdd = () => {
     setSelectedDepartment(null);
+    setIsReadOnly(false);
     setIsModalOpen(true);
   };
 
   const handleEdit = (department) => {
     setSelectedDepartment(department);
+    setIsReadOnly(false);
+    setIsModalOpen(true);
+  };
+
+  const handleView = (department) => {
+    setSelectedDepartment(department);
+    setIsReadOnly(true);
     setIsModalOpen(true);
   };
 
@@ -110,6 +119,7 @@ const Departments = () => {
         data={departments}
         columns={columns}
         onEdit={handleEdit}
+        onView={handleView}
         onDelete={handleDelete}
         searchPlaceholder="Search departments by name, code or head..."
       />
@@ -117,11 +127,12 @@ const Departments = () => {
       <Modal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
-        title={selectedDepartment ? 'Edit Department' : 'Add New Department'}
+        title={isReadOnly ? 'Department Details' : selectedDepartment ? 'Edit Department' : 'Add New Department'}
       >
         <DepartmentForm
           onSubmit={handleSubmit}
           initialData={selectedDepartment}
+          isReadOnly={isReadOnly}
           onCancel={() => setIsModalOpen(false)}
         />
       </Modal>
