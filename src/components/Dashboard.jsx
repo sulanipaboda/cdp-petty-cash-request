@@ -101,11 +101,8 @@ const Dashboard = () => {
         // If VITE_API_BASE_URL is relative (like /api/v1), apiBase will be empty string, 
         // resulting in /uploads/... which hits our Vite proxy.
         const apiBase = import.meta.env.VITE_API_BASE_URL?.replace(/\/api\/v1\/?$/, '') || '';
-        const receiptUrl = request?.receipt_image_path ? `${apiBase}/${request.receipt_image_path}`.replace(/\/+/g, '/') : null;
-        // Ensure absolute URL if apiBase was a full URL
-        const finalImageUrl = (apiBase.startsWith('http') && receiptUrl && !receiptUrl.startsWith('http')) 
-            ? `${apiBase}/${request.receipt_image_path}`.replace(/([^:]\/)\/+/g, "$1")
-            : receiptUrl;
+        const receiptUrl = request?.receipt_image_path ? `${apiBase}/${request.receipt_image_path}`.replace(/([^:]\/)\/+/g, "$1") : null;
+        const finalImageUrl = receiptUrl;
         
         const config = {
             verification: { 
@@ -136,15 +133,18 @@ const Dashboard = () => {
         });
     };
 
-    const handleWorkflowSubmit = async (description) => {
+    const handleWorkflowSubmit = async (description, status = null) => {
         const { requestId, type } = workflowModal;
         try {
             if (type === 'verification') {
-                await dispatch(verifyPettyCash({ id: requestId, status: 'verified', description })).unwrap();
+                const finalStatus = status || 'verified';
+                await dispatch(verifyPettyCash({ id: requestId, status: finalStatus, description })).unwrap();
             } else if (type === 'approval') {
-                await dispatch(approvePettyCash({ id: requestId, status: 'approved', description })).unwrap();
+                const finalStatus = status || 'approved';
+                await dispatch(approvePettyCash({ id: requestId, status: finalStatus, description })).unwrap();
             } else if (type === 'payment') {
-                await dispatch(updatePaymentStatusAsync({ id: requestId, payment_status: 'paid', description })).unwrap();
+                const finalStatus = status || 'paid';
+                await dispatch(updatePaymentStatusAsync({ id: requestId, payment_status: finalStatus, description })).unwrap();
             }
             toast.success(`${type.charAt(0).toUpperCase() + type.slice(1)} updated successfully!`);
             setWorkflowModal({ ...workflowModal, isOpen: false });
@@ -416,6 +416,14 @@ const Dashboard = () => {
                                                         <CheckCircle className="h-3 w-3" />
                                                         Done
                                                     </button>
+                                                ) : request.payment_status === 'onhold' ? (
+                                                    <button
+                                                        onClick={() => handleWorkflowAction(request.id, 'payment')}
+                                                        className="flex items-center gap-1.5 px-3 py-1.5 bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 border border-red-100 dark:border-red-800 rounded-lg text-[9px] font-black uppercase tracking-widest hover:bg-red-100 transition-all"
+                                                    >
+                                                        <Clock className="h-3 w-3" />
+                                                        On Hold
+                                                    </button>
                                                 ) : (
                                                     <button
                                                         onClick={() => handleWorkflowAction(request.id, 'payment')}
@@ -495,6 +503,7 @@ const Dashboard = () => {
                 isOpen={workflowModal.isOpen}
                 onClose={() => setWorkflowModal({ ...workflowModal, isOpen: false })}
                 onSubmit={handleWorkflowSubmit}
+                type={workflowModal.type}
                 title={workflowModal.title}
                 placeholder={workflowModal.placeholder}
                 viewOnly={workflowModal.viewOnly}

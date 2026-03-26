@@ -14,7 +14,7 @@ export const fetchRequests = createAsyncThunk('pettyCash/fetchRequests', async (
 
 export const fetchCategories = createAsyncThunk('pettyCash/fetchCategories', async (_, { rejectWithValue }) => {
     try {
-        const response = await api.get('/categories/list');
+        const response = await api.get('/categories/public/list');
         return response.data.data;
     } catch (error) {
         return rejectWithValue(error.response?.data || error.message);
@@ -23,7 +23,7 @@ export const fetchCategories = createAsyncThunk('pettyCash/fetchCategories', asy
 
 export const fetchBranches = createAsyncThunk('pettyCash/fetchBranches', async (_, { rejectWithValue }) => {
     try {
-        const response = await api.get('/branches/list');
+        const response = await api.get('/branches/public/list');
         return response.data.data;
     } catch (error) {
         return rejectWithValue(error.response?.data || error.message);
@@ -32,7 +32,7 @@ export const fetchBranches = createAsyncThunk('pettyCash/fetchBranches', async (
 
 export const fetchDepartments = createAsyncThunk('pettyCash/fetchDepartments', async (_, { rejectWithValue }) => {
     try {
-        const response = await api.get('/departments/list');
+        const response = await api.get('/departments/public/list');
         return response.data.data;
     } catch (error) {
         return rejectWithValue(error.response?.data || error.message);
@@ -94,6 +94,7 @@ const initialState = {
     departments: [],
     requests: [],
     status: 'idle', // 'idle' | 'loading' | 'succeeded' | 'failed'
+    submitStatus: 'idle', // 'idle' | 'loading' | 'succeeded' | 'failed'
     error: null,
 };
 
@@ -137,9 +138,16 @@ const pettyCashSlice = createSlice({
                 state.departments = action.payload;
             })
             // Submit Request
-
+            .addCase(submitRequest.pending, (state) => {
+                state.submitStatus = 'loading';
+            })
             .addCase(submitRequest.fulfilled, (state, action) => {
+                state.submitStatus = 'succeeded';
                 state.requests.unshift(action.payload);
+            })
+            .addCase(submitRequest.rejected, (state, action) => {
+                state.submitStatus = 'failed';
+                state.error = action.payload;
             })
             // Update Status
             .addCase(updateRequestStatusAsync.fulfilled, (state, action) => {

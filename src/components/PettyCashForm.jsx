@@ -1,7 +1,7 @@
 // src/components/PettyCashForm.jsx
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Calendar, User, MapPin, Package, FileText, Send, Upload, DollarSign, X, CheckCircle, ShieldCheck, Hash, Briefcase, Layers, UserCheck } from 'lucide-react';
+import { Calendar, User, MapPin, Package, FileText, Send, Upload, DollarSign, X, CheckCircle, ShieldCheck, Hash, Briefcase, Layers, UserCheck, Loader2, Check } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchCategories, fetchBranches, fetchDepartments, submitRequest } from '../store/pettyCashSlice';
@@ -10,9 +10,9 @@ import { useEffect } from 'react';
 
 const PettyCashForm = () => {
     const dispatch = useDispatch();
-    const { categories, branches, departments, requests } = useSelector(state => state.pettyCash);
-    const { users, currentUser } = useSelector(state => state.user);
-    const isAdmin = currentUser?.role === 'System Administrator' || currentUser?.role === 'Finance Manager';
+    const { categories, branches, departments, submitStatus } = useSelector(state => state.pettyCash);
+    const { currentUser } = useSelector(state => state.user);
+    const [showSuccess, setShowSuccess] = useState(false);
 
     useEffect(() => {
         dispatch(fetchCategories());
@@ -123,26 +123,37 @@ const PettyCashForm = () => {
 
         try {
             await dispatch(submitRequest(data)).unwrap();
-            toast.success('Submitted Successfully');
-            setFormData({
-                fullName: '',
-                email: '',
-                branchId: '',
-                departmentId: '',
-                dateNeeded: '',
-                category: '',
-                description: '',
-                requestType: 'New Purchase',
-                amount: '',
-                status: 'pending',
-                paymentStatus: 'pending',
-                approvedBy: '',
-                receiptFile: null,
-                receiptFileName: '',
-                accountNumber: '',
-                bankName: '',
-                bankBranch: '',
-            });
+            
+            // Show Success Overlay
+            setShowSuccess(true);
+            
+            // Success Modal Auto-close and form reset after 1 second
+            setTimeout(() => {
+                setShowSuccess(false);
+                setFormData({
+                    fullName: '',
+                    email: '',
+                    branchId: '',
+                    departmentId: '',
+                    dateNeeded: '',
+                    category: '',
+                    description: '',
+                    requestType: 'New Purchase',
+                    amount: '',
+                    status: 'pending',
+                    paymentStatus: 'pending',
+                    approvedBy: '',
+                    receiptFile: null,
+                    receiptFileName: '',
+                    accountNumber: '',
+                    bankName: '',
+                    bankBranch: '',
+                });
+                if (document.getElementById('receipt-upload')) {
+                    document.getElementById('receipt-upload').value = '';
+                }
+            }, 1000);
+
         } catch (error) {
             toast.error(error.message || 'Submission failed');
         }
@@ -417,12 +428,26 @@ const PettyCashForm = () => {
                         <div className="pt-6 flex flex-col items-center gap-4">
                             <motion.button
                                 type="submit"
-                                whileHover={{ scale: 1.01 }}
-                                whileTap={{ scale: 0.99 }}
-                                className="w-full bg-primary-600 text-white py-3.5 rounded-xl font-black text-[13px] shadow-[0_10px_20px_rgba(41,140,119,0.3)] hover:bg-primary-700 transition-all flex items-center justify-center uppercase tracking-[0.2em] gap-2"
+                                disabled={submitStatus === 'loading'}
+                                whileHover={submitStatus === 'loading' ? {} : { scale: 1.01 }}
+                                whileTap={submitStatus === 'loading' ? {} : { scale: 0.99 }}
+                                className={`w-full py-3.5 rounded-xl font-black text-[13px] uppercase tracking-[0.2em] flex items-center justify-center gap-2 transition-all ${
+                                    submitStatus === 'loading' 
+                                    ? 'bg-gray-400 cursor-not-allowed opacity-70' 
+                                    : 'bg-primary-600 hover:bg-primary-700 text-white shadow-[0_10px_20px_rgba(41,140,119,0.3)]'
+                                }`}
                             >
-                                <Send className="h-4 w-4" />
-                                Submit Requisition
+                                {submitStatus === 'loading' ? (
+                                    <>
+                                        <Loader2 className="h-4 w-4 animate-spin" />
+                                        Processing...
+                                    </>
+                                ) : (
+                                    <>
+                                        <Send className="h-4 w-4" />
+                                        Submit Requisition
+                                    </>
+                                )}
                             </motion.button>
                             <div className="flex items-center gap-2 text-gray-600">
                                 <ShieldCheck className="h-4 w-4 text-primary-600" />
@@ -432,6 +457,94 @@ const PettyCashForm = () => {
                     </form>
                 </div>
             </motion.div>
+
+            {/* Animated Loading Overlay */}
+            <AnimatePresence>
+                {submitStatus === 'loading' && (
+                    <motion.div
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        className="fixed inset-0 z-[100] bg-white/40 backdrop-blur-md flex flex-col items-center justify-center p-6 text-center"
+                    >
+                        <div className="relative">
+                            <motion.div
+                                animate={{ rotate: 360 }}
+                                transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
+                                className="w-24 h-24 border-4 border-primary-600/20 border-t-primary-600 rounded-full"
+                            />
+                            <motion.div
+                                initial={{ scale: 0.8, opacity: 0 }}
+                                animate={{ scale: 1, opacity: 1 }}
+                                transition={{ delay: 0.3 }}
+                                className="absolute inset-0 flex items-center justify-center"
+                            >
+                                <Loader2 className="h-10 w-10 text-primary-600 animate-pulse" />
+                            </motion.div>
+                        </div>
+                        <motion.h2 
+                            initial={{ y: 20, opacity: 0 }}
+                            animate={{ y: 0, opacity: 1 }}
+                            transition={{ delay: 0.5 }}
+                            className="mt-8 text-2xl font-black text-gray-900 uppercase tracking-[0.2em]"
+                        >
+                            Processing 
+                            <span className="text-primary-600">Request</span>
+                        </motion.h2>
+                        <motion.p 
+                            initial={{ y: 20, opacity: 0 }}
+                            animate={{ y: 0, opacity: 1 }}
+                            transition={{ delay: 0.7 }}
+                            className="mt-3 text-[11px] font-bold text-gray-500 uppercase tracking-widest leading-relaxed"
+                        >
+                            Please wait while we secure your requisition...<br />
+                            This may take a moment.
+                        </motion.p>
+                    </motion.div>
+                )}
+            </AnimatePresence>
+
+            {/* Success Overlay */}
+            <AnimatePresence>
+                {showSuccess && (
+                    <motion.div
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        className="fixed inset-0 z-[110] bg-white flex flex-col items-center justify-center p-6 text-center"
+                    >
+                        <motion.div
+                            initial={{ scale: 0, rotate: -45 }}
+                            animate={{ scale: 1, rotate: 0 }}
+                            transition={{ 
+                                type: "spring",
+                                stiffness: 260,
+                                damping: 20,
+                                delay: 0.1
+                            }}
+                            className="w-24 h-24 bg-primary-600 rounded-full flex items-center justify-center shadow-2xl shadow-primary-200"
+                        >
+                            <Check className="h-12 w-12 text-white" />
+                        </motion.div>
+                        <motion.h2 
+                            initial={{ y: 20, opacity: 0 }}
+                            animate={{ y: 0, opacity: 1 }}
+                            transition={{ delay: 0.4 }}
+                            className="mt-8 text-3xl font-black text-gray-900 uppercase tracking-[0.1em]"
+                        >
+                            Request <span className="text-primary-600">Submitted!</span>
+                        </motion.h2>
+                        <motion.p 
+                            initial={{ y: 20, opacity: 0 }}
+                            animate={{ y: 0, opacity: 1 }}
+                            transition={{ delay: 0.6 }}
+                            className="mt-3 text-[12px] font-bold text-gray-500 uppercase tracking-widest"
+                        >
+                            Your requisition has been recorded successfully.
+                        </motion.p>
+                    </motion.div>
+                )}
+            </AnimatePresence>
         </div>
     );
 };

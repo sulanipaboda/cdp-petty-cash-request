@@ -11,11 +11,9 @@ import {
 const RequestDetailsModal = ({ request, onClose, onUpdateStatus, canUpdateStatus }) => {
   if (!request) return null;
 
+  const [isPreviewOpen, setIsPreviewOpen] = React.useState(false);
   const apiBase = import.meta.env.VITE_API_BASE_URL?.replace(/\/api\/v1\/?$/, '') || '';
-  const imageUrl = request.receipt_image_path ? `${apiBase}/${request.receipt_image_path}`.replace(/\/+/g, '/') : null;
-  const finalImageUrl = (apiBase.startsWith('http') && imageUrl && !imageUrl.startsWith('http')) 
-      ? `${apiBase}/${request.receipt_image_path}`.replace(/([^:]\/)\/+/g, "$1")
-      : imageUrl;
+  const finalImageUrl = request.receipt_image_path ? `${apiBase}/${request.receipt_image_path}`.replace(/([^:]\/)\/+/g, "$1") : null;
 
   const formatDate = (dateString) => {
     if (!dateString) return 'N/A';
@@ -199,7 +197,10 @@ const RequestDetailsModal = ({ request, onClose, onUpdateStatus, canUpdateStatus
             {finalImageUrl && (
               <div className="mt-8">
                 <SectionLabel icon={FileText} label="Attachment Proof" />
-                <div className="mt-3 relative group rounded-2xl overflow-hidden border border-gray-100 dark:border-gray-800 shadow-lg">
+                <div 
+                  className="mt-3 relative group rounded-2xl overflow-hidden border border-gray-100 dark:border-gray-800 shadow-lg cursor-pointer"
+                  onClick={() => setIsPreviewOpen(true)}
+                >
                   <img
                     src={finalImageUrl}
                     alt="Receipt"
@@ -210,15 +211,10 @@ const RequestDetailsModal = ({ request, onClose, onUpdateStatus, canUpdateStatus
                     }}
                   />
                   <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                    <a
-                      href={finalImageUrl}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="px-6 py-3 bg-white text-black text-xs font-black uppercase tracking-widest rounded-xl flex items-center gap-2 hover:scale-110 transition-transform"
-                    >
+                    <div className="px-6 py-3 bg-white text-black text-xs font-black uppercase tracking-widest rounded-xl flex items-center gap-2 hover:scale-110 transition-transform">
                       <ExternalLink className="h-4 w-4" />
-                      View Full Image
-                    </a>
+                      View Full Preview
+                    </div>
                   </div>
                 </div>
               </div>
@@ -254,6 +250,44 @@ const RequestDetailsModal = ({ request, onClose, onUpdateStatus, canUpdateStatus
             </div>
           )}
         </motion.div>
+        
+        {/* Image Preview Overlay */}
+        <AnimatePresence>
+          {isPreviewOpen && (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="fixed inset-0 z-[110] bg-black/90 backdrop-blur-xl flex items-center justify-center p-4 md:p-10"
+              onClick={() => setIsPreviewOpen(false)}
+            >
+              <motion.div
+                initial={{ scale: 0.9, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                exit={{ scale: 0.9, opacity: 0 }}
+                className="relative max-w-5xl w-full h-full flex items-center justify-center"
+                onClick={(e) => e.stopPropagation()}
+              >
+                <button
+                  onClick={() => setIsPreviewOpen(false)}
+                  className="absolute -top-12 right-0 p-3 text-white/70 hover:text-white transition-colors"
+                >
+                  <X className="h-8 w-8" />
+                </button>
+                <img
+                  src={finalImageUrl}
+                  alt="Receipt Full Preview"
+                  className="max-w-full max-h-full object-contain rounded-xl shadow-2xl"
+                />
+                <div className="absolute -bottom-12 left-0 right-0 text-center">
+                  <p className="text-white/50 text-[10px] font-black uppercase tracking-[0.3em]">
+                    Click anywhere outside or press X to close
+                  </p>
+                </div>
+              </motion.div>
+            </motion.div>
+          )}
+        </AnimatePresence>
       </motion.div>
     </AnimatePresence>
   );
