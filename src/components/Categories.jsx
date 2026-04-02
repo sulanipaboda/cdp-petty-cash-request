@@ -11,6 +11,7 @@ import {
   deleteCategory 
 } from '../store/categorySlice';
 import CategoryForm from './CategoryForm';
+import Spinner from './common/Spinner';
 import toast from 'react-hot-toast';
 
 const Categories = () => {
@@ -78,14 +79,20 @@ const Categories = () => {
         </button>
       </div>
 
-      <DataTable 
-        title="Categories List"
-        data={categories}
-        columns={columns}
-        onEdit={handleEdit}
-        onDelete={handleDelete}
-        searchPlaceholder="Search categories by name or description..."
-      />
+      {useSelector(state => state.category.status) === 'loading' ? (
+        <div className="flex justify-center py-12">
+          <Spinner size="lg" />
+        </div>
+      ) : (
+        <DataTable 
+          title="Categories List"
+          data={categories}
+          columns={columns}
+          onEdit={handleEdit}
+          onDelete={handleDelete}
+          searchPlaceholder="Search categories by name or description..."
+        />
+      )}
 
       <Modal
         isOpen={isModalOpen}

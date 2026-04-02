@@ -3,6 +3,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import DataTable from './common/DataTable';
 import Modal from './common/Modal';
 import PermissionForm from './PermissionForm';
+import Spinner from './common/Spinner';
 import { 
   fetchPermissions, 
   createPermission, 
@@ -50,14 +51,20 @@ const Permissions = () => {
         <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100 uppercase tracking-tight">Permission Management</h1>
       </div>
 
-      <DataTable 
-        title="Permissions List"
-        data={permissions}
-        columns={columns}
-        onEdit={handleEdit}
-        onDelete={handleDelete}
-        searchPlaceholder="Search by module or action..."
-      />
+      {useSelector(state => state.user.dataStatus) === 'loading' ? (
+        <div className="flex justify-center py-12">
+          <Spinner size="lg" />
+        </div>
+      ) : (
+        <DataTable 
+          title="Permissions List"
+          data={permissions}
+          columns={columns}
+          onEdit={handleEdit}
+          onDelete={handleDelete}
+          searchPlaceholder="Search by module or action..."
+        />
+      )}
     </div>
   );
 };

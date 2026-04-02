@@ -21,6 +21,7 @@ import {
 } from '../store/pettyCashSlice';
 import RequestDetailsModal from './RequestDetailsModal';
 import WorkflowActionModal from './WorkflowActionModal';
+import Spinner from './common/Spinner';
 import toast from 'react-hot-toast';
 
 const Dashboard = () => {
@@ -221,8 +222,8 @@ const Dashboard = () => {
         >
             {/* Header */}
             {fetchStatus === 'loading' && (
-                <div className="absolute top-4 right-4 text-primary-600 animate-pulse text-sm font-bold">
-                    Loading data...
+                <div className="fixed inset-0 z-50 flex items-center justify-center bg-white/50 dark:bg-gray-900/50 backdrop-blur-sm">
+                    <Spinner size="lg" />
                 </div>
             )}
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">

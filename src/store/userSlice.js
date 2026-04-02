@@ -329,8 +329,15 @@ const userSlice = createSlice({
         state.permissions = state.permissions.filter(p => p.id !== action.payload);
       })
       // Audit Logs
+      .addCase(fetchAuditLogs.pending, (state) => {
+        state.dataStatus = 'loading';
+      })
       .addCase(fetchAuditLogs.fulfilled, (state, action) => {
+        state.dataStatus = 'succeeded';
         state.auditLogs = action.payload;
+      })
+      .addCase(fetchAuditLogs.rejected, (state) => {
+        state.dataStatus = 'failed';
       });
   },
 });

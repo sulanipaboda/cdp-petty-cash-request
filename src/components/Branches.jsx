@@ -10,6 +10,7 @@ import {
   toggleBranchStatus
 } from '../store/branchSlice';
 import BranchForm from './BranchForm';
+import Spinner from './common/Spinner';
 import toast from 'react-hot-toast';
 
 const Branches = () => {
@@ -142,15 +143,21 @@ const Branches = () => {
         </button>
       </div>
 
-      <DataTable
-        title="Branches List"
-        data={branches}
-        columns={columns}
-        onEdit={handleEdit}
-        onView={handleView}
-        onDelete={handleDelete}
-        searchPlaceholder="Search branches by name, code or city..."
-      />
+      {useSelector(state => state.branch.status) === 'loading' ? (
+        <div className="flex justify-center py-12">
+          <Spinner size="lg" />
+        </div>
+      ) : (
+        <DataTable
+          title="Branches List"
+          data={branches}
+          columns={columns}
+          onEdit={handleEdit}
+          onView={handleView}
+          onDelete={handleDelete}
+          searchPlaceholder="Search branches by name, code or city..."
+        />
+      )}
     </div>
   );
 };

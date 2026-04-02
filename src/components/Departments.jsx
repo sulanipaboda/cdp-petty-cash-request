@@ -12,6 +12,7 @@ import {
   toggleDepartmentStatus 
 } from '../store/departmentSlice';
 import DepartmentForm from './DepartmentForm';
+import Spinner from './common/Spinner';
 import toast from 'react-hot-toast';
 
 const Departments = () => {
@@ -114,15 +115,21 @@ const Departments = () => {
         </button>
       </div>
 
-      <DataTable 
-        title="Departments List"
-        data={departments}
-        columns={columns}
-        onEdit={handleEdit}
-        onView={handleView}
-        onDelete={handleDelete}
-        searchPlaceholder="Search departments by name, code or head..."
-      />
+      {useSelector(state => state.department.status) === 'loading' ? (
+        <div className="flex justify-center py-12">
+          <Spinner size="lg" />
+        </div>
+      ) : (
+        <DataTable 
+          title="Departments List"
+          data={departments}
+          columns={columns}
+          onEdit={handleEdit}
+          onView={handleView}
+          onDelete={handleDelete}
+          searchPlaceholder="Search departments by name, code or head..."
+        />
+      )}
 
       <Modal
         isOpen={isModalOpen}

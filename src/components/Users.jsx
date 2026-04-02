@@ -3,6 +3,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import DataTable from './common/DataTable';
 import Modal from './common/Modal';
 import UserForm from './UserForm';
+import Spinner from './common/Spinner';
 import { 
   fetchUsers, 
   createUser, 
@@ -117,15 +118,21 @@ const Users = () => {
         </button>
       </div>
 
-      <DataTable 
-        title="Users List"
-        data={users}
-        columns={columns}
-        onEdit={handleEdit}
-        onView={handleView}
-        onDelete={handleDelete}
-        searchPlaceholder="Search by name, email or role..."
-      />
+      {useSelector(state => state.user.dataStatus) === 'loading' ? (
+        <div className="flex justify-center py-12">
+          <Spinner size="lg" />
+        </div>
+      ) : (
+        <DataTable 
+          title="Users List"
+          data={users}
+          columns={columns}
+          onEdit={handleEdit}
+          onView={handleView}
+          onDelete={handleDelete}
+          searchPlaceholder="Search by name, email or role..."
+        />
+      )}
 
 
       <Modal

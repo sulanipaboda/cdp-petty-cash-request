@@ -1,5 +1,6 @@
 import React from 'react';
 import { useSelector, useDispatch } from 'react-redux';
+import Spinner from './common/Spinner';
 import DataTable from './common/DataTable';
 import { Terminal } from 'lucide-react';
 import { fetchAuditLogs } from '../store/userSlice';
@@ -59,12 +60,18 @@ const Logs = () => {
         </div>
       </div>
 
-      <DataTable 
-        title="System Activity Stream"
-        data={auditLogs}
-        columns={columns}
-        searchPlaceholder="Search logs by user, action or module..."
-      />
+      {useSelector(state => state.user.dataStatus) === 'loading' ? (
+        <div className="flex justify-center py-12">
+          <Spinner size="lg" />
+        </div>
+      ) : (
+        <DataTable 
+          title="System Activity Stream"
+          data={auditLogs}
+          columns={columns}
+          searchPlaceholder="Search logs by user, action or module..."
+        />
+      )}
     </div>
   );
 };

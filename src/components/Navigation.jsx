@@ -48,8 +48,8 @@ const Navigation = () => {
   const roleName = getRoleName();
 
   return (
-    <nav className="bg-white dark:bg-gray-900 shadow-sm border-b border-gray-200 dark:border-gray-800 sticky top-0 z-50 w-full transition-colors duration-300">
-      <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8">
+    <nav className="bg-white dark:bg-gray-900 shadow-sm border-b border-gray-200 dark:border-gray-800 fixed top-0 left-0 right-0 z-50 w-full transition-colors duration-300">
+      <div className="max-[1600px] mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
           {/* Logo Section */}
           <div className="flex items-center space-x-4">
@@ -90,8 +90,8 @@ const Navigation = () => {
               {isNotificationsOpen && (
                 <>
                   <div className="fixed inset-0 z-40" onClick={() => setIsNotificationsOpen(false)}></div>
-                  <div className="absolute right-0 mt-2 w-80 sm:w-96 bg-white dark:bg-gray-900 rounded-2xl shadow-2xl border border-gray-100 dark:border-gray-800 flex flex-col z-50 animate-in fade-in zoom-in duration-200">
-                    <div className="px-5 py-4 border-b border-gray-100 dark:border-gray-800 flex items-center justify-between">
+                  <div className="absolute right-0 mt-2 w-80 sm:w-96 bg-white dark:bg-gray-900 rounded-2xl shadow-2xl border border-gray-100 dark:border-gray-800 flex flex-col z-50 animate-in fade-in zoom-in duration-200 h-[calc(100vh-100px)] max-h-[500px]">
+                    <div className="px-5 py-4 border-b border-gray-100 dark:border-gray-800 flex items-center justify-between flex-shrink-0">
                       <h3 className="text-sm font-black text-gray-900 dark:text-gray-100 uppercase tracking-tighter">Notifications</h3>
                       {unreadCount > 0 && (
                         <button 
@@ -103,7 +103,7 @@ const Navigation = () => {
                       )}
                     </div>
 
-                    <div className="max-h-[400px] overflow-y-auto p-2">
+                    <div className="flex-1 overflow-y-auto p-2 min-h-0">
                        {notifications.length === 0 ? (
                          <div className="py-12 text-center">
                            <Bell className="h-10 w-10 text-gray-100 dark:text-gray-800 mx-auto mb-3" />
@@ -139,7 +139,7 @@ const Navigation = () => {
                        )}
                     </div>
 
-                    <div className="p-2 border-t border-gray-100 dark:border-gray-800">
+                    <div className="p-2 border-t border-gray-100 dark:border-gray-800 flex-shrink-0">
                       <button className="w-full py-2.5 text-[10px] font-black text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 uppercase tracking-[0.2em] transition-colors rounded-xl hover:bg-gray-50 dark:hover:bg-gray-800">
                         View Audit Logs
                       </button>
