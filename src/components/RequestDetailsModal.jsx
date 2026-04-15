@@ -14,6 +14,7 @@ const RequestDetailsModal = ({ request, onClose, onUpdateStatus, canUpdateStatus
   const [isPreviewOpen, setIsPreviewOpen] = React.useState(false);
   const apiBase = import.meta.env.VITE_API_BASE_URL?.replace(/\/api\/v1\/?$/, '') || '';
   const finalImageUrl = request.receipt_image_path ? `${apiBase}/${request.receipt_image_path}`.replace(/([^:]\/)\/+/g, "$1") : null;
+  const isPdf = finalImageUrl ? finalImageUrl.toLowerCase().endsWith('.pdf') : false;
 
   const formatDate = (dateString) => {
     if (!dateString) return 'N/A';
@@ -193,30 +194,53 @@ const RequestDetailsModal = ({ request, onClose, onUpdateStatus, canUpdateStatus
               </div>
             )}
 
-            {/* Receipt Preview (if any) */}
+            {/* Receipt Attachment */}
             {finalImageUrl && (
               <div className="mt-8">
                 <SectionLabel icon={FileText} label="Attachment Proof" />
-                <div 
-                  className="mt-3 relative group rounded-2xl overflow-hidden border border-gray-100 dark:border-gray-800 shadow-lg cursor-pointer"
-                  onClick={() => setIsPreviewOpen(true)}
-                >
-                  <img
-                    src={finalImageUrl}
-                    alt="Receipt"
-                    className="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-700"
-                    onError={(e) => {
-                      e.target.onerror = null;
-                      e.target.src = 'https://placehold.co/600x400?text=Receipt+Not+Found';
-                    }}
-                  />
-                  <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                    <div className="px-6 py-3 bg-white text-black text-xs font-black uppercase tracking-widest rounded-xl flex items-center gap-2 hover:scale-110 transition-transform">
-                      <ExternalLink className="h-4 w-4" />
-                      View Full Preview
+                {isPdf ? (
+                  // PDF: show a prominent button to open in new tab
+                  <div className="mt-3 flex items-center gap-4 p-5 rounded-2xl border border-gray-100 dark:border-gray-800 bg-gray-50 dark:bg-gray-800/50">
+                    <div className="p-3 bg-red-50 dark:bg-red-900/20 rounded-xl border border-red-100 dark:border-red-800">
+                      <FileText className="h-7 w-7 text-red-500 dark:text-red-400" />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-xs font-black text-gray-900 dark:text-gray-100 uppercase tracking-widest">PDF Receipt</p>
+                      <p className="text-[10px] text-gray-400 font-medium mt-0.5 truncate">{request.receipt_image_path}</p>
+                    </div>
+                    <a
+                      href={finalImageUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex items-center gap-2 px-5 py-2.5 bg-primary-600 hover:bg-primary-700 text-white text-[10px] font-black uppercase tracking-widest rounded-xl transition-all shadow-lg shadow-primary-900/20"
+                    >
+                      <ExternalLink className="h-3.5 w-3.5" />
+                      Open PDF
+                    </a>
+                  </div>
+                ) : (
+                  // Image: show inline thumbnail + full-screen overlay
+                  <div
+                    className="mt-3 relative group rounded-2xl overflow-hidden border border-gray-100 dark:border-gray-800 shadow-lg cursor-pointer"
+                    onClick={() => setIsPreviewOpen(true)}
+                  >
+                    <img
+                      src={finalImageUrl}
+                      alt="Receipt"
+                      className="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-700"
+                      onError={(e) => {
+                        e.target.onerror = null;
+                        e.target.src = 'https://placehold.co/600x400?text=Receipt+Not+Found';
+                      }}
+                    />
+                    <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                      <div className="px-6 py-3 bg-white text-black text-xs font-black uppercase tracking-widest rounded-xl flex items-center gap-2 hover:scale-110 transition-transform">
+                        <ExternalLink className="h-4 w-4" />
+                        View Full Preview
+                      </div>
                     </div>
                   </div>
-                </div>
+                )}
               </div>
             )}
           </div>

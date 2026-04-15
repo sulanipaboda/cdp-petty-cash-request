@@ -1,7 +1,7 @@
 // src/components/WorkflowActionModal.jsx
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Send, MessageSquare, AlertCircle, Clock } from 'lucide-react';
+import { X, Send, MessageSquare, AlertCircle, Clock, FileText, ExternalLink } from 'lucide-react';
 import toast from 'react-hot-toast';
 
 const WorkflowActionModal = ({ isOpen, onClose, onSubmit, type, title, placeholder, viewOnly = false, content = '', imageUrl = null }) => {
@@ -106,32 +106,58 @@ const WorkflowActionModal = ({ isOpen, onClose, onSubmit, type, title, placehold
                             )}
                         </div>
 
-                        {imageUrl && (
-                            <div className="space-y-2">
-                                <label className="text-[10px] font-black text-gray-400 dark:text-gray-500 uppercase tracking-[0.2em] px-1">
-                                    Attachment / Receipt
-                                </label>
-                                <div 
-                                    className="relative group rounded-2xl overflow-hidden border border-gray-100 dark:border-gray-800 cursor-pointer"
-                                    onClick={() => setIsPreviewOpen(true)}
-                                >
-                                    <img 
-                                        src={imageUrl} 
-                                        alt="Receipt" 
-                                        className="w-full h-48 object-cover transition-transform duration-500 group-hover:scale-110"
-                                        onError={(e) => {
-                                            e.target.onerror = null;
-                                            e.target.src = 'https://placehold.co/600x400?text=Receipt+Not+Found';
-                                        }}
-                                    />
-                                    <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                                        <div className="px-4 py-2 bg-white text-gray-900 rounded-xl text-[10px] font-black uppercase tracking-widest shadow-xl transform translate-y-2 group-hover:translate-y-0 transition-all">
-                                            View Full Preview
+                        {imageUrl && (() => {
+                            const isPdf = imageUrl.toLowerCase().endsWith('.pdf');
+                            return (
+                                <div className="space-y-2">
+                                    <label className="text-[10px] font-black text-gray-400 dark:text-gray-500 uppercase tracking-[0.2em] px-1">
+                                        Attachment / Receipt
+                                    </label>
+                                    {isPdf ? (
+                                        // PDF — open in new tab
+                                        <div className="flex items-center gap-4 p-4 rounded-2xl border border-gray-100 dark:border-gray-800 bg-gray-50 dark:bg-gray-800/50">
+                                            <div className="p-3 bg-red-50 dark:bg-red-900/20 rounded-xl border border-red-100 dark:border-red-800 flex-shrink-0">
+                                                <FileText className="h-6 w-6 text-red-500 dark:text-red-400" />
+                                            </div>
+                                            <div className="flex-1 min-w-0">
+                                                <p className="text-xs font-black text-gray-900 dark:text-gray-100 uppercase tracking-widest">PDF Receipt</p>
+                                                <p className="text-[10px] text-gray-400 font-medium mt-0.5 truncate">{imageUrl.split('/').pop()}</p>
+                                            </div>
+                                            <a
+                                                href={imageUrl}
+                                                target="_blank"
+                                                rel="noopener noreferrer"
+                                                className="flex items-center gap-2 px-4 py-2 bg-primary-600 hover:bg-primary-700 text-white text-[10px] font-black uppercase tracking-widest rounded-xl transition-all shadow-lg shadow-primary-900/20 flex-shrink-0"
+                                            >
+                                                <ExternalLink className="h-3.5 w-3.5" />
+                                                Open PDF
+                                            </a>
                                         </div>
-                                    </div>
+                                    ) : (
+                                        // Image — inline thumbnail + fullscreen overlay
+                                        <div
+                                            className="relative group rounded-2xl overflow-hidden border border-gray-100 dark:border-gray-800 cursor-pointer"
+                                            onClick={() => setIsPreviewOpen(true)}
+                                        >
+                                            <img
+                                                src={imageUrl}
+                                                alt="Receipt"
+                                                className="w-full h-48 object-cover transition-transform duration-500 group-hover:scale-110"
+                                                onError={(e) => {
+                                                    e.target.onerror = null;
+                                                    e.target.src = 'https://placehold.co/600x400?text=Receipt+Not+Found';
+                                                }}
+                                            />
+                                            <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                                                <div className="px-4 py-2 bg-white text-gray-900 rounded-xl text-[10px] font-black uppercase tracking-widest shadow-xl transform translate-y-2 group-hover:translate-y-0 transition-all">
+                                                    View Full Preview
+                                                </div>
+                                            </div>
+                                        </div>
+                                    )}
                                 </div>
-                            </div>
-                        )}
+                            );
+                        })()}
 
                         {/* Actions */}
                         <div className="flex gap-3 pt-2">

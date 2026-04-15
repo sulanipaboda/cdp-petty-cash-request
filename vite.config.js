@@ -10,11 +10,13 @@ export default defineConfig({
       '/api': {
         target: 'http://localhost:8000',
         changeOrigin: true,
+        secure: true,
         rewrite: (path) => path
       },
       '/uploads': {
         target: 'http://localhost:8000',
         changeOrigin: true,
+        secure: true,
         rewrite: (path) => path
       }
     }
