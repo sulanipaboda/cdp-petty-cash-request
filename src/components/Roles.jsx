@@ -14,6 +14,7 @@ import toast from 'react-hot-toast';
 
 const Roles = () => {
   const roles = useSelector((state) => state.user.roles || []);
+  const dataStatus = useSelector((state) => state.user.dataStatus);
   const dispatch = useDispatch();
 
   const [view, setView] = useState('list'); // 'list' or 'form'
@@ -115,7 +116,7 @@ const Roles = () => {
         </button>
       </div>
 
-      {useSelector(state => state.user.dataStatus) === 'loading' ? (
+      {dataStatus === 'loading' ? (
         <div className="flex justify-center py-12">
           <Spinner size="lg" />
         </div>

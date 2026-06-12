@@ -15,6 +15,7 @@ import toast from 'react-hot-toast';
 
 const Branches = () => {
   const branches = useSelector((state) => state.branch.branches || []);
+  const branchStatus = useSelector((state) => state.branch.status);
   const dispatch = useDispatch();
 
   const [view, setView] = useState('list'); // 'list' or 'form'
@@ -143,7 +144,7 @@ const Branches = () => {
         </button>
       </div>
 
-      {useSelector(state => state.branch.status) === 'loading' ? (
+      {branchStatus === 'loading' ? (
         <div className="flex justify-center py-12">
           <Spinner size="lg" />
         </div>

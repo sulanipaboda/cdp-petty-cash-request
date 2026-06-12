@@ -7,6 +7,7 @@ import { fetchAuditLogs } from '../store/userSlice';
 
 const Logs = () => {
   const auditLogs = useSelector((state) => state.user.auditLogs || []);
+  const dataStatus = useSelector((state) => state.user.dataStatus);
   const dispatch = useDispatch();
 
   React.useEffect(() => {
@@ -60,7 +61,7 @@ const Logs = () => {
         </div>
       </div>
 
-      {useSelector(state => state.user.dataStatus) === 'loading' ? (
+      {dataStatus === 'loading' ? (
         <div className="flex justify-center py-12">
           <Spinner size="lg" />
         </div>

@@ -17,6 +17,7 @@ import toast from 'react-hot-toast';
 
 const Departments = () => {
   const departments = useSelector((state) => state.department.departments || []);
+  const departmentStatus = useSelector((state) => state.department.status);
   const dispatch = useDispatch();
 
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -115,7 +116,7 @@ const Departments = () => {
         </button>
       </div>
 
-      {useSelector(state => state.department.status) === 'loading' ? (
+      {departmentStatus === 'loading' ? (
         <div className="flex justify-center py-12">
           <Spinner size="lg" />
         </div>

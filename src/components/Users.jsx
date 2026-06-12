@@ -15,6 +15,7 @@ import toast from 'react-hot-toast';
 
 const Users = () => {
   const users = useSelector((state) => state.user.users || []);
+  const dataStatus = useSelector((state) => state.user.dataStatus);
   const dispatch = useDispatch();
 
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -118,7 +119,7 @@ const Users = () => {
         </button>
       </div>
 
-      {useSelector(state => state.user.dataStatus) === 'loading' ? (
+      {dataStatus === 'loading' ? (
         <div className="flex justify-center py-12">
           <Spinner size="lg" />
         </div>

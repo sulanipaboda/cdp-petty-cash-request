@@ -14,6 +14,7 @@ import toast from 'react-hot-toast';
 
 const Permissions = () => {
   const permissions = useSelector((state) => state.user.permissions || []);
+  const dataStatus = useSelector((state) => state.user.dataStatus);
   const dispatch = useDispatch();
 
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -51,7 +52,7 @@ const Permissions = () => {
         <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100 uppercase tracking-tight">Permission Management</h1>
       </div>
 
-      {useSelector(state => state.user.dataStatus) === 'loading' ? (
+      {dataStatus === 'loading' ? (
         <div className="flex justify-center py-12">
           <Spinner size="lg" />
         </div>
